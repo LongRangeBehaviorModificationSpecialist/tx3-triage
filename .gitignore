@@ -1,0 +1,5 @@
+# Exclude the 'scripts' directory and all its contents
+scripts/
+
+# Exclude the 'testing.ps1' file
+test.ps1
