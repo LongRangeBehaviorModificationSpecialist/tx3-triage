@@ -5,6 +5,9 @@
 #! ======================================
 
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
 # 6-001
 function Get-PrefetchFilesList {
     [CmdletBinding()]
@@ -17,7 +20,7 @@ function Get-PrefetchFilesList {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" |
             Select-Object Name, LastAccessTime, CreationTime |
             Sort-Object LastAccessTime | Format-List
@@ -38,7 +41,7 @@ function Get-PrefetchFilesList {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -55,7 +58,7 @@ function Get-DetailedPrefetchData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" |
             Select-Object -Property * |
             Sort-Object LastAccessTime
@@ -76,7 +79,7 @@ function Get-DetailedPrefetchData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

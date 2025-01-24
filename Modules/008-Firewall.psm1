@@ -5,6 +5,9 @@
 #! ======================================
 
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
 # 8-001
 function Get-FirewallRules {
     [CmdletBinding()]
@@ -17,7 +20,7 @@ function Get-FirewallRules {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetFirewallRule
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -36,7 +39,7 @@ function Get-FirewallRules {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -53,7 +56,7 @@ function Get-AdvFirewallRules {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = netsh advfirewall firewall show rule name=all verbose
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -72,7 +75,7 @@ function Get-AdvFirewallRules {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -89,7 +92,7 @@ function Get-DefenderExclusions {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-MpPreference
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -108,7 +111,7 @@ function Get-DefenderExclusions {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

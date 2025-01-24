@@ -66,8 +66,8 @@ function Get-TPMDetails {
 
         # Show-Message("$(Split-Path $($MyInvocation.MyCommand.Path) -Leaf) module accessed successfully") -Yellow
 
-        $stopwatch = New-Object System.Diagnostics.Stopwatch
-        $stopwatch.Start()
+        # $stopwatch = New-Object System.Diagnostics.Stopwatch
+        # $stopwatch.Start()
 
         $Manufacturers = @{
             0x414D4400 = "AMD"

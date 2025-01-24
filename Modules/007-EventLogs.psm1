@@ -5,6 +5,9 @@
 #! ======================================
 
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
 # 7-001
 function Get-EventLogListBasic {
     [CmdletBinding()]
@@ -17,7 +20,7 @@ function Get-EventLogListBasic {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -ListLog * | Sort-Object -Property RecordCount -Descending
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -36,7 +39,7 @@ function Get-EventLogListBasic {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -53,7 +56,7 @@ function Get-EventLogListDetailed {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -ListLog * | Where-Object { $_.IsEnabled -eq "True" } |
             Select-Object LogName, RecordCount, FileSize, LogMode, LogFilePath, LastWriteTime, IsEnabled |
             Sort-Object -Property RecordCount -Descending | Format-List
@@ -74,7 +77,7 @@ function Get-EventLogListDetailed {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -93,7 +96,7 @@ function Get-SecurityEventCount {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-EventLog -LogName security -After $CutoffDate |
             Group-Object -Property EventID -NoElement |
@@ -115,7 +118,7 @@ function Get-SecurityEventCount {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -134,7 +137,7 @@ function Get-SecurityEventsLast30DaysTxt {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-EventLog Security -After $CutoffDate | Format-List *
             if ($Data.Count -eq 0) {
@@ -154,7 +157,7 @@ function Get-SecurityEventsLast30DaysTxt {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -173,7 +176,7 @@ function Get-SecurityEventsLast30DaysCsv {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-EventLog Security -After $CutoffDate | ConvertTo-Csv -NoTypeInformation
             if ($Data.Count -eq 0) {
@@ -193,7 +196,7 @@ function Get-SecurityEventsLast30DaysCsv {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -212,9 +215,14 @@ function Get-Application1002Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1002 } |
-            Select-Object TimeCreated, ID, Message | Format-List
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            try {
+                $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1002 } |
+                    Select-Object TimeCreated, ID, Message | Format-List
+            }
+            catch [NoMatchingEventsFound] {
+                Write-Warning "No events were found that match the specified selection criteria"
+            }
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -232,7 +240,7 @@ function Get-Application1002Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -251,7 +259,7 @@ function Get-System1014Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 1014 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -271,7 +279,7 @@ function Get-System1014Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -290,7 +298,7 @@ function Get-Application1102Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1102 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -310,7 +318,7 @@ function Get-Application1102Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -329,7 +337,7 @@ function Get-Security4616Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4616 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -349,7 +357,7 @@ function Get-Security4616Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -368,7 +376,7 @@ function Get-Security4624Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4624 } |
             Select-Object TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
             if ($Data.Count -eq 0) {
@@ -388,7 +396,7 @@ function Get-Security4624Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -407,7 +415,7 @@ function Get-Security4625Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4625 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -427,7 +435,7 @@ function Get-Security4625Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -446,7 +454,7 @@ function Get-Security4648Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4648 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -466,7 +474,7 @@ function Get-Security4648Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -485,7 +493,7 @@ function Get-Security4672Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4672 } |
             Select-Object TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
             if ($Data.Count -eq 0) {
@@ -505,7 +513,7 @@ function Get-Security4672Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -524,7 +532,7 @@ function Get-Security4673Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4673 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -544,7 +552,7 @@ function Get-Security4673Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -563,7 +571,7 @@ function Get-Security4674Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4674 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -583,7 +591,7 @@ function Get-Security4674Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -602,7 +610,7 @@ function Get-Security4688Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4688 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -622,7 +630,7 @@ function Get-Security4688Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -641,7 +649,7 @@ function Get-Security4720Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4720 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -661,7 +669,7 @@ function Get-Security4720Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -680,7 +688,7 @@ function Get-System7036Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 7036 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -700,7 +708,7 @@ function Get-System7036Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -719,7 +727,7 @@ function Get-System7045Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 7045 } |
             Select-Object TimeCreated, ID, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
             if ($Data.Count -eq 0) {
@@ -739,7 +747,7 @@ function Get-System7045Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -758,7 +766,7 @@ function Get-System64001Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 64001 } |
             Select-Object TimeCreated, ID, Message | Format-List
             if ($Data.Count -eq 0) {
@@ -778,7 +786,7 @@ function Get-System64001Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -795,7 +803,7 @@ function Get-AppInvEvts {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory |
             Select-Object TimeCreated, ID, Message |
             Sort-Object -Property TimeCreated -Descending | Format-List
@@ -816,7 +824,7 @@ function Get-AppInvEvts {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -833,7 +841,7 @@ function Get-TerminalServiceEvents {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational |
             Select-Object TimeCreated, ID, Message |
             Sort-Object -Property TimeCreated -Descending | Format-List
@@ -854,7 +862,7 @@ function Get-TerminalServiceEvents {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -871,7 +879,7 @@ function Get-PSOperational4104Events {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WinEvent -FilterHashtable @{ LogName = "Microsoft-Windows-PowerShell/Operational"; ID = 4104 } |
             Format-Table TimeCreated, Message -AutoSize
             if ($Data.Count -eq 0) {
@@ -891,7 +899,7 @@ function Get-PSOperational4104Events {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

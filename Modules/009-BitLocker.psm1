@@ -5,6 +5,9 @@
 #! ======================================
 
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
 # 9-001
 function Get-BitlockerRecoveryKeys {
     [CmdletBinding()]
@@ -17,7 +20,7 @@ function Get-BitlockerRecoveryKeys {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data1 = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if ($Data1.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -64,7 +67,7 @@ function Get-BitlockerRecoveryKeys {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

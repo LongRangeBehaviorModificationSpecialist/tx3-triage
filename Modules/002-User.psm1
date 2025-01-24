@@ -5,6 +5,9 @@
 #! ======================================
 
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
 # 2-001
 function Get-WhoAmI {
     [CmdletBinding()]
@@ -17,7 +20,7 @@ function Get-WhoAmI {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = whoami /ALL /FO LIST
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -36,7 +39,7 @@ function Get-WhoAmI {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -53,7 +56,7 @@ function Get-UserProfile {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -72,7 +75,7 @@ function Get-UserProfile {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -89,7 +92,7 @@ function Get-UserInfo {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -108,7 +111,7 @@ function Get-UserInfo {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -125,7 +128,7 @@ function Get-LocalUserData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-LocalUser | Format-Table
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -144,7 +147,7 @@ function Get-LocalUserData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -161,7 +164,7 @@ function Get-LogonSession {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -180,7 +183,7 @@ function Get-LogonSession {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -197,7 +200,7 @@ function Get-PowershellConsoleHistoryAllUsers {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Specify the directory where user profiles are stored
             $UsersDir = "C:\Users"
             # Get a list of all user directories in C:\Users
@@ -228,7 +231,7 @@ function Get-PowershellConsoleHistoryAllUsers {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -248,7 +251,7 @@ function Get-LastLogons {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $LogonEvents = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
             $Data = @()
             foreach ($LogonEvent in $LogonEvents) {
@@ -275,7 +278,7 @@ function Get-LastLogons {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

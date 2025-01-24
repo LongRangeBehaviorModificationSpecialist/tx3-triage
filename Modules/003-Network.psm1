@@ -5,6 +5,9 @@
 #! ======================================
 
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
 # 3-001
 function Get-NetworkConfig {
     [CmdletBinding()]
@@ -17,7 +20,7 @@ function Get-NetworkConfig {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration |
             Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Format-List
             if ($Data.Count -eq 0) {
@@ -37,7 +40,7 @@ function Get-NetworkConfig {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -54,7 +57,7 @@ function Get-OpenNetworkConnections {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetTCPConnection -State Established
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -73,7 +76,7 @@ function Get-OpenNetworkConnections {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -95,7 +98,7 @@ function Get-NetstatDetailed {
             # Run the command
             $ExecutionTime = Measure-Command {
                 Show-Message("$Header") -Header
-                Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+                Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
                 [datetime]$DateTime = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
 
@@ -193,7 +196,7 @@ Active Connections, Associated Processes and DLLs
         catch {
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogMessage("$ErrorMessage") -ErrorMessage
+            Write-LogEntry("$ErrorMessage") -ErrorMessage
         }
     }
     end { }
@@ -211,7 +214,7 @@ function Get-NetstatBasic {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = netstat -nao
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -230,15 +233,15 @@ function Get-NetstatBasic {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-005A
+# 3-005
 function Get-NetTcpConnectionsAllTxt {
     [CmdletBinding()]
-    param ([string]$Num = "3-005A")
+    param ([string]$Num = "3-005")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetTcpConnections.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -247,7 +250,7 @@ function Get-NetTcpConnectionsAllTxt {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime |
             Sort-Object LocalAddress -Descending | Format-List
             if ($Data.Count -eq 0) {
@@ -267,15 +270,15 @@ function Get-NetTcpConnectionsAllTxt {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-005B
+# 3-006
 function Get-NetTcpConnectionsAllCsv {
     [CmdletBinding()]
-    param ([string]$Num = "3-005B")
+    param ([string]$Num = "3-006")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetTcpConnections.csv"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -284,7 +287,7 @@ function Get-NetTcpConnectionsAllCsv {
         # Run the command (to export as CSV)
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetTcpConnection | ConvertTo-Csv -NoTypeInformation
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -303,15 +306,15 @@ function Get-NetTcpConnectionsAllCsv {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-006
+# 3-007
 function Get-NetworkAdapters {
     [CmdletBinding()]
-    param ([string]$Num = "3-006")
+    param ([string]$Num = "3-007")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetworkAdapterList.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -320,7 +323,7 @@ function Get-NetworkAdapters {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetAdapter | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -339,15 +342,15 @@ function Get-NetworkAdapters {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-007
+# 3-008
 function Get-NetIPConfig {
     [CmdletBinding()]
-    param ([string]$Num = "3-007")
+    param ([string]$Num = "3-008")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetIPConfiguration.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -356,7 +359,7 @@ function Get-NetIPConfig {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetIPConfiguration | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -375,15 +378,15 @@ function Get-NetIPConfig {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-008
+# 3-009
 function Get-RouteData {
     [CmdletBinding()]
-    param ([string]$Num = "3-008")
+    param ([string]$Num = "3-009")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_Routes.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -392,7 +395,7 @@ function Get-RouteData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = route PRINT
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -411,15 +414,15 @@ function Get-RouteData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-009
+# 3-010
 function Get-IPConfig {
     [CmdletBinding()]
-    param ([string]$Num = "3-009")
+    param ([string]$Num = "3-010")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_IPConfig.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -428,7 +431,7 @@ function Get-IPConfig {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = ipconfig /all
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -447,15 +450,15 @@ function Get-IPConfig {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-010
+# 3-011
 function Get-ARPData {
     [CmdletBinding()]
-    param ([string]$Num = "3-010")
+    param ([string]$Num = "3-011")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_ARPData.csv"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -464,7 +467,7 @@ function Get-ARPData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress | ConvertTo-Csv -NoTypeInformation
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -483,15 +486,15 @@ function Get-ARPData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-011
+# 3-012
 function Get-NetIPAddrs {
     [CmdletBinding()]
-    param ([string]$Num = "3-011")
+    param ([string]$Num = "3-012")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetIpAddresses.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -500,7 +503,7 @@ function Get-NetIPAddrs {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetIPAddress | Sort-Object -Property IPAddress
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -519,15 +522,15 @@ function Get-NetIPAddrs {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-012
+# 3-013
 function Get-HostsFile {
     [CmdletBinding()]
-    param ([string]$Num = "3-012")
+    param ([string]$Num = "3-013")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_HostsFile.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -536,7 +539,7 @@ function Get-HostsFile {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Content "$Env:windir\system32\drivers\etc\hosts"
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -555,15 +558,15 @@ function Get-HostsFile {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-013
+# 3-014
 function Get-NetworksFile {
     [CmdletBinding()]
-    param ([string]$Num = "3-013")
+    param ([string]$Num = "3-014")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetworksFile.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -572,7 +575,7 @@ function Get-NetworksFile {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Content "$Env:windir\system32\drivers\etc\networks"
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -591,15 +594,15 @@ function Get-NetworksFile {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-014
+# 3-015
 function Get-ProtocolFile {
     [CmdletBinding()]
-    param ([string]$Num = "3-014")
+    param ([string]$Num = "3-015")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_ProtocolFile.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -608,7 +611,7 @@ function Get-ProtocolFile {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Content "$Env:windir\system32\drivers\etc\protocol"
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -627,15 +630,15 @@ function Get-ProtocolFile {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-015
+# 3-016
 function Get-ServicesFile {
     [CmdletBinding()]
-    param ([string]$Num = "3-015")
+    param ([string]$Num = "3-016")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_ServiceFile.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -644,7 +647,7 @@ function Get-ServicesFile {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Content "$Env:windir\system32\drivers\etc\services"
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -663,15 +666,15 @@ function Get-ServicesFile {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-016
+# 3-017
 function Get-SmbShares {
     [CmdletBinding()]
-    param ([string]$Num = "3-016")
+    param ([string]$Num = "3-017")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_SmbShares.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -680,7 +683,7 @@ function Get-SmbShares {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-SmbShare
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -699,15 +702,15 @@ function Get-SmbShares {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-017
+# 3-018
 function Get-WifiPasswords {
     [CmdletBinding()]
-    param ([string]$Num = "3-017")
+    param ([string]$Num = "3-018")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_WifiPasswords.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -716,7 +719,7 @@ function Get-WifiPasswords {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object {
                 $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object {
                     (netsh wlan show profile name="$Name" key=clear)
@@ -742,15 +745,15 @@ function Get-WifiPasswords {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-018
+# 3-019
 function Get-NetInterfaces {
     [CmdletBinding()]
-    param ([string]$Num = "3-018")
+    param ([string]$Num = "3-019")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetIPInterfaces.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -759,7 +762,7 @@ function Get-NetInterfaces {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetIPInterface | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -778,15 +781,15 @@ function Get-NetInterfaces {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 3-019
+# 3-020
 function Get-NetRouteData {
     [CmdletBinding()]
-    param ([string]$Num = "3-019")
+    param ([string]$Num = "3-020")
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_NetRoute.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -795,7 +798,7 @@ function Get-NetRouteData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetRoute | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -814,7 +817,7 @@ function Get-NetRouteData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

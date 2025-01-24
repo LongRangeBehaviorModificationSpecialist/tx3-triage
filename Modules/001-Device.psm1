@@ -4,26 +4,28 @@
 #!
 #! ======================================
 
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
-# 1-000A
+# 1-001
 function Get-VariousData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-000A"
+        [string]$Num = "1-001",
+        [string]$FileName = "VariousData.txt"
     )
 
     # if (-not $DeviceFolder) {
     #     Write-Error-Error "Global variable 'DeviceFolder' is not set."
     # }
 
-    $File = "$DeviceFolder\$($Num)_VariousData.txt"
+    $File = "$DeviceFolder\$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ComputerDetails
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -42,16 +44,16 @@ function Get-VariousData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-000B
+# 1-002
 function Get-TPMData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-000B"
+        [string]$Num = "1-002"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_TPMDetails.txt"
@@ -61,7 +63,7 @@ function Get-TPMData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-TPMDetails
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -80,16 +82,16 @@ function Get-TPMData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-001
+# 1-003
 function Get-PSInfo {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-001"
+        [string]$Num = "1-003"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_PSInfo.txt"
@@ -99,7 +101,7 @@ function Get-PSInfo {
         # Measure the time it takes to run the PsInfo command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Run the PsInfo command
             $Data = .\bin\PsInfo.exe -accepteula -s -h -d
             if ($Data.Count -eq 0) {
@@ -119,16 +121,16 @@ function Get-PSInfo {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-002
+# 1-004
 function Get-PSDriveData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-002"
+        [string]$Num = "1-004"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_PSDriveInfo.txt"
@@ -138,7 +140,7 @@ function Get-PSDriveData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-PSDrive -PSProvider FileSystem | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -157,16 +159,16 @@ function Get-PSDriveData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-003
+# 1-005
 function Get-LogicalDiskData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-003"
+        [string]$Num = "1-005"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_LogicalDisks.txt"
@@ -176,7 +178,7 @@ function Get-LogicalDiskData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -195,16 +197,16 @@ function Get-LogicalDiskData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-004
+# 1-006
 function Get-ComputerData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-004"
+        [string]$Num = "1-006"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_ComputerInfo.txt"
@@ -214,7 +216,7 @@ function Get-ComputerData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ComputerInfo
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -233,16 +235,16 @@ function Get-ComputerData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-005A
+# 1-007
 function Get-SystemDataCMD {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-005A"
+        [string]$Num = "1-007"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_SystemInfo.txt"
@@ -252,7 +254,7 @@ function Get-SystemDataCMD {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = systeminfo /FO LIST
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -271,16 +273,16 @@ function Get-SystemDataCMD {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-005B
+# 1-008
 function Get-SystemDataPS {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-005B"
+        [string]$Num = "1-008"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_ComputerSystem.txt"
@@ -290,7 +292,7 @@ function Get-SystemDataPS {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -309,16 +311,16 @@ function Get-SystemDataPS {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-006
+# 1-009
 function Get-OperatingSystemData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-006"
+        [string]$Num = "1-009"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_OSInfo.txt"
@@ -328,7 +330,7 @@ function Get-OperatingSystemData {
         # Run the first command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -347,16 +349,16 @@ function Get-OperatingSystemData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-007
+# 1-010
 function Get-PhysicalMemory {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-007"
+        [string]$Num = "1-010"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_PhysicalMemory.txt"
@@ -366,7 +368,7 @@ function Get-PhysicalMemory {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -385,16 +387,16 @@ function Get-PhysicalMemory {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-008
+# 1-011
 function Get-EnvVars {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-008"
+        [string]$Num = "1-011"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_EnvVars.txt"
@@ -404,7 +406,7 @@ function Get-EnvVars {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path env: | Format-List
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -423,16 +425,16 @@ function Get-EnvVars {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-009
+# 1-012
 function Get-PhysicalDiskData {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-009"
+        [string]$Num = "1-012"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_PhysicalDisks.txt"
@@ -442,7 +444,7 @@ function Get-PhysicalDiskData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Disk | Select-Object -Property * | Sort-Object DiskNumber
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -461,16 +463,16 @@ function Get-PhysicalDiskData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-010A
+# 1-013
 function Get-DiskPartitions {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-010A"
+        [string]$Num = "1-013"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_DiskPartitions.txt"
@@ -480,7 +482,7 @@ function Get-DiskPartitions {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -499,16 +501,16 @@ function Get-DiskPartitions {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-010B
+# 1-014
 function Get-Win32DiskParts {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-010B"
+        [string]$Num = "1-014"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_Win32DiskPartitions.txt"
@@ -518,7 +520,7 @@ function Get-Win32DiskParts {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name | Format-List
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -537,16 +539,16 @@ function Get-Win32DiskParts {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011A
+# 1-015
 function Get-Win32StartupApps {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-011A"
+        [string]$Num = "1-015"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_Win32StartupApps.txt"
@@ -556,7 +558,7 @@ function Get-Win32StartupApps {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -575,16 +577,16 @@ function Get-Win32StartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011B
+# 1-016
 function Get-HKLMSoftwareCVRunStartupApps {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-011B"
+        [string]$Num = "1-016"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_HKLMSoftwareCVRunStartupApps.txt"
@@ -594,7 +596,7 @@ function Get-HKLMSoftwareCVRunStartupApps {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run |
             Select-Object * -ExcludeProperty PS*
             if ($Data.Count -eq 0) {
@@ -614,16 +616,16 @@ function Get-HKLMSoftwareCVRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011C
+# 1-017
 function Get-HKLMSoftwareCVPoliciesExpRunStartupApps {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-011C"
+        [string]$Num = "1-017"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_HKLMSoftwareCVPoliciesExpRunStartupApps.txt"
@@ -633,7 +635,7 @@ function Get-HKLMSoftwareCVPoliciesExpRunStartupApps {
         #Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run |
             Select-Object * -ExcludeProperty PS*
             if ($Data.Count -eq 0) {
@@ -653,15 +655,15 @@ function Get-HKLMSoftwareCVPoliciesExpRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011D
+# 1-018
 function Get-HKLMSoftwareCVRunOnceStartupApps {
     [CmdletBinding()]
-    param ([string]$Num = "1-011D")
+    param ([string]$Num = "1-018")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_HKLMSoftwareCVRunOnceStartupApps.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -670,7 +672,7 @@ function Get-HKLMSoftwareCVRunOnceStartupApps {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce |
             Select-Object * -ExcludeProperty PS*
             if ($Data.Count -eq 0) {
@@ -690,16 +692,16 @@ function Get-HKLMSoftwareCVRunOnceStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011E
+# 1-019
 function Get-HKCUSoftwareCVRunStartupApps {
     [CmdletBinding()]
     param (
-        [string]$Num = "1-011E"
+        [string]$Num = "1-019"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_HKCUSoftwareCVRunStartupApps.txt"
@@ -709,7 +711,7 @@ function Get-HKCUSoftwareCVRunStartupApps {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | Select-Object * -ExcludeProperty PS*
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -728,15 +730,15 @@ function Get-HKCUSoftwareCVRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011F
+# 1-020
 function Get-HKCUSoftwareCVPoliciesExpRunStartupApps {
     [CmdletBinding()]
-    param ([string]$Num = "1-011F")
+    param ([string]$Num = "1-020")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_HKCUSoftwareCVPoliciesExpRunStartupApps.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -745,8 +747,13 @@ function Get-HKCUSoftwareCVPoliciesExpRunStartupApps {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run | Select-Object * -ExcludeProperty PS*
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            try {
+                $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run | Select-Object * -ExcludeProperty PS*
+            }
+            catch [PathNotFound] {
+                Write-Error "Cannot find the requested registry path because it does not exist"
+            }
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -764,15 +771,15 @@ function Get-HKCUSoftwareCVPoliciesExpRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-011G
+# 1-021
 function Get-HKCUSoftwareCVRunOnceStartupApps {
     [CmdletBinding()]
-    param ([string]$Num = "1-011G")
+    param ([string]$Num = "1-021")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_HKCUSoftwareCVRunOnceStartupApps.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -781,7 +788,7 @@ function Get-HKCUSoftwareCVRunOnceStartupApps {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce | Select-Object * -ExcludeProperty PS*
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -800,15 +807,15 @@ function Get-HKCUSoftwareCVRunOnceStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-012
+# 1-022
 function Get-SoftwareLicenseData {
     [CmdletBinding()]
-    param ([string]$Num = "1-012")
+    param ([string]$Num = "1-022")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_SoftwareLicense.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -817,7 +824,7 @@ function Get-SoftwareLicenseData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WmiObject -ClassName SoftwareLicensingService
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -836,15 +843,15 @@ function Get-SoftwareLicenseData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-013
+# 1-023
 function Get-AutoRunsData {
     [CmdletBinding()]
-    param ([string]$Num = "1-013")
+    param ([string]$Num = "1-023")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_AutoRuns.csv"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -853,7 +860,7 @@ function Get-AutoRunsData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = .\bin\autorunsc64.exe -a * -c -nobanner
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -872,15 +879,15 @@ function Get-AutoRunsData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-014
+# 1-024
 function Get-BiosData {
     [CmdletBinding()]
-    param ([string]$Num = "1-014")
+    param ([string]$Num = "1-024")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_BiosInfo.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -889,7 +896,7 @@ function Get-BiosData {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -908,15 +915,15 @@ function Get-BiosData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-015
+# 1-025
 function Get-ConnectedDevices {
     [CmdletBinding()]
-    param ([string]$Num = "1-015")
+    param ([string]$Num = "1-025")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_ConnectedDevices.csv"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -925,13 +932,13 @@ function Get-ConnectedDevices {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-PnpDevice
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
             else {
-                Save-OutputAsCsv $Data $File
+                $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
@@ -944,15 +951,15 @@ function Get-ConnectedDevices {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-016
+# 1-026
 function Get-HardwareInfo {
     [CmdletBinding()]
-    param ([string]$Num = "1-016")
+    param ([string]$Num = "1-026")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_Hardware.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -961,7 +968,7 @@ function Get-HardwareInfo {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-CimInstance Win32_PnPEntity
             foreach ($Item in $Data) {
                 $Item | Add-Member -MemberType NoteProperty -Name "Host" -Value $Env:COMPUTERNAME
@@ -985,19 +992,19 @@ function Get-HardwareInfo {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-017
+# 1-027
 function Get-Win32Products {
     <#
 .SYNOPSIS
     `Get-Win32Products` returns data about products that were installed via the Windows installer.
 #>
     [CmdletBinding()]
-    param ([string]$Num = "1-017")
+    param ([string]$Num = "1-027")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_Win32Products.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -1006,7 +1013,7 @@ function Get-Win32Products {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-WmiObject Win32_Product
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -1025,19 +1032,19 @@ function Get-Win32Products {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 1-018
+# 1-028
 function Get-OpenWindowTitles {
     <#
     .SYNOPSIS
     `Get-OpenWindowTitles` queries all main window titles and lists them as a table.
 #>
     [CmdletBinding()]
-    param ([string]$Num = "1-018")
+    param ([string]$Num = "1-028")
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_OpenWindowTitles.txt"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -1046,7 +1053,7 @@ function Get-OpenWindowTitles {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Format-Table ID, ProcessName, MainWindowTitle -AutoSize
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -1065,7 +1072,7 @@ function Get-OpenWindowTitles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

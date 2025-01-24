@@ -1,5 +1,6 @@
-# Exclude the 'scripts' directory and all its contents
-scripts/
-
-# Exclude the 'testing.ps1' file
+# Exclude the 'test.ps1' file
 test.ps1
+
+20250124_130147_169.254.31.28_MAS-4N6-BOX/
+
+20250124_130148_169.254.31.28_MAS-4N6-BOX/

@@ -6,11 +6,14 @@
 #? =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 
 
-# 5-045
+$ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+# 5-047
 function Get-RecentDllFiles {
     [CmdletBinding()]
     param (
-        [string]$Num = "5-045",
+        [string]$Num = "5-047",
         [string]$Path = "C:\"
     )
 
@@ -21,7 +24,7 @@ function Get-RecentDllFiles {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object {
                 $_.Extension -eq ".dll" } |
                 Select-Object Name, Directory, FullName, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc
@@ -43,16 +46,16 @@ function Get-RecentDllFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 5-046
+# 5-048
 function Get-RecentLinkFiles {
     [CmdletBinding()]
     param (
-        [string]$Num = "5-046",
+        [string]$Num = "5-048",
         [int]$DaysBack = 90
     )
 
@@ -63,7 +66,7 @@ function Get-RecentLinkFiles {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Get Recent .lnk files
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-CimInstance -ClassName Win32_ShortcutFile | Where-Object {
@@ -91,16 +94,16 @@ function Get-RecentLinkFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 5-047
+# 5-049
 function Get-CompressedFiles {
     [CmdletBinding()]
     param (
-        [string]$Num = "5-047",
+        [string]$Num = "5-049",
         [string]$Path = "C:\",
         # Default file types to search
         [string[]]$FileTypes = @("*.exe", "*.dll", "*.zip")
@@ -113,7 +116,7 @@ function Get-CompressedFiles {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Get compressed files
             $Data = Get-ChildItem -Path $Path -Include $FileTypes -Recurse -Force | Where-Object {
                 $_.Attributes -band [IO.FileAttributes]::Compressed
@@ -137,16 +140,16 @@ function Get-CompressedFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 5-048
+# 5-050
 function Get-EncryptedFiles {
     [CmdletBinding()]
     param (
-        [string]$Num = "5-048",
+        [string]$Num = "5-050",
         [string]$Path = "C:\"
     )
 
@@ -157,7 +160,7 @@ function Get-EncryptedFiles {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | Where-Object {
                 $_.Attributes -band [IO.FileAttributes]::Encrypted
             }
@@ -180,16 +183,16 @@ function Get-EncryptedFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 5-049
+# 5-051
 function Get-ExeTimeline {
     [CmdletBinding()]
     param (
-        [string]$Num = "5-049",
+        [string]$Num = "5-051",
         [string]$Path = "C:\",
         [int]$DaysBack = 90
     )
@@ -201,7 +204,7 @@ function Get-ExeTimeline {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | Where-Object {
@@ -225,16 +228,16 @@ function Get-ExeTimeline {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
-# 5-050
+# 5-052
 function Get-DownloadedExecutables {
     [CmdletBinding()]
     param (
-        [string]$Num = "5-050",
+        [string]$Num = "5-052",
         [string]$Path = "C:\"
     )
 
@@ -245,7 +248,7 @@ function Get-DownloadedExecutables {
         # Run the command
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
-            Write-LogMessage("[$($ScriptName), Ln: $(Get-LineNum)] $Header")
+            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | ForEach-Object {
                 Get-Item $_.FullName -Stream * } | Where-Object {
                     $_.Stream -Match "Zone.Identifier"
@@ -268,7 +271,7 @@ function Get-DownloadedExecutables {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }

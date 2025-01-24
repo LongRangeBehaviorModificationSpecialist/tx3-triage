@@ -1,225 +1,23 @@
-# Date Last Updated
-[String]$Dlu = "2025-01-23"
-
-
-# Time the script started
-[DateTime]$startTime = Get-Date
-
-
-function Get-TimeStamp {
-<#
-.SYNOPSIS
-    This function returns the current time in the format of YYYY-MM-dd HH:mm:ss
-#>
-    return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date)
-}
-
-
-# Get date and time values to use in the naming of the output directory and the output .html file
-[String]$RunDate = (Get-Date).ToString("yyyyMMdd_HHmmss")
-
-
-# Get the current IP addresses of the machine from on this script is run
-[String]$Ipv4 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV4Address | Select-Object -ExpandProperty IPAddressToString
-[String]$Ipv6 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV6Address | Select-Object -ExpandProperty IPAddressToString
-
-
-# Getting the computer name
-[String]$ComputerName = $Env:COMPUTERNAME
-
-
-$Cwd = Get-Location
-
-
-$CaseFolder = New-Item -ItemType Directory -Path $Cwd -Name "$($RunDate)_$($Ipv4)_$($ComputerName)" -Force
-
-
-function Get-LineNum {
-    return $MyInvocation.ScriptLineNumber
-}
-
-
-function Save-Output {
-    param (
-        [Parameter(Mandatory, Position = 0)]
-        [Object]$Data,
-        [Parameter(Mandatory, Position = 1)]
-        [String]$File
-    )
-
-    process { $Data | Out-File -FilePath $File -Encoding UTF8 }
-}
-
-
-function Save-OutputAppend {
-    param (
-        [Parameter(Mandatory ,Position = 0)]
-        [Object]$Data,
-        [Parameter(Mandatory, Position = 1)]
-        [String]$File
-    )
-
-    process { $Data | Out-File -Append -FilePath $File -Encoding UTF8 }
-}
-
-
-function Save-OutputAsCsv {
-    param (
-        [Parameter(Mandatory, Position = 0)]
-        [Object]$Data,
-        [Parameter(Mandatory, Position = 1)]
-        [String]$File
-    )
-
-    process { $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8 }
-}
-
-
-function Set-CaseFolder {
-
-    $setCaseFuncName = $MyInvocation.MyCommand.Name
-
-    try {
-        $ExecutionTime = Measure-Command {
-            $Folders = @(
-                "001_DeviceInfo",
-                "002_UserInfo",
-                "003_Network",
-                "004_Processes",
-                "005_System",
-                "006_Prefetch",
-                "007_EventLogFiles",
-                "008_Firewall",
-                "009_BitLocker",
-                "Logs"
-            )
-            foreach ($Folder in $Folders) {
-                New-Item -ItemType Directory -Path $CaseFolder -Name $Folder -Force
-            }
-            $global:deviceFolder = "$CaseFolder\$($Folders[0])"
-            $global:userFolder = "$CaseFolder\$($Folders[1])"
-            $global:networkFolder = "$CaseFolder\$($Folders[2])"
-            $global:processFolder = "$CaseFolder\$($Folders[3])"
-            $global:systemFolder = "$CaseFolder\$($Folders[4])"
-            $global:prefetchFolder = "$CaseFolder\$($Folders[5])"
-            $global:eventLogFolder = "$CaseFolder\$($Folders[6])"
-            $global:firewallFolder = "$CaseFolder\$($Folders[7])"
-            $global:bitlockerFolder = "$CaseFolder\$($Folders[8])"
-            $global:logFolder = "$CaseFolder\$($Folders[9])"
-        }
-        Show-FinishMessage $setCaseFuncName $ExecutionTime
-        Write-LogFinishedMessage $setCaseFuncName $ExecutionTime
-    }
-    catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
-        throw $PSItem
-    }
-}
-
-
-function Show-FinishMessage {
-    param(
-        [Parameter(Mandatory, Position = 0)]
-        [String]$FunctionName,
-        [Parameter(Mandatory, Position = 1)]
-        [TimeSpan]$ExecutionTime
-    )
-
-    Show-Message("`"$($FunctionName)`" function finished in $($ExecutionTime.TotalSeconds) seconds") -Blue
-}
-
-
-function Show-Message {
-<#
-.SYNOPSIS
-    Write-Host wrapper to standardize messages to the console
-#>
-    param(
-        [Parameter(Mandatory)]
-        [String]$Message,
-
-        [Switch]$Header,
-        [Switch]$NoTime,
-
-        [Switch]$Blue,
-        [Switch]$Green,
-        [Switch]$White,
-        [Switch]$Magenta,
-        [Switch]$Red,
-        [Switch]$Yellow
-    )
-
-    # Determine the color based on the switches
-    $Color = if ($Blue) { "Blue" }
-    elseif ($White) { "White" }
-    elseif ($Green) { "Green" }
-    elseif ($Magenta) { "Magenta" }
-    elseif ($Red) { "Red" }
-    elseif ($Yellow) { "Yellow" }
-    else { "Gray" }
-
-    # Generate timestamp if -NoTime is not provided
-    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
-
-    # If the -header switch is used, prepend a newline and header text
-    $HeaderText = if ($Header) { "`n" } else { "" }
-
-    # Format the full message
-    $FormattedMessage = $HeaderText + "$DisplayTimeStamp $Message"
-
-    # Display the message with the appropriate color
-    switch ($Color) {
-        "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
-        "White" { Write-Host $FormattedMessage -ForegroundColor White }
-        "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
-        "Magenta" { Write-Host $FormattedMessage -ForegroundColor DarkMagenta }
-        "Red" { Write-Host $FormattedMessage -ForegroundColor DarkRed }
-        "Yellow" { Write-Host $FormattedMessage -ForegroundColor DarkYellow }
-        "Gray" { Write-Host $FormattedMessage -ForegroundColor Gray }
-    }
-}
-
-
-function Show-OutputSavedToFile {
-    param(
-        [Parameter(Mandatory, Position = 0)]
-        [String]$File,
-
-        [Switch]$NoTime
-    )
-
-    if ($NoTime) {
-        Show-Message("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"") -NoTime -Green
-    }
-    else {
-        Show-Message("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"") -Green
-    }
-}
-
-
-function Write-LogMessage {
+function Write-LogEntry {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $True)]
-        [String]$Message,
+        [string]$Message,
 
-        [Switch]$NoLevel,
-        [Switch]$DebugMessage,
-        [Switch]$WarningMessage,
-        [Switch]$ErrorMessage,
-        [Switch]$NoTime,
-        [Switch]$Header
+        [switch]$NoLevel,
+        [switch]$DebugMessage,
+        [switch]$WarningMessage,
+        [switch]$ErrorMessage,
+        [switch]$NoTime,
+        [switch]$Header
     )
 
-    # Set the name of the .log file
-    $logFile = "$logFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
+    $global:LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    if (-not (Test-Path $logFolder)) {
-        throw "Log folder '$logFolder' does not exist"
-    }
+    # if (-not (Test-Path $LogFolder)) {
+    #     throw "Log folder '$LogFolder' does not exist"
+    # }
+
     if (-not $Message) {
         throw "The message parameter cannot be empty."
     }
@@ -241,51 +39,273 @@ function Write-LogMessage {
     # Format the full message
     $FormattedMessage = $HeaderText + $DisplayTimeStamp + $MsgLevel + $Message
 
-    $FormattedMessage | Out-File -FilePath $logFile -Append -Encoding UTF8
+    Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
+    # $FormattedMessage | Out-File -FilePath $LogFile -Append -Encoding UTF8
+}
+
+
+# Date Last Updated
+[string]$Dlu = "2025-01-24"
+
+
+# Time the script started
+[datetime]$StartTime = Get-Date
+
+
+# Get date and time values to use in the naming of the output directory and the output .html file
+[string]$RunDate = (Get-Date).ToString("yyyyMMdd_HHmmss")
+
+
+# Get the current IP addresses of the machine from on this script is run
+[string]$Ipv4 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV4Address | Select-Object -ExpandProperty IPAddressToString
+[string]$Ipv6 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV6Address | Select-Object -ExpandProperty IPAddressToString
+
+
+# Getting the computer name
+[string]$ComputerName = $Env:COMPUTERNAME
+
+
+$CaseFolderName = New-Item -ItemType Directory -Path $(Get-Location) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)" -Force
+
+
+# List of file types to use in some commands
+$ExecutableFileTypes = @(
+    "*.BAT", "*.BIN", "*.CGI", "*.CMD", "*.COM", "*.DLL",
+    "*.EXE", "*.JAR", "*.JOB", "*.JSE", "*.MSI", "*.PAF",
+    "*.PS1", "*.SCR", "*.SCRIPT", "*.VB", "*.VBE", "*.VBS",
+    "*.VBSCRIPT", "*.WS", "*.WSF"
+)
+
+
+function Set-CaseFolders {
+
+    $SetCaseFuncName = $MyInvocation.MyCommand.Name
+
+    try {
+        $ExecutionTime = Measure-Command {
+            $Folders = @(
+                "001_DeviceInfo",
+                "002_UserInfo",
+                "003_Network",
+                "004_Processes",
+                "005_System",
+                "006_Prefetch",
+                "007_EventLogFiles",
+                "008_Firewall",
+                "009_BitLocker",
+                "Logs"
+            )
+            foreach ($Folder in $Folders) {
+                New-Item -ItemType Directory -Path $CaseFolderName  -Name $Folder -Force
+            }
+            $global:DeviceFolder = "$CaseFolderName\$($Folders[0])"
+            $global:UserFolder = "$CaseFolderName\$($Folders[1])"
+            $global:NetworkFolder = "$CaseFolderName\$($Folders[2])"
+            $global:ProcessFolder = "$CaseFolderName\$($Folders[3])"
+            $global:SystemFolder = "$CaseFolderName\$($Folders[4])"
+            $global:PrefetchFolder = "$CaseFolderName\$($Folders[5])"
+            $global:EventLogFolder = "$CaseFolderName\$($Folders[6])"
+            $global:FirewallFolder = "$CaseFolderName\$($Folders[7])"
+            $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
+            $global:LogFolder = "$CaseFolderName\$($Folders[9])"
+        }
+        Show-FinishMessage $SetCaseFuncName $ExecutionTime -Header
+        Write-LogFinishedMessage $SetCaseFuncName $ExecutionTime
+    }
+    catch {
+        # Error handling
+        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+        Show-Message("$ErrorMessage") -Red
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
+        throw $PSItem
+    }
+}
+
+
+function Get-TimeStamp {
+    <#
+.SYNOPSIS
+    This function returns the current time in the format of YYYY-MM-dd HH:mm:ss
+#>
+    return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date)
+}
+
+
+function Show-Message {
+    <#
+.SYNOPSIS
+    Write-Host wrapper to standardize messages to the console
+#>
+    param(
+        [Parameter(Mandatory)]
+        [string]$Message,
+
+        [switch]$Header,
+        [switch]$NoTime,
+
+        [switch]$Blue,
+        [switch]$Green,
+        [switch]$White,
+        [switch]$Magenta,
+        [switch]$Red,
+        [switch]$Yellow,
+        [switch]$RedOnGray,
+        [switch]$YellowOnRed
+    )
+
+    # Determine the color based on the switches
+    $Color = if ($Blue) { "Blue" }
+    elseif ($White) { "White" }
+    elseif ($Green) { "Green" }
+    elseif ($Magenta) { "Magenta" }
+    elseif ($Red) { "Red" }
+    elseif ($Yellow) { "Yellow" }
+    elseif ($RedOnGray) { "RedOnGray" }
+    elseif ($YellowOnRed) { "YellowOnRed" }
+    else { "Gray" }
+
+    # Generate timestamp if -NoTime is not provided
+    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { $Null }
+
+    # If the -header switch is used, prepend a newline and header text
+    $HeaderText = if ($Header) { "`n" } else { $Null }
+
+    # Format the full message
+    $FormattedMessage = "$HeaderText" + "$DisplayTimeStamp $Message"
+
+    # Display the message with the appropriate color
+    switch ($Color) {
+        "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
+        "White" { Write-Host $FormattedMessage -ForegroundColor White }
+        "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
+        "Magenta" { Write-Host $FormattedMessage -ForegroundColor DarkMagenta }
+        "Red" { Write-Host $FormattedMessage -ForegroundColor DarkRed }
+        "Yellow" { Write-Host $FormattedMessage -ForegroundColor DarkYellow }
+        "RedOnGray" { Write-Host $FormattedMessage -ForegroundColor DarkRed -BackgroundColor Gray }
+        "YellowOnRed" { Write-Host $FormattedMessage -ForegroundColor DarkYellow -BackgroundColor DarkRed }
+        "Gray" { Write-Host $FormattedMessage -ForegroundColor Gray }
+    }
+}
+
+
+function Get-LineNum {
+    return $MyInvocation.ScriptLineNumber
+}
+
+
+function Save-Output {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 1)]
+        [string]$File
+    )
+
+    process { $Data | Out-File -FilePath $File -Encoding UTF8 }
+}
+
+
+function Save-OutputAppend {
+    param (
+        [Parameter(Mandatory ,Position = 0)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 1)]
+        [string]$File
+    )
+
+    process { $Data | Out-File -Append -FilePath $File -Encoding UTF8 }
+}
+
+
+function Save-OutputAsCsv {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 1)]
+        [string]$File
+    )
+
+    process { $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8 }
+}
+
+
+function Show-FinishMessage {
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$FunctionName,
+        [Parameter(Mandatory, Position = 1)]
+        [timespan]$ExecutionTime,
+
+        [switch]$Header
+    )
+
+    if ($Header) {
+        Show-Message("`"$($FunctionName)`" function finished in $($ExecutionTime.TotalSeconds) seconds") -Header -Blue
+    }
+    else {
+        Show-Message("`"$($FunctionName)`" function finished in $($ExecutionTime.TotalSeconds) seconds") -Blue
+    }
+}
+
+
+function Show-OutputSavedToFile {
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$File,
+
+        [switch]$NoTime
+    )
+
+    if ($NoTime) {
+        Show-Message("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"") -NoTime -Green
+    }
+    else {
+        Show-Message("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"") -Green
+    }
 }
 
 
 function Write-LogFinishedMessage {
     param(
         [Parameter(Mandatory = $True, Position = 0)]
-        [String]$FunctionName,
+        [string]$FunctionName,
         [Parameter(Mandatory = $True, Position = 1)]
-        [TimeSpan]$ExecutionTime
+        [timespan]$ExecutionTime
     )
 
-    Write-LogMessage("Function `"$FunctionName`" finished in $($ExecutionTime.TotalSeconds) seconds`n")
+    Write-LogEntry("Function `"$FunctionName`" finished in $($ExecutionTime.TotalSeconds) seconds`n")
 }
 
 
 function Write-LogOutputAppended {
     param(
         [Parameter(Mandatory = $True, Position = 0)]
-        [String]$File
+        [string]$File
     )
 
-    Write-LogMessage("Output appended to -> `"$([System.IO.Path]::GetFileName($File))`"")
+    Write-LogEntry("Output appended to -> `"$([System.IO.Path]::GetFileName($File))`"")
 }
 
 
 function Write-LogOutputSaved {
     param(
         [Parameter(Mandatory = $True, Position = 0)]
-        [String]$File
+        [string]$File
     )
 
-    Write-LogMessage("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"")
+    Write-LogEntry("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"")
 }
 
 
 function Write-NoDataFound {
     param(
         [Parameter(Mandatory = $True, Position = 0)]
-        [String]$FunctionName
+        [string]$FunctionName
     )
 
-    $NoDataMsg = "No data found for `"$($FunctionName)`""
+    $NoDataMsg = "No data found for `"$($FunctionName)`" function"
     Show-Message("$NoDataMsg") -Yellow
-    Write-LogMessage("$NoDataMsg")
+    Write-LogEntry("$NoDataMsg")
 
 }
 
@@ -318,10 +338,10 @@ function Get-EncryptedDiskDetector {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting Encrypted Disk Detector on: $ComputerName"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($EddFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($EddFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the scan results
-            $EddFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $EddFolderName
+            $EddFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $EddFolderName
 
             if (-not (Test-Path $EddFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$EddFolder`""
@@ -330,7 +350,7 @@ function Get-EncryptedDiskDetector {
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($EddFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($EddFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($EddFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Name the file to save the results of the scan to
             $EddFilePath = Join-Path -Path $EddFolder -ChildPath $EddResultsFileName
@@ -341,7 +361,7 @@ function Get-EncryptedDiskDetector {
             # Show & log $SuccessMsg message
             $SuccessMsg = "Encrypted Disk Detector completed successfully on computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($EddFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($EddFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
 
             # Show & log file location message
             Show-OutputSavedToFile $EddFilePath
@@ -350,12 +370,14 @@ function Get-EncryptedDiskDetector {
         # Show & log finish messages
         Show-FinishMessage $EddFuncName $ExecutionTime
         Write-LogFinishedMessage $EddFuncName $ExecutionTime
+
+        return
     }
     catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -387,10 +409,10 @@ function Get-RunningProcesses {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting Process Capture from: $ComputerName.  Please wait..."
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($ProcessFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($ProcessFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the files list
-            $ProcessesFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $ProcessesFolderName
+            $ProcessesFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $ProcessesFolderName
 
             if (-not (Test-Path $ProcessesFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$ProcessesFolder`""
@@ -399,7 +421,7 @@ function Get-RunningProcesses {
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($ProcessesFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($ProcessFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($ProcessFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Run MAGNETProcessCapture.exe from the \bin directory and save the output to the results folder.
             # The program will create its own directory to save the results with the following naming convention:
@@ -409,7 +431,7 @@ function Get-RunningProcesses {
             # Show & log $SuccessMsg message
             $SuccessMsg = "Process Capture completed successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($ProcessFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($ProcessFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         # Show & log finish messages
         Show-FinishMessage $ProcessFuncName $ExecutionTime
@@ -419,7 +441,7 @@ function Get-RunningProcesses {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -451,10 +473,10 @@ function Get-ComputerRam {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($RamFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Create a folder called "RAM" to store the captured RAM file
-            $RamFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $RamFolderName -Force
+            $RamFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $RamFolderName -Force
 
             if (-not (Test-Path $RamFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$RamFolder`""
@@ -463,7 +485,7 @@ function Get-ComputerRam {
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($RamFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($RamFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Start the RAM acquisition from the current machine
             Start-Process -NoNewWindow -FilePath $RamCaptureExeFilePath -ArgumentList "/accepteula /go /silent" -Wait
@@ -473,7 +495,7 @@ function Get-ComputerRam {
             # Show & log $SuccessMsg message
             $SuccessMsg = "RAM capture completed successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($RamFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         # Show & log finish messages
         Show-FinishMessage $RamFuncName $ExecutionTime
@@ -483,7 +505,7 @@ function Get-ComputerRam {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -511,10 +533,10 @@ function Get-RegistryHives {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Windows Registry Hives from computer: $ComputerName"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the registry hives
-            $RegHiveFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $RegHiveFolderName -Force
+            $RegHiveFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $RegHiveFolderName -Force
 
             if (-not (Test-Path $RegHiveFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$RegHiveFolder`""
@@ -523,13 +545,13 @@ function Get-RegistryHives {
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($RegHiveFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
-            # Show & log $softwareMsg message
+            # Show & log $SoftwareMsg message
             try {
-                $softwareMsg = "Copying the SOFTWARE Registry Hive"
-                Show-Message("$softwareMsg")
-                Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $softwareMsg")
+                $SoftwareMsg = "Copying the SOFTWARE Registry Hive"
+                Show-Message("$SoftwareMsg")
+                Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $SoftwareMsg")
                 cmd /r reg export HKLM\Software $RegHiveFolder\software.reg
             }
             catch {
@@ -537,11 +559,11 @@ function Get-RegistryHives {
                 return
             }
 
-            # Show & log $samMsg message
+            # Show & log $SamMsg message
             try {
-                $samMsg = "Copying the SAM Registry Hive"
-                Show-Message("$samMsg")
-                Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $samMsg")
+                $SamMsg = "Copying the SAM Registry Hive"
+                Show-Message("$SamMsg")
+                Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $SamMsg")
                 cmd /r reg export HKLM\Sam $RegHiveFolder\sam.reg
             }
             catch {
@@ -549,11 +571,11 @@ function Get-RegistryHives {
                 return
             }
 
-            # Show & log $sysMsg message
+            # Show & log $SysMsg message
             try {
-                $sysMsg = "Copying the SYSTEM Registry Hive"
-                Show-Message("$sysMsg")
-                Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $sysMsg")
+                $SysMsg = "Copying the SYSTEM Registry Hive"
+                Show-Message("$SysMsg")
+                Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $SysMsg")
                 cmd /r reg export HKLM\System $RegHiveFolder\system.reg
             }
             catch {
@@ -561,11 +583,11 @@ function Get-RegistryHives {
                 return
             }
 
-            # Show & log $secMsg message
+            # Show & log $SecMsg message
             try {
-                $secMsg = "Copying the SECURITY Registry Hive"
-                Show-Message("$secMsg")
-                Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $secMsg")
+                $SecMsg = "Copying the SECURITY Registry Hive"
+                Show-Message("$SecMsg")
+                Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $SecMsg")
                 cmd /r reg export HKLM\Security $RegHiveFolder\security.reg
             }
             catch {
@@ -577,7 +599,7 @@ function Get-RegistryHives {
             try {
                 $NtMsg = "Copying the current user's NTUSER.DAT file"
                 Show-Message("$NtMsg")
-                Write-LogMessage("[$($RegistryFuncName), Ln: $(Get-LineNum)] $NtMsg")
+                Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $NtMsg")
                 cmd /r reg export HKCU $RegHiveFolder\current-ntuser.reg
             }
             catch {
@@ -593,7 +615,7 @@ function Get-RegistryHives {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -628,10 +650,10 @@ function Get-EventLogs {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Windows Event Logs from computer: $ComputerName"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($EventLogFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the Event Logs
-            $EventLogFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $EventLogFolderName -Force
+            $EventLogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $EventLogFolderName -Force
 
             if (-not (Test-Path $EventLogFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$EventLogFolder`""
@@ -640,7 +662,7 @@ function Get-EventLogs {
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($EventLogFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File | Select-Object -First $NumberOfRecords
 
@@ -664,12 +686,12 @@ function Get-EventLogs {
                 # Show & log $CopyMsg messages of each file copied
                 $CopyMsg = "Copied file -> `"$($File.Name)`""
                 Show-Message($CopyMsg) -Magenta
-                Write-LogMessage("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CopyMsg")
+                Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CopyMsg")
             }
             # Show & log $SuccessMsg message
             $SuccessMsg = "Event Log files copied successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($EventLogFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         # Show & log finish messages
         Show-FinishMessage $EventLogFuncName $ExecutionTime
@@ -679,7 +701,7 @@ function Get-EventLogs {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -713,10 +735,10 @@ function Get-NTUserDatFiles {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of NTUSER.DAT files from computer: $ComputerName"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($NTUserFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the copied .DAT files
-            $NTUserFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $NTUserFolderName
+            $NTUserFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $NTUserFolderName
 
             if (-not (Test-Path $NTUserFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$NTUserFolder`""
@@ -725,7 +747,7 @@ function Get-NTUserDatFiles {
             # Show & log $CreateDirMsg messages
             $CreateDirMsg = "Created `"$($NTUserFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             if (-not (Test-Path $RawCopyPath)) {
                 Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
@@ -739,7 +761,7 @@ function Get-NTUserDatFiles {
                         # Show & log the $CopyMsg message
                         $CopyMsg = "Copying NTUSER.DAT file from the $User profile from computer: $ComputerName"
                         Show-Message("$CopyMsg") -Magenta
-                        Write-LogMessage("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CopyMsg")
+                        Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CopyMsg")
                         $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:"$FilePathName" /OutputPath:"$NTuserFolder" /OutputName:"$OutputName" }
                         if ($LASTEXITCODE -ne 0) {
                             Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
@@ -755,7 +777,7 @@ function Get-NTUserDatFiles {
             # Show & log $SuccessMsg message
             $SuccessMsg = "NTUSER.DAT files copied successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($NTUserFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         # Show & log finish messages
         Show-FinishMessage $NTUserFuncName $ExecutionTime
@@ -765,7 +787,7 @@ function Get-NTUserDatFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -799,19 +821,19 @@ function Get-PrefetchFiles {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Prefetch files from computer: $ComputerName"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the prefetch files
-            $PFFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $PFFolderName
+            $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $PFFolderName
 
-            if (-not (Test-Path $NTUserFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> `"$NTUserFolder`""
+            if (-not (Test-Path $PFFolder)) {
+                throw "[ERROR] The necessary folder does not exist -> `"$PFFolder`""
             }
 
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($PFFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Set variables for the files in the prefetch folder of the examined device
             $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File | Select-Object -First $NumberOfRecords
@@ -836,12 +858,12 @@ function Get-PrefetchFiles {
                 # Show & log $CopyMsg messages of each file copied
                 $CopyMsg = "Copied file -> `"$($File.Name)`""
                 Show-Message($CopyMsg) -Magenta
-                Write-LogMessage("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CopyMsg")
+                Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CopyMsg")
             }
             # Show & log $SuccessMsg message
             $SuccessMsg = "Prefetch files copied successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         # Show & log finish messages
         Show-FinishMessage $PFCopyFuncName $ExecutionTime
@@ -851,7 +873,7 @@ function Get-PrefetchFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -891,10 +913,10 @@ function Get-SrumDB {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning capture of SRUMDB.dat files from computer: $ComputerName"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($SrumFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the SRUM database
-            $SrumFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $SrumFolderName
+            $SrumFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $SrumFolderName
 
             if (-not (Test-Path $SrumFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$SrumFolder`""
@@ -903,7 +925,7 @@ function Get-SrumDB {
             # Show & log $CreateDirMsg messages
             $CreateDirMsg = "Created `"$($SrumFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($SrumFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             if (-not (Test-Path $RawCopyPath)) {
                 Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
@@ -925,12 +947,12 @@ function Get-SrumDB {
             # Show & log $SuccessMsg message
             $SuccessMsg = "SRUMDB.dat file copied successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
-            Write-LogMessage("[$($SrumFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
 
             # Show & log $FileSavTitle message
             $FileSavName = "Copied file saved as -> $OutputName`n"
             Show-Message("$FileSavName") -Green
-            Write-LogMessage("[$SrumFuncName, Ln: $(Get-LineNum)] $FileSavName")
+            Write-LogEntry("[$SrumFuncName, Ln: $(Get-LineNum)] $FileSavName")
         }
         # Show & log finish messages
         Show-FinishMessage $SrumFuncName $ExecutionTime
@@ -940,7 +962,7 @@ function Get-SrumDB {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -975,10 +997,10 @@ function Get-AllFilesList {
             # Show & log BeginMessage message
             $BeginMessage = "Collecting list of all files from computer: $($ComputerName)"
             Show-Message("$BeginMessage") -Header
-            Write-LogMessage("[$($AllDrivesFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($AllDrivesFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the scan results
-            $FilesListsFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $FilesListFolderName
+            $FilesListsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $FilesListFolderName
 
             if (-not (Test-Path $FilesListsFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$FilesListsFolder`""
@@ -991,7 +1013,7 @@ function Get-AllFilesList {
 
                 $ScanMessage = "Scanning files on the $($DriveName):\ drive"
                 Show-Message("$ScanMessage") -Magenta
-                Write-LogMessage("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $ScanMessage")
+                Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $ScanMessage")
 
                 # Scan and save file details
                 Get-ChildItem -Path "$($DriveName):\" -Recurse -Force -ErrorAction SilentlyContinue | Where-Object {
@@ -1013,12 +1035,12 @@ function Get-AllFilesList {
                 # Show & log $DoneMessage message
                 $DoneMessage = "Completed scanning of $($DriveName):\ drive"
                 Show-Message("$DoneMessage") -Green
-                Write-LogMessage("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $DoneMessage")
+                Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $DoneMessage")
 
                 # Show & log $FileTitle message
                 $FileTitle = "Output saved to -> `"$([System.IO.Path]::GetFileName($FileListingSaveFile))`"`n"
                 Show-Message("$FileTitle") -Green
-                Write-LogMessage("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $FileTitle")
+                Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $FileTitle")
             }
         }
         # Show & log finish messages
@@ -1029,10 +1051,11 @@ function Get-AllFilesList {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
+
 
 function Get-FileHashes {
     [CmdletBinding()]
@@ -1061,10 +1084,10 @@ function Get-FileHashes {
             # Show & log $beginMessage message
             $beginMessage = "Hashing files for computer: $ComputerName"
             Show-Message("$beginMessage") -Header
-            Write-LogMessage("[$($FileHashFuncName), Ln: $(Get-LineNum)] $beginMessage")
+            Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $beginMessage")
 
             # Make new directory to store the prefetch files
-            $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolder -Name $HashResultsFolderName
+            $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
 
             if (-not (Test-Path $HashResultsFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> `"$HashResultsFolder`""
@@ -1073,7 +1096,7 @@ function Get-FileHashes {
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created `"$($HashResultsFolder.Name)`" folder in the case directory"
             Show-Message("$CreateDirMsg")
-            Write-LogMessage("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+            Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
 <#
             # Set the beginning of the hash CSV filename to the same as the case directory name
@@ -1092,7 +1115,7 @@ function Get-FileHashes {
             $Results = @()
 
             # Exclude the PowerShell transcript file from being included in the file that are hashed
-            $Results = Get-ChildItem -Path $CaseFolder -Recurse -Force -File | Where-Object {
+            $Results = Get-ChildItem -Path $CaseFolderName -Recurse -Force -File | Where-Object {
                 $_.Name -notlike $ExcludedFiles
                 } | ForEach-Object {
                     $FileHash = (Get-FileHash -Algorithm SHA256 -Path $_.FullName).Hash
@@ -1117,7 +1140,7 @@ function Get-FileHashes {
                 # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
                 $HashMsgFileName = "Completed hashing file: `"$($_.Name)`" -> [SHA256] $($FileHash)"
                 Show-Message("$HashMsgFileName") -Blue
-                Write-LogMessage("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName`n")
+                Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName`n")
             }
             # Export the results to the CSV file
             $Results | Export-Csv -Path $HashOutputFilePath -NoTypeInformation -Encoding UTF8
@@ -1125,7 +1148,7 @@ function Get-FileHashes {
             # Show & log $FileMsg message
             $FileMsg = "Hash values saved to -> `"$HashOutputFileName`""
             Show-Message("$FileMsg") -Header -Magenta
-            Write-LogMessage("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
+            Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
         }
         # Show & log finish messages
         Show-FinishMessage $FileHashFuncName $ExecutionTime
@@ -1135,7 +1158,7 @@ function Get-FileHashes {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
@@ -1150,11 +1173,11 @@ function Get-CaseArchive {
     try {
         $ExecutionTime = Measure-Command {
             # Show beginning message
-            Show-Message("Creating Case Archive file -> `"$($CaseFolder.Name).zip`"") -Header
-            $CaseFolderParent = Split-Path -Path $CaseFolder -Parent
-            $CaseFolderName = (Get-Item -Path $CaseFolder).Name
-            Compress-Archive -Path $CaseFolder -DestinationPath "$CaseFolderParent\$CaseFolderName.zip" -Force
-            Show-Message("Case Archive file -> `"$($CaseFolder.Name).zip`" created successfully`n") -Magenta
+            Show-Message("Creating Case Archive file -> `"$($CaseFolderName.Name).zip`"") -Header
+            $CaseFolderParent = Split-Path -Path $CaseFolderName -Parent
+            $CaseFolderTitle = (Get-Item -Path $CaseFolderName).Name
+            Compress-Archive -Path $CaseFolderName -DestinationPath "$CaseFolderParent\$CaseFolderTitle.zip" -Force
+            Show-Message("Case Archive file -> `"$($CaseFolderName.Name).zip`" created successfully`n") -Magenta
         }
         # Finish logging
         Show-FinishMessage $CaseArchiveFuncName $ExecutionTime
@@ -1164,10 +1187,13 @@ function Get-CaseArchive {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 }
 
 
-Export-ModuleMember -Function Set-CaseFolder, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogMessage, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-AllFilesList, Get-CaseArchive, Get-ComputerRam, Get-EncryptedDiskDetector, Get-EventLogs, Get-FileHashes, Get-NTUserDatFiles, Get-PrefetchFiles, Get-RegistryHives, Get-RunningProcesses, Get-SrumDB -Variable dlu, startTime, RunDate, ipv4, ipv6, ComputerName, caseFolder, logFile
+Export-ModuleMember -Function Set-CaseFolders, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogEntry, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-AllFilesList, Get-CaseArchive, Get-ComputerRam, Get-EncryptedDiskDetector, Get-EventLogs, Get-FileHashes, Get-NTUserDatFiles, Get-PrefetchFiles, Get-RegistryHives, Get-RunningProcesses, Get-SrumDB -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, CaseFolderName, LogFile, ExecutableFileTypes
+
+
+# Export-ModuleMember -Function * -Variable *

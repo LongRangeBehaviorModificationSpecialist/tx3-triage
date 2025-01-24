@@ -64,8 +64,8 @@ function Get-ComputerDetails {
     # $DateScanned = ((Get-Date).ToUniversalTime()).ToString("yyyy-MM-dd HH:mm:ssZ")
     # Write-Information -InformationAction Continue -MessageData ("Started Get-ComputerDetails at {0}" -f $DateScanned)
 
-    $stopwatch = New-Object System.Diagnostics.Stopwatch
-    $stopwatch.Start()
+    # $stopwatch = New-Object System.Diagnostics.Stopwatch
+    # $stopwatch.Start()
 
     Enum DomainRole {
         StandaloneWorkstation = 0
@@ -147,7 +147,7 @@ function Get-ComputerDetails {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogMessage("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("$ErrorMessage") -ErrorMessage
         throw $PSItem
     }
 
@@ -159,5 +159,6 @@ function Get-ComputerDetails {
     #     Write-Verbose ("Ended at {0}" -f ((Get-Date).ToUniversalTime()).ToString("yyyy-MM-dd HH:mm:ssZ"))
     # }
 }
+
 
 Export-ModuleMember -Function Get-ComputerDetails
