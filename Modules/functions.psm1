@@ -1503,137 +1503,137 @@ function Get-PrefetchFiles {
 # 00H
 function Get-SrumDB {
 
-    [CmdletBinding()]
+#     [CmdletBinding()]
 
-    param (
+#     param (
 
-        [Parameter(Position = 0)]
+#         [Parameter(Position = 0)]
 
-        [ValidateScript({ Test-Path $_ })]
+#         [ValidateScript({ Test-Path $_ })]
 
-        [string]$CaseFolder,
+#         [string]$CaseFolder,
 
-        [Parameter(Position = 1)]
+#         [Parameter(Position = 1)]
 
-        [ValidateNotNullOrEmpty()]
+#         [ValidateNotNullOrEmpty()]
 
-        [string]$ComputerName,
+#         [string]$ComputerName,
 
-        # Name of the directory to store the copied SRUM file
+#         # Name of the directory to store the copied SRUM file
 
-        [string]$SrumFolderName = "00H_SRUM",
+#         [string]$SrumFolderName = "00H_SRUM",
 
-        [string]$FileNamePath = "$Env:windir\System32\sru\SRUDB.dat",
+#         [string]$FileNamePath = "$Env:windir\System32\sru\SRUDB.dat",
 
-        [string]$OutputName = "SRUDB_$($ComputerName).dat",
+#         [string]$OutputName = "SRUDB_$($ComputerName).dat",
 
-        # Path to the RawCopy executable
+#         # Path to the RawCopy executable
 
-        [string]$RawCopyPath = ".\bin\RawCopy.exe"
+#         [string]$RawCopyPath = ".\bin\RawCopy.exe"
 
-    )
+#     )
 
-    $SrumFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
+#     $SrumFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
-    try {
+#     try {
 
-        $ExecutionTime = Measure-Command {
+#         $ExecutionTime = Measure-Command {
 
-            # Show & log $BeginMessage message
+#             # Show & log $BeginMessage message
 
-            $BeginMessage = "Beginning capture of SRUMDB.dat files from computer: $ComputerName"
+#             $BeginMessage = "Beginning capture of SRUMDB.dat files from computer: $ComputerName"
 
-            Show-Message("$BeginMessage") -Header
+#             Show-Message("$BeginMessage") -Header
 
-            Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+#             Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
-            # Make new directory to store the SRUM database
+#             # Make new directory to store the SRUM database
 
-            $SrumFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $SrumFolderName
+#             $SrumFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $SrumFolderName
 
-            if (-not (Test-Path $SrumFolder)) {
+#             if (-not (Test-Path $SrumFolder)) {
 
-                throw "[ERROR] The necessary folder does not exist -> `"$SrumFolder`""
+#                 throw "[ERROR] The necessary folder does not exist -> `"$SrumFolder`""
 
-            }
+#             }
 
-            # Show & log $CreateDirMsg messages
+#             # Show & log $CreateDirMsg messages
 
-            $CreateDirMsg = "Created `"$($SrumFolder.Name)`" folder in the case directory"
+#             $CreateDirMsg = "Created `"$($SrumFolder.Name)`" folder in the case directory"
 
-            Show-Message("$CreateDirMsg")
+#             Show-Message("$CreateDirMsg")
 
-            Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+#             Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
-            if (-not (Test-Path $RawCopyPath)) {
+#             if (-not (Test-Path $RawCopyPath)) {
 
-                Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
+#                 Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
 
-                return
+#                 return
 
-            }
+#             }
 
-            # Run the command
+#             # Run the command
 
-            try {
+#             try {
 
-                $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$FileNamePath /OutputPath:"$SrumFolder" /OutputName:$OutputName }
+#                 $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$FileNamePath /OutputPath:"$SrumFolder" /OutputName:$OutputName }
 
-                if ($LASTEXITCODE -ne 0) {
+#                 if ($LASTEXITCODE -ne 0) {
 
-                    Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
+#                     Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
 
-                    return
+#                     return
 
-                }
+#                 }
 
-            }
+#             }
 
-            catch {
+#             catch {
 
-                Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
+#                 Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
 
-                return
+#                 return
 
-            }
+#             }
 
-            # Show & log $SuccessMsg message
+#             # Show & log $SuccessMsg message
 
-            $SuccessMsg = "SRUMDB.dat file copied successfully from computer: $ComputerName"
+#             $SuccessMsg = "SRUMDB.dat file copied successfully from computer: $ComputerName"
 
-            Show-Message("$SuccessMsg")
+#             Show-Message("$SuccessMsg")
 
-            Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+#             Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
 
-            # Show & log $FileSavTitle message
+#             # Show & log $FileSavTitle message
 
-            $FileSavName = "Copied file saved as -> $OutputName`n"
+#             $FileSavName = "Copied file saved as -> $OutputName`n"
 
-            Show-Message("$FileSavName") -Green
+#             Show-Message("$FileSavName") -Green
 
-            Write-LogEntry("[$SrumFuncName, Ln: $(Get-LineNum)] $FileSavName")
+#             Write-LogEntry("[$SrumFuncName, Ln: $(Get-LineNum)] $FileSavName")
 
-        }
+#         }
 
-        # Show & log finish messages
+#         # Show & log finish messages
 
-        Show-FinishMessage $SrumFuncName $ExecutionTime
+#         Show-FinishMessage $SrumFuncName $ExecutionTime
 
-        Write-LogFinishedMessage $SrumFuncName $ExecutionTime
+#         Write-LogFinishedMessage $SrumFuncName $ExecutionTime
 
-    }
+#     }
 
-    catch {
+#     catch {
 
-        # Error handling
+#         # Error handling
 
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+#         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
 
-        Show-Message("$ErrorMessage") -Red
+#         Show-Message("$ErrorMessage") -Red
 
-        Write-LogEntry("$ErrorMessage") -ErrorMessage
+#         Write-LogEntry("$ErrorMessage") -ErrorMessage
 
-    }
+#     }
 
 }
 
