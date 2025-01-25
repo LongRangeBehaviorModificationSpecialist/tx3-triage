@@ -56,12 +56,13 @@ function Get-TPMDetails {
 #>
 
     [CmdletBinding()]
-    param(
-    )
 
-    begin{
+    param()
+
+    begin {
 
         $Manufacturers = @{
+
             0x414D4400 = "AMD"
             0x41544D4C = "Atmel"
             0x4252434D = "Broadcom"
@@ -83,7 +84,9 @@ function Get-TPMDetails {
             0x53544D20 = "ST Microelectronics"
             0x54584E00 = "Texas Instruments"
             0x57454300 = "Winbond"
+
         }
+
     }
 
     process {
@@ -107,19 +110,31 @@ function Get-TPMDetails {
                     if ($Key -eq $Result.ManufacturerId) {
 
                         $Result.ManufacturerName = $Manufacturers[$Key]
+
                     }
+
                 }
+
             }
 
             return $ResultsArray | Select-Object Host, DateScanned, TpmPresent, TpmReady, ManufacturerId, ManufacturerName, ManufacturerVersion, ManagedAuthLevel, OwnerAuth, OwnerClearDisabled, AutoProvisioning, LockedOut, LockoutCount, LockoutMax, SelfTest, FirmwareVersionAtLastProvision
+
         }
+
         catch {
+
             # Error handling
+
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+
             Show-Message("$ErrorMessage") -Red
+
             Write-LogEntry("$ErrorMessage") -ErrorMessage
+
         }
+
     }
+
 }
 
 Export-ModuleMember -Function Get-TPMDetails
