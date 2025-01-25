@@ -1,23 +1,4 @@
-# EDITED BY : mikespon
-
 #Requires -RunAsAdministrator
-
-
-# CHECK THESE FUNCTIONS TO SEE IF THEY SHOULD BE INCLUDED
-
-<#
-
-function Get-RecentlyInstalledSoftwareEventLogs {
-    Write-Host "Collecting Recently Installed Software EventLogs..."
-    $ApplicationFolder = "$FolderCreation\Applications"
-    mkdir -Force $ApplicationFolder | Out-Null
-    $ProcessOutput = "$ApplicationFolder\RecentlyInstalledSoftwareEventLogs.txt"
-    Get-WinEvent -ProviderName msiinstaller | where id -eq 1033 | select timecreated, message | FL * | Out-File -Force -FilePath $ProcessOutput
-    $CSVExportLocation = "$CSVOutputFolder\InstalledSoftware.csv"
-    Get-WinEvent -ProviderName msiinstaller | where id -eq 1033 | select timecreated, message | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath $CSVExportLocation -Encoding UTF8
-}
-
-#>
 
 <#
 
@@ -30,119 +11,6 @@ function Get-RecentlyInstalledSoftwareEventLogs {
 .\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 24-21445 -Edd -Process -Ram -NTUser -Registry -Prefetch -EventLogs -AllDrives -NoListDrives -DriveList @("C","F") -Srum -HashResults -Archive
 
 #>
-
-
-<#
-.SYNOPSIS
-    Obtains information from a computer running the Windows OS that may prove useful with DFIR triage tasks.
-
-.DESCRIPTION
-    In addition to collecting basic information about the computer, the user has the option to collect the following data:
-
-    (1)  Running Processes
-    (2)  RAM
-    (3)  NTUSER.DAT Files
-    (4)  Registry Hives (from the `C:\Windows\System32\config` directory)
-    (5)  Prefetch Files
-    (6)  Windows Event Logs
-    (7)  Copy the SRUMDB.DAT database from the examined device
-    (8)  Names of all files from all connected devices (selected by user)
-
-    Further, the user can choose the options to:
-
-    (9)  Hash the files that are created as a result of running this script
-    (10) Create an archive file (.zip format) of the results
-
-    The order that the switches are listed on the command line does not matter.
-
-.PARAMETER User
-    Name of the user or person conducting the triage of the device. If there are spaces in the name, enclose the value in double quotes (i.e. "FirstName LastName").
-
-.PARAMETER Agency
-    Name of the agency conducting the investigation. If there are spaces in the name, enclose the value in double quotes (i.e. "VIRGINIA STATE POLICE").
-
-.PARAMETER CaseNumber
-    Case number of the investigation. If there are spaces in this value, enclose the entire value in double quotes.
-
-.PARAMETER Edd
-    Run Encrypted Disk Detection on the examined machine and save the output to a text file.
-
-.PARAMETER Process
-    Collect information on the currently running processes to the collection device. Each process will be saved as a `.dmp` file. Processes will be collected using Magnet Process Capture.
-
-.PARAMETER Ram
-    Collect the computer's RAM to the collection device? RAM will be collected using Magnet RAM Capture.
-
-.PARAMETER NTUser
-    Copy all of the NTUSER.DAT files from the system to the collection device?
-
-.PARAMETER Registry
-    Copy the common registry hives to the collection device? The hives that will be copied are the SAM, SECURITY, SYSTEM, SOFTWARE, and the current user's NTUSER.DAT file.
-
-.PARAMETER Prefetch
-    Copy the prefetch files from the operating system to the collection device?
-
-.PARAMETER EventLogs
-    Copy the Event Log files fom the operating system to the collection device? This will recursively copy all of the Windows Event Logs.
-
-.PARAMETER Srum
-    Include this switch if you want to copy the SRUM.DAT database file from the machine being examined.
-
-.PARAMETER AllDrives
-    Create lists of each file, from each mounted drive, that is currently connected to the examined machine? This option will recursively search each connected storage device and create a list of each file that is stored on that device. This may take some time to complete, depending on the size and useage of the connected devices.
-
-    To include all drives connected to the examined machine, use the `-AllDrives` switch
-
-    PS C:\> .\tx3-triage.ps1 -AllDrives
-
-    To only INCLUDE CERTAIN drives in the scan, list the drives using the `DriveList` switch and include the `-ListDrives` switch. [This command will only scan the C:\ and D:\ drives]
-
-    PS C:\> .\tx3-triage.ps1 -AllDives -ListDrives -DriveList @("C","D")
-
-    To EXCLUDE CERTAIN drives from the scan, list the drives using the `DriveList` switch and include the `-ExcludeDrives` switch. [This command will scan all drives EXCEPT the F:\ and Z:\ drives]
-
-    PS C:\> .\tx3-triage.ps1 -AllDives -NoListDrives -DriveList @("F","Z")
-
-.PARAMETER HashResults
-    Hash each of the files output from this script? It will create a .CSV file in the `HashResults` directory documenting the hash value of each file created by this script.
-
-.PARAMETER Archive
-    Create an archive (.zip) file of the results folder.
-
-.INPUTS
-    None
-
-.OUTPUTS
-    This script will create a new directory in the directory from which this script is launched.
-    The new directory will have the following naming convention:
-    <yyyymmdd_hhmmss>_<ComputerIpAddress>_<ComputerName>, i.e. `20250113_102532_192.168.101.28_BAD-GUYS-COMPUTER`.
-
-.EXAMPLE
-    .\tx3-triage.ps1 [[-User] <UserName>] [[-Agency] <AgencyName>] [[-CaseNumber] <CaseNumber>]
-
-    Basic Usage -> NO file hashing, NO case archive creation
-
-.EXAMPLE
-    .\tx3-triage.ps1 [[-User] <UserName>] [[-Agency] <AgencyName>] [[-CaseNumber] <CaseNumber>] [-HashResults] [-Archive]
-
-    Basic Usage -> including hashing all the output/copied files) and creating a case archive (.zip) folder
-
-.EXAMPLE
-    .\tx3-triage.ps1 [[-User] <UserName>] [[-Agency] <AgencyName>] [[-CaseNumber] <CaseNumber>] [-HashResults] [-Archive] [-Yolo]
-
-    Collect all information (the `-HashResults` and `-Archive` switches are not included within the `-Yolo` switch command; they must be listed seperately).
-
-.EXAMPLE
-    .\tx3-triage.ps1 [[-User] <UserName>] [[-Agency] <AgencyName>] [[-CaseNumber] <CaseNumber>] [-HashResults] [-Archive]
-
-.LINK
-    https://github.com/LongRangeBehaviorModificationSpecialist/tx3/tree/main
-
-.NOTES
-    Author: Michael A Sponheimer
-    Date:   2025-01-24
-#>
-
 
 param (
     [Parameter(Mandatory = $True)]
@@ -177,6 +45,7 @@ param (
 # Configure the powershell policy to run unsigned scripts
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Force
 
+
 $ErrorActionPreference = "SilentlyContinue"
 
 
@@ -184,34 +53,29 @@ $ErrorActionPreference = "SilentlyContinue"
 $ScriptName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 
-Import-Module .\modules\functions.psm1 -Force -Global
+# Name of the folder containing the .psm1 files that are to be imported
+$ModulesFolder = "modules"
+
+
+Import-Module .\functions\functions.psm1 -Force -Global
 Show-Message("Module file: `"functions.psm1`" was imported successfully") -NoTime -Blue
 
 
-# Create the required directories to store the results with no output printed to the terminal
-Set-CaseFolders
-
-
-Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: `"functions.psm1`" was imported successfully")
-
-
-# Get the directory of the current script
+# # Get the directory of the current script
 $ScriptDirectory = $(Get-Location)
-Write-Host "`$ScriptDirectory = $ScriptDirectory"
 
 
-# Construct the path to the 'modules' directory
-$ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath "modules"
-Write-Host "`$ModuleDirectory = $ModulesDirectory"
+# # Construct the path to the 'modules' directory
+$ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 
-foreach($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
+foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
     Import-Module -Name $file.FullName -Force -Global
-    Show-Message("Module file: `"$($file.FullName)`" was imported successfully") -NoTime -Blue
-    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: `"$($file.FullName)`" was imported successfully")
+    Show-Message("Module file: `"$($file.Name)`" was imported successfully") -NoTime -Blue
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: `"$($file.Name)`" was imported successfully")
 }
 
-Write-Host "All modules from '$ModulesDirectory' have been imported successfully."
+Write-Host "All modules from ``$ModulesDirectory`` have been imported successfully."
 
 
 # Start transcript to record all of the screen output
@@ -316,20 +180,6 @@ Show-Message("--> Please read the instructions before executing the script! <--"
 Read-Host -Prompt "`nPress [ENTER] to begin data collection -> "
 
 
-# Show message that the case folder has been created and the directory name
-$CaseDirMadeMsg = "Case directory created -> `"\$(Split-Path -Path $CaseFolderName -Leaf)\`""
-Show-Message("$CaseDirMadeMsg") -Header -Blue
-Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] $CaseDirMadeMsg")
-
-
-# Get the names of the folders in the $CaseFolderName and write them to the .log file and output names to the screen
-Get-ChildItem -Path $CaseFolderName -Directory | ForEach-Object {
-    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Created sub-folder `"$($_.Name)`" in the case directory")
-    Show-Message("Created `"$($_.Name)`" folder") -Green
-}
-
-
-
 if ($Null -eq $User) {
     [String]$User = Read-Host -Prompt "[*] Enter user's name -> "
 }
@@ -365,7 +215,7 @@ function Invoke-Edd {
         Get-EncryptedDiskDetector $CaseFolderName $ComputerName
 
         # Read the contents of the EDD text file and show the results on the screen
-        Get-Content -Path "$CaseFolderName\000A_EncryptedDiskDetector\EncryptedDiskDetector.txt" -Force
+        Get-Content -Path "$CaseFolderName\00A_EncryptedDiskDetector\EncryptedDiskDetector.txt" -Force
 
         Show-Message("`nEncrypted Disk Detector has finished - Review the results before proceeding") -NoTime -Yellow
         Write-Host ""
@@ -379,7 +229,6 @@ function Invoke-Edd {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Encrypted Disk Detector option was not enabled") -WarningMessage
     }
 }
-
 Invoke-Edd
 
 
@@ -396,7 +245,6 @@ function Invoke-ProcessCapture {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Process Capture option was not enabled") -WarningMessage
     }
 }
-
 Invoke-ProcessCapture
 
 
@@ -412,7 +260,6 @@ function Invoke-RamCapture {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The RAM Capture option was not enabled") -WarningMessage
     }
 }
-
 Invoke-RamCapture
 
 
@@ -428,7 +275,6 @@ function Invoke-RegistryCopy {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Registry Hive file collection option was not enabled") -WarningMessage
     }
 }
-
 Invoke-RegistryCopy
 
 
@@ -444,7 +290,6 @@ function Invoke-EventLogCopy {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Event Log collection option was not enabled") -WarningMessage
     }
 }
-
 Invoke-EventLogCopy
 
 
@@ -460,7 +305,6 @@ function Invoke-CopyNTUserFiles {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The NTUSER.DAT file collection option was not enabled") -WarningMessage
     }
 }
-
 Invoke-CopyNTUserFiles
 
 
@@ -476,12 +320,10 @@ function Invoke-PrefetchCopy {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Prefetch file collection option was not enabled") -WarningMessage
     }
 }
-
 Invoke-PrefetchCopy
 
 
 function Invoke-SrumDBCopy {
-
     if ($Srum) {
         Get-SrumDB $CaseFolderName $ComputerName
     }
@@ -493,7 +335,6 @@ function Invoke-SrumDBCopy {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The SRUM database collection option was not enabled") -WarningMessage
     }
 }
-
 Invoke-SrumDBCopy
 
 
@@ -551,7 +392,6 @@ function Invoke-ListAllFiles {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The All File Listings collection option was not enabled") -WarningMessage
     }
 }
-
 Invoke-ListAllFiles
 
 
@@ -564,7 +404,6 @@ function Invoke-HashResults {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Hash Results Files option was not enabled") -WarningMessage
     }
 }
-
 Invoke-HashResults
 
 
@@ -577,7 +416,6 @@ function Invoke-CaseArchive {
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The create Case Archive file option was not enabled") -WarningMessage
     }
 }
-
 Invoke-CaseArchive
 
 
@@ -595,7 +433,6 @@ function Invoke-Yolo {
         Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
     }
 }
-
 Invoke-Yolo
 
 
@@ -613,7 +450,7 @@ Invoke-Yolo
 # Get-VariousData
 # Get-TPMData
 # Get-PSInfo
-Get-PSDriveData
+# Get-PSDriveData
 # Get-LogicalDiskData
 # Get-ComputerData
 # Get-SystemDataCMD
@@ -828,6 +665,7 @@ if ($HashResults) {
     Get-FileHashes $CaseFolderName $ComputerName
 }
 
+
 # Ask the user if they wish to make a .zip file of the results folder when script is complete
 if ($Archive) {
     Get-CaseArchive
@@ -848,17 +686,3 @@ Show-Message("`n$(Stop-Transcript)") -NoTime
 
 # Show a popup message when script is complete
 (New-Object -ComObject Wscript.Shell).popup("The Script has finished running", 0, "Done", 0x1) | Out-Null
-
-
-<# TO ADD TO SCRIPT
---> Check system directories for executables not signed as part of an operating system release
-    Get-ChildItem -Path "C:\Windows\*\*.exe" -File -Force | Get-AuthenticodeSignature | ? {$_.IsOSBinary -notmatch 'True'}
-    ANOTHER VERSION OF THE ABOVE COMMAND:
-    Get-ChildItem -Force -Recurse -Path "C:\Windows\*\*.exe" -File | Get-AuthenticodeSignature | Where-Object {$_.status -eq "Valid"}
-
-    get-childitem -Recurse -include *.exe | Select-Object -Property Name, Directory, @{ N = 'FileHash'; E = { (Get-FileHash $_.FullName).Hash } }, CreationTimeUtc, LastAccessTimeUtc | ConvertTo-Html | Out-File -FilePath "C:\Users\VSP\Desktop\EXETestdoc.html"
-
-    --> something to document the start time and end time
-    --> get-transcript to document list of commands run
-#>
-

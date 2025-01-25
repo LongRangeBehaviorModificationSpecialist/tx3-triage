@@ -60,9 +60,7 @@ function Get-TPMDetails {
     param()
 
     begin {
-
         $Manufacturers = @{
-
             0x414D4400 = "AMD"
             0x41544D4C = "Atmel"
             0x4252434D = "Broadcom"
@@ -84,57 +82,32 @@ function Get-TPMDetails {
             0x53544D20 = "ST Microelectronics"
             0x54584E00 = "Texas Instruments"
             0x57454300 = "Winbond"
-
         }
-
     }
-
     process {
-
         try {
-
             $ResultsArray =  Get-Tpm -ErrorAction SilentlyContinue
-
             foreach ($Result in $ResultsArray) {
-
                 $Result | Add-Member -MemberType NoteProperty -Name "Host" -Value $env:COMPUTERNAME
-
                 $Result | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
-
                 $Result | Add-Member -MemberType NoteProperty -Name "FirmwareVersionAtLastProvision" -Value (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\TPM\WMI" -Name "FirmwareVersionAtLastProvision" -ErrorAction SilentlyContinue).FirmwareVersionAtLastProvision
-
                 $Result | Add-Member -MemberType NoteProperty -Name "ManufacturerName" -Value ""
-
                 foreach ($Key in $Manufacturers.Keys) {
-
                     if ($Key -eq $Result.ManufacturerId) {
-
                         $Result.ManufacturerName = $Manufacturers[$Key]
-
                     }
-
                 }
-
             }
-
             return $ResultsArray | Select-Object Host, DateScanned, TpmPresent, TpmReady, ManufacturerId, ManufacturerName, ManufacturerVersion, ManagedAuthLevel, OwnerAuth, OwnerClearDisabled, AutoProvisioning, LockedOut, LockoutCount, LockoutMax, SelfTest, FirmwareVersionAtLastProvision
-
         }
-
         catch {
-
             # Error handling
-
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-
             Show-Message("$ErrorMessage") -Red
-
-            Write-LogEntry("$ErrorMessage") -ErrorMessage
-
+            Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
-
     }
-
 }
+
 
 Export-ModuleMember -Function Get-TPMDetails

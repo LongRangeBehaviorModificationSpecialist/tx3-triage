@@ -73,7 +73,7 @@ function Get-FirewallRules {
 
         Show-Message("$ErrorMessage") -Red
 
-        Write-LogEntry("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
 
     }
 
@@ -145,7 +145,7 @@ function Get-AdvFirewallRules {
 
         Show-Message("$ErrorMessage") -Red
 
-        Write-LogEntry("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
 
     }
 
@@ -217,7 +217,7 @@ function Get-DefenderExclusions {
 
         Show-Message("$ErrorMessage") -Red
 
-        Write-LogEntry("$ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
 
     }
 
