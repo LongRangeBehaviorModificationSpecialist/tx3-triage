@@ -11,9 +11,12 @@ $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 # 9-001
 function Get-BitlockerRecoveryKeys {
     [CmdletBinding()]
-    param ([string]$Num = "9-001")
+    param (
+        [string]$Num = "9-001",
+        [string]$FilePath = "BitlockerRecoveryKeys.txt"
+    )
 
-    $File = Join-Path -Path $BitlockerFolder -ChildPath "$($Num)_BitlockerRecoveryKeys.txt"
+    $File = Join-Path -Path $BitlockerFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -21,7 +24,9 @@ function Get-BitlockerRecoveryKeys {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data1 = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
+
             if ($Data1.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -68,7 +73,6 @@ function Get-BitlockerRecoveryKeys {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 

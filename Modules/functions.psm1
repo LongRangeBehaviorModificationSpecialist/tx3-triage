@@ -68,6 +68,11 @@ function Write-LogEntry {
 $CaseFolderName = New-Item -ItemType Directory -Path $(Get-Location) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)" -Force
 
 
+# Error messages to use in the various functions
+[string]$KeyNotFoundMsg = "Cannot find the listed registry key because it does not exist."
+[string]$NoMatchingEventsMsg = "No events were found that match the specified selection criteria"
+
+
 # List of file types to use in some commands
 $ExecutableFileTypes = @(
     "*.BAT", "*.BIN", "*.CGI", "*.CMD", "*.COM", "*.DLL",
@@ -321,13 +326,13 @@ function Get-EncryptedDiskDetector {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Relative path to the Encrypted Disk Detector executable file
-        [string]$EddExeFilePath = ".\bin\EDDv310.exe",
-
         # Name of the directory to store the results of the scan
         [string]$EddFolderName = "00A_EncryptedDiskDetector",
         # Name of the results file that will store the results of the scan
-        [string]$EddResultsFileName = "EncryptedDiskDetector.txt"
+        [string]$EddResultsFileName = "EncryptedDiskDetector.txt",
+
+        # Relative path to the Encrypted Disk Detector executable file
+        [string]$EddExeFilePath = ".\bin\EDDv310.exe"
     )
 
     $EddFuncName = $MyInvocation.MyCommand.Name
@@ -378,7 +383,6 @@ function Get-EncryptedDiskDetector {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -394,11 +398,12 @@ function Get-RunningProcesses {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Relative path to the ProcessCapture executable file
-        [string]$ProcessCaptureExeFilePath = ".\bin\MagnetProcessCapture.exe",
-
         # Name of the directory to store the extracted process files
-        [string]$ProcessesFolderName = "00B_Processes"
+        [string]$ProcessesFolderName = "00B_Processes",
+
+        # Relative path to the ProcessCapture executable file
+        [string]$ProcessCaptureExeFilePath = ".\bin\MagnetProcessCapture.exe"
+
     )
 
     $ProcessFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
@@ -442,7 +447,6 @@ function Get-RunningProcesses {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -458,11 +462,12 @@ function Get-ComputerRam {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Relative path to the RAM Capture executable file
-        [string]$RamCaptureExeFilePath = ".\bin\MRCv120.exe",
-
         # Name of the directory to store the extracted RAM image
-        [string]$RamFolderName = "00C_RAM"
+        [string]$RamFolderName = "00C_RAM",
+
+        # Relative path to the RAM Capture executable file
+        [string]$RamCaptureExeFilePath = ".\bin\MRCv120.exe"
+
     )
 
     $RamFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
@@ -506,7 +511,6 @@ function Get-ComputerRam {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -555,8 +559,9 @@ function Get-RegistryHives {
                 cmd /r reg export HKLM\Software $RegHiveFolder\software.reg
             }
             catch {
-                Write-Error "An error occurred while copying SOFTWARE Hive: $($PSItem.Exception.Message)"
-                return
+                $SoftwareWarnMsg = "An error occurred while copying SOFTWARE Hive: $($PSItem.Exception.Message)"
+                Show-Message("$SoftwareWarnMsg") -Red
+                Write-LogEntry("$SoftwareWarnMsg") -WarningMessage
             }
 
             # Show & log $SamMsg message
@@ -567,8 +572,9 @@ function Get-RegistryHives {
                 cmd /r reg export HKLM\Sam $RegHiveFolder\sam.reg
             }
             catch {
-                Write-Error "An error occurred while copying SAM Hive: $($PSItem.Exception.Message)"
-                return
+                $SamWarnMsg = "An error occurred while copying SAM Hive: $($PSItem.Exception.Message)"
+                Show-Message("$SamWarnMsg") -Red
+                Write-LogEntry("$SamWarnMsg") -WarningMessage
             }
 
             # Show & log $SysMsg message
@@ -579,8 +585,9 @@ function Get-RegistryHives {
                 cmd /r reg export HKLM\System $RegHiveFolder\system.reg
             }
             catch {
-                Write-Error "An error occurred while copying SYSTEM Hive: $($PSItem.Exception.Message)"
-                return
+                $SystemWarnMsg =  "An error occurred while copying SYSTEM Hive: $($PSItem.Exception.Message)"
+                Show-Message("$SystemWarnMsg") -Red
+                Write-LogEntry("$SystemWarnMsg") -WarningMessage
             }
 
             # Show & log $SecMsg message
@@ -591,8 +598,9 @@ function Get-RegistryHives {
                 cmd /r reg export HKLM\Security $RegHiveFolder\security.reg
             }
             catch {
-                Write-Error "An error occurred while copying SECURITY Hive: $($PSItem.Exception.Message)"
-                return
+                $SecurityWarnMsg =  "An error occurred while copying SECURITY Hive: $($PSItem.Exception.Message)"
+                Show-Message("$SecurityWarnMsg") -Red
+                Write-LogEntry("$SecurityWarnMsg") -WarningMessage
             }
 
             # Show & log $NtMsg message
@@ -603,8 +611,9 @@ function Get-RegistryHives {
                 cmd /r reg export HKCU $RegHiveFolder\current-ntuser.reg
             }
             catch {
-                Write-Error "An error occurred while copying the current user's NTUSER.DAT file: $($PSItem.Exception.Message)"
-                return
+                $NTUserWarnMsg =  "An error occurred while copying the current user's NTUSER.DAT file: $($PSItem.Exception.Message)"
+                Show-Message("$NTUserWarnMsg") -Red
+                Write-LogEntry("$NTUserWarnMsg") -WarningMessage
             }
         }
         # Show & log finish messages
@@ -616,7 +625,6 @@ function Get-RegistryHives {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -632,15 +640,15 @@ function Get-EventLogs {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Path to the RawCopy executable
-        [string]$RawCopyPath = ".\bin\RawCopy.exe",
-
         # Name of the directory to store the copied Event Logs
         [string]$EventLogFolderName = "00E_EventLogs",
 
         # Set variable for Event Logs folder on the examined machine
         [string]$EventLogDir = "$Env:HOMEDRIVE\Windows\System32\winevt\Logs",
-        [int]$NumberOfRecords = 5
+        [int]$NumberOfRecords = 5,
+
+        # Path to the RawCopy executable
+        [string]$RawCopyPath = ".\bin\RawCopy.exe"
     )
 
     $EventLogFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
@@ -667,25 +675,29 @@ function Get-EventLogs {
             $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File | Select-Object -First $NumberOfRecords
 
             if (-not (Test-Path $RawCopyPath)) {
-                Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
-                return
+                $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
+                Show-Message("$NoRawCopyWarnMsg") -Red
+                Write-LogEntry("$NoRawCopyWarnMsg") -WarningMessage
             }
 
             foreach ($File in $Files) {
                 try {
                     $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:"$EventLogDir\$File" /OutputPath:"$EventLogFolder" /OutputName:"$File" }
+
                     if ($LASTEXITCODE -ne 0) {
-                        Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
-                        return
+                        $NoProperExitMsg = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
+                        Show-Message("$NoProperExitMsg") -Red
+                        Write-LogEntry("$NoProperExitMsg") -WarningMessage
                     }
                 }
                 catch {
-                    Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
-                    return
+                    $RawCopyOtherMsg = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
+                    Show-Message("$RawCopyOtherMsg") -Red
+                    Write-LogEntry("$RawCopyOtherMsg") -WarningMessage
                 }
                 # Show & log $CopyMsg messages of each file copied
                 $CopyMsg = "Copied file -> `"$($File.Name)`""
-                Show-Message($CopyMsg) -Magenta
+                Show-Message($CopyMsg) -Green
                 Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CopyMsg")
             }
             # Show & log $SuccessMsg message
@@ -702,7 +714,6 @@ function Get-EventLogs {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -718,14 +729,14 @@ function Get-NTUserDatFiles {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Path to the RawCopy executable
-        [string]$RawCopyPath = ".\bin\RawCopy.exe",
-
         # Name of the directory to store the copied NTUSER.DAT files
         [string]$NTUserFolderName = "00F_NTUserDATFiles",
 
         [string]$FilePathName = "$Env:HOMEDRIVE\Users\$User\NTUSER.DAT",
-        [string]$OutputName = "$User-NTUSER.DAT"
+        [string]$OutputName = "$User-NTUSER.DAT",
+
+        # Path to the RawCopy executable
+        [string]$RawCopyPath = ".\bin\RawCopy.exe"
     )
 
     $NTUserFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
@@ -750,8 +761,9 @@ function Get-NTUserDatFiles {
             Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             if (-not (Test-Path $RawCopyPath)) {
-                Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
-                return
+                $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
+                Show-Message("$NoRawCopyWarnMsg") -Red
+                Write-LogEntry("$NoRawCopyWarnMsg") -WarningMessage
             }
 
             try {
@@ -763,16 +775,19 @@ function Get-NTUserDatFiles {
                         Show-Message("$CopyMsg") -Magenta
                         Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CopyMsg")
                         $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:"$FilePathName" /OutputPath:"$NTuserFolder" /OutputName:"$OutputName" }
+
                         if ($LASTEXITCODE -ne 0) {
-                            Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
-                            return
+                            $NoProperExitMsg = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
+                            Show-Message("$NoProperExitMsg") -Red
+                            Write-LogEntry("$NoProperExitMsg") -WarningMessage
                         }
                     }
                 }
             }
             catch {
-                Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
-                return
+                $RawCopyOtherMsg = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
+                Show-Message("$RawCopyOtherMsg") -Red
+                Write-LogEntry("$RawCopyOtherMsg") -WarningMessage
             }
             # Show & log $SuccessMsg message
             $SuccessMsg = "NTUSER.DAT files copied successfully from computer: $ComputerName"
@@ -788,7 +803,6 @@ function Get-NTUserDatFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -804,14 +818,14 @@ function Get-PrefetchFiles {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Path to the RawCopy executable
-        [string]$RawCopyPath = ".\bin\RawCopy.exe",
-
         # Name of the directory to store the copied prefetch files
         [string]$PFFolderName = "00G_PrefetchFiles",
         # Variable for Windows Prefetch folder location
         [string]$WinPrefetchDir = "$Env:HOMEDRIVE\Windows\Prefetch",
-        [int]$NumberOfRecords = 5
+        [int]$NumberOfRecords = 5,
+
+        # Path to the RawCopy executable
+        [string]$RawCopyPath = ".\bin\RawCopy.exe"
     )
 
     $PFCopyFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
@@ -874,7 +888,6 @@ function Get-PrefetchFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -896,14 +909,14 @@ function Get-SrumDB {
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
 
-        # Path to the RawCopy executable
-        [string]$RawCopyPath = ".\bin\RawCopy.exe",
-
         # Name of the directory to store the copied SRUM file
         [string]$SrumFolderName = "00H_SRUM",
 
         [string]$FileNamePath = "$Env:windir\System32\sru\SRUDB.dat",
-        [string]$OutputName = "SRUDB_$($ComputerName).dat"
+        [string]$OutputName = "SRUDB_$($ComputerName).dat",
+
+        # Path to the RawCopy executable
+        [string]$RawCopyPath = ".\bin\RawCopy.exe"
     )
 
     $SrumFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
@@ -963,7 +976,6 @@ function Get-SrumDB {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1052,7 +1064,6 @@ function Get-AllFilesList {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1077,8 +1088,6 @@ function Get-FileHashes {
     $FileHashFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     try {
-
-        # [string[]]$ExcludedFiles = @('*PowerShell_transcript*')
 
         $ExecutionTime = Measure-Command {
             # Show & log $beginMessage message
@@ -1159,7 +1168,6 @@ function Get-FileHashes {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1188,12 +1196,8 @@ function Get-CaseArchive {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 
-Export-ModuleMember -Function Set-CaseFolders, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogEntry, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-AllFilesList, Get-CaseArchive, Get-ComputerRam, Get-EncryptedDiskDetector, Get-EventLogs, Get-FileHashes, Get-NTUserDatFiles, Get-PrefetchFiles, Get-RegistryHives, Get-RunningProcesses, Get-SrumDB -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, CaseFolderName, LogFile, ExecutableFileTypes
-
-
-# Export-ModuleMember -Function * -Variable *
+Export-ModuleMember -Function Set-CaseFolders, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogEntry, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-AllFilesList, Get-CaseArchive, Get-ComputerRam, Get-EncryptedDiskDetector, Get-EventLogs, Get-FileHashes, Get-NTUserDatFiles, Get-PrefetchFiles, Get-RegistryHives, Get-RunningProcesses, Get-SrumDB -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, CaseFolderName, LogFile, NoMatchingEventsMsg, ExecutableFileTypes

@@ -23,48 +23,52 @@ function Get-ADSData {
 
     [CmdletBinding()]
     param(
-        [string]$Path = "C:\Users\mikes"
+        [string]$Path = "C:\Users"
     )
 
-        $ErrorActionPreference = "SilentlyContinue"
+    $ErrorActionPreference = "SilentlyContinue"
 
-        try {
-            $Files = Get-ChildItem -Path $Path -Recurse -Force -File
-            $Results = @()
+    try {
+        $Files = Get-ChildItem -Path $Path -Recurse -Force -File
 
-            foreach ($File in $Files) {
-                $Streams = Get-Item -Path $File.FullName -Stream * |
-                Where-Object { $_.Stream -notlike "*DATA" -and $_.Stream -ne "Zone.Identifier" }
+        $Results = @()
 
-                foreach ($Stream in $Streams) {
-                    $StreamContent = try {
-                        Get-Content -Path $File.FullName -Stream $Stream.Stream
-                    }
-                    catch {
-                        Show-Message("Error reading stream content: $($PSItem)") -Red
-                    }
+        foreach ($File in $Files) {
 
-                    $Results += [PSCustomObject]@{
-                        Host              = $env:COMPUTERNAME
-                        DateScanned       = $DateScanned
-                        FileName          = $File.FullName
-                        Stream            = $Stream.Stream
-                        StreamLength      = $Stream.Length
-                        StreamContent     = $StreamContent
-                        CreationTimeUtc   = $File.CreationTimeUtc
-                        LastAccessTimeUtc = $File.LastAccessTimeUtc
-                        LastWriteTimeUtc  = $File.LastWriteTimeUtc
-                        Attributes        = $File.Attributes
-                    }
+            $Streams = Get-Item -Path $File.FullName -Stream * | Where-Object { $_.Stream -notlike "*DATA" -and $_.Stream -ne "Zone.Identifier" }
+
+            foreach ($Stream in $Streams) {
+                $StreamContent = try {
+                    Get-Content -Path $File.FullName -Stream $Stream.Stream
+                }
+                catch {
+                    Show-Message("Error reading stream content: $($PSItem)") -Red
+                }
+
+                $Results += [PSCustomObject]@{
+                    Host              = $env:COMPUTERNAME
+                    DateScanned       = $DateScanned
+                    FileName          = $File.FullName
+                    Stream            = $Stream.Stream
+                    StreamLength      = $Stream.Length
+                    StreamContent     = $StreamContent
+                    CreationTimeUtc   = $File.CreationTimeUtc
+                    LastAccessTimeUtc = $File.LastAccessTimeUtc
+                    LastWriteTimeUtc  = $File.LastWriteTimeUtc
+                    Attributes        = $File.Attributes
                 }
             }
-            return $Results | Select-Object Host, DateScanned, FileName, Stream, StreamLength,
-                StreamContent, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc, Attributes
         }
-        catch {
-            Write-Error "Failed to search ADS in path `'$Path`": $($_)"
-        }
-    # }
+
+        return $Results | Select-Object Host, DateScanned, FileName, Stream, StreamLength, StreamContent, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc, Attributes
+
+    }
+    catch {
+    # Error handling
+    $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+    Show-Message("$ErrorMessage") -Red
+    Write-LogEntry("$ErrorMessage") -ErrorMessage
+    }
 }
 
 

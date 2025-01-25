@@ -11,9 +11,12 @@ $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 # 6-001
 function Get-PrefetchFilesList {
     [CmdletBinding()]
-    param ([string]$Num = "6-001")
+    param (
+        [string]$Num = "6-001",
+        [string]$FileName = "PrefetchFilesList.txt"
+    )
 
-    $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_PrefetchFilesList.txt"
+    $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -21,9 +24,9 @@ function Get-PrefetchFilesList {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" |
-            Select-Object Name, LastAccessTime, CreationTime |
-            Sort-Object LastAccessTime | Format-List
+
+            $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object Name, LastAccessTime, CreationTime | Sort-Object LastAccessTime | Format-List
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -42,16 +45,18 @@ function Get-PrefetchFilesList {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 6-002
 function Get-DetailedPrefetchData {
     [CmdletBinding()]
-    param ([string]$Num = "6-002")
+    param (
+        [string]$Num = "6-002",
+        [string]$FileName = "PrefetchFilesDetailed.txt"
+    )
 
-    $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_PrefetchFilesDetailed.txt"
+    $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -59,9 +64,9 @@ function Get-DetailedPrefetchData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" |
-            Select-Object -Property * |
-            Sort-Object LastAccessTime
+
+            $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -80,7 +85,6 @@ function Get-DetailedPrefetchData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 

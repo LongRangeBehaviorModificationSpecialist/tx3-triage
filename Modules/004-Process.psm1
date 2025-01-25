@@ -11,9 +11,12 @@ $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 # 4-001
 function Get-RunningProcessesAll {
     [CmdletBinding()]
-    param ([string]$Num = "4-001")
+    param (
+        [string]$Num = "4-001",
+        [string]$FileName = "RunningProcesses.txt"
+    )
 
-    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_RunningProcesses.txt"
+    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -21,7 +24,9 @@ function Get-RunningProcessesAll {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -40,16 +45,18 @@ function Get-RunningProcessesAll {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 4-002
 function Get-RunningProcessesCsv {
     [CmdletBinding()]
-    param ([string]$Num = "4-002")
+    param (
+        [string]$Num = "4-002",
+        [string]$FileName = "RunningProcesses.csv"
+    )
 
-    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_RunningProcesses.csv"
+    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -57,7 +64,9 @@ function Get-RunningProcessesCsv {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -76,16 +85,18 @@ function Get-RunningProcessesCsv {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 4-003
 function Get-UniqueProcessHash {
     [CmdletBinding()]
-    param ([string]$Num = "4-003")
+    param (
+        [string]$Num = "4-003",
+        [string]$FileName = "UniqueProcessHash.csv"
+    )
 
-    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_UniqueProcessHash.csv"
+    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -93,6 +104,7 @@ function Get-UniqueProcessHash {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = @()
             foreach ($P in (Get-WmiObject Win32_Process | Select-Object Name, ExecutablePath, CommandLine, ParentProcessId, ProcessId)) {
                 $ProcessObj = New-Object PSCustomObject
@@ -107,6 +119,7 @@ function Get-UniqueProcessHash {
                     $Data += $ProcessObj
                 }
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -126,16 +139,18 @@ function Get-UniqueProcessHash {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 4-004
 function Get-SvcHostsAndProcesses {
     [CmdletBinding()]
-    param ([string]$Num = "4-004")
+    param (
+        [string]$Num = "4-004",
+        [string]$FileName = "SvcHostAndProcesses.txt"
+    )
 
-    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_SvcHostAndProcesses.txt"
+    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -143,8 +158,9 @@ function Get-SvcHostsAndProcesses {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq "svchost.exe" |
-            Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path
+
+            $Data = Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq "svchost.exe" | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -163,16 +179,18 @@ function Get-SvcHostsAndProcesses {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 4-005
 function Get-RunningServices {
     [CmdletBinding()]
-    param ([string]$Num = "4-005")
+    param (
+        [string]$Num = "4-005",
+        [string]$FileName = "RunningServices.csv"
+    )
 
-    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_RunningServices.csv"
+    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -180,7 +198,9 @@ function Get-RunningServices {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -199,16 +219,18 @@ function Get-RunningServices {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 4-006
 function Get-InstalledDrivers {
     [CmdletBinding()]
-    param ([string]$Num = "4-006")
+    param (
+        [string]$Num = "4-006",
+        [string]$FileName = "InstalledDrivers.txt"
+    )
 
-    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_InstalledDrivers.txt"
+    $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -216,7 +238,9 @@ function Get-InstalledDrivers {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = driverquery
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -235,7 +259,6 @@ function Get-InstalledDrivers {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 

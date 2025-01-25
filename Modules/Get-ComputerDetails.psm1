@@ -59,14 +59,6 @@ function Get-ComputerDetails {
     param(
     )
 
-    # Show-Message("$(Split-Path $($MyInvocation.MyCommand.Path) -Leaf) module accessed successfully") -Yellow
-
-    # $DateScanned = ((Get-Date).ToUniversalTime()).ToString("yyyy-MM-dd HH:mm:ssZ")
-    # Write-Information -InformationAction Continue -MessageData ("Started Get-ComputerDetails at {0}" -f $DateScanned)
-
-    # $stopwatch = New-Object System.Diagnostics.Stopwatch
-    # $stopwatch.Start()
-
     Enum DomainRole {
         StandaloneWorkstation = 0
         MemberWorkstation = 1
@@ -89,9 +81,13 @@ function Get-ComputerDetails {
     try {
 
         $Win32_OperatingSystem = Get-CIMinstance -class Win32_OperatingSystem
+
         $Win32_ComputerSystem = Get-CIMInstance -class Win32_ComputerSystem
+
         $Win32_BIOS = Get-CIMinstance -class Win32_BIOS
+
         $Win32_Processor = Get-CIMinstance -class Win32_Processor
+
         $SoftwareLicensingProduct = Get-CimInstance SoftwareLicensingProduct -Filter "Name like 'Windows%'" | Where-Object { $_.PartialProductKey }
 
         $Result = New-Object -TypeName PSObject
@@ -99,12 +95,15 @@ function Get-ComputerDetails {
         foreach ($Property in $Win32_OperatingSystem.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
+
         $Result.CurrentTimeZone = $Result.CurrentTimeZone / 60
 
         foreach ($Property in $Win32_ComputerSystem.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
+
         $Result.DomainRole = ([DomainRole]$Result.DomainRole).ToString()
+
         $UpTime = (Get-Date) - $Result.LastBootUpTime
 
         foreach ($Property in $Win32_Processor.PSObject.Properties) {
@@ -114,51 +113,44 @@ function Get-ComputerDetails {
         foreach ($Property in $Win32_BIOS.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
+
         $Result.BiosVersion = $Result.BiosVersion -join " | "
 
         $UpTime = (Get-Date) - $Win32_OperatingSystem.LastBootUpTime
 
         $Result.DomainRole = ([DomainRole]$Result.DomainRole).ToString()
+
         $Result | Add-Member -MemberType NoteProperty -Name MinimumPasswordLength -Value (net accounts | Select-String -Pattern "Minimum password length").ToString().Split()[-1]
+
         $Result | Add-Member -MemberType NoteProperty -Name UpTime -Value ("{0}:{1}:{2}:{3}" -f $Uptime.Days, $UpTime.Hours, $UpTime.Minutes, $UpTime.Seconds)
+
         $Result | Add-Member -MemberType NoteProperty -Name USBStorageLock -Value (Get-ItemProperty -Path "HKLM:SYSTEM\CurrentControlSet\Services\USBStor" -Name "Start" -ErrorAction Stop).Start
+
         $Result | Add-Member -MemberType NoteProperty -Name LicenseType -Value ($SoftwareLicensingProduct.Description).Split(",")[1].Trim()
+
         $Result | Add-Member -MemberType NoteProperty -Name LicenseStatus -Value ([LicenseStatus]$SoftwareLicensingProduct.LicenseStatus).ToString()
-        $Result | Add-Member -MemberType NoteProperty -Name BIOSInstallDate -Value $Win32_BIOS.InstallDate -ErrorAction SilentlyContinue # Resolves conflict with Win32_OperatingSystem
-        $Result | Add-Member -MemberType NoteProperty -Name BIOSManufacturer -Value $Win32_BIOS.Manufacturer -ErrorAction SilentlyContinue # Resolves conflict with Win32_ComputerSystem
-        $Result | Add-Member -MemberType NoteProperty -Name BIOSSerialNumber -Value $Win32_BIOS.SerialNumber -ErrorAction SilentlyContinue # Resolves conflict with Win32_OperatingSystem
+
+        # Resolves conflict with Win32_OperatingSystem
+        $Result | Add-Member -MemberType NoteProperty -Name BIOSInstallDate -Value $Win32_BIOS.InstallDate -ErrorAction SilentlyContinue
+
+        # Resolves conflict with Win32_ComputerSystem
+        $Result | Add-Member -MemberType NoteProperty -Name BIOSManufacturer -Value $Win32_BIOS.Manufacturer -ErrorAction SilentlyContinue
+
+        # Resolves conflict with Win32_OperatingSystem
+        $Result | Add-Member -MemberType NoteProperty -Name BIOSSerialNumber -Value $Win32_BIOS.SerialNumber -ErrorAction SilentlyContinue
 
         $Result | Add-Member -MemberType NoteProperty -Name "Host" -Value $env:COMPUTERNAME
+
         $Result | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
 
-        return $Result | Select-Object Host, DateScanned, CurrentTimeZone, InstallDate, LastBootUpTime, UpTime, LocalDateTime,
-        BootDevice, BootROMSupported, BootupState, ChassisBootupState,
-        DataExecutionPrevention_32BitApplications, DataExecutionPrevention_Available, DataExecutionPrevention_Drivers,
-        DataExecutionPrevention_SupportPolicy, MinimumPasswordLength, USBStorageLock, Debug, EncryptionLevel, AdminPasswordStatus,
-        Description, Distributed, OSArchitecture, OSProductSuite, OSType, OperatingSystemSKU, Organization, OtherTypeDescription, PortableOperatingSystem, ProductType,
-        RegisteredUser, ServicePackMajorVersion, ServicePackMinorVersion, Status, SuiteMask, BuildNumber, Caption, LicenseType, LicenseStatus, SystemDevice,
-        SystemDirectory, SystemDrive, MUILanguages, Version, WindowsDirectory, DNSHostName, DaylightInEffect, Domain, DomainRole, EnableDaylightSavingsTime,
-        PrimaryOwnerContact, PrimaryOwnerName, SupportContactDescription, UserName,
-        Manufacturer, Model, NetworkServerModeEnabled, HypervisorPresent, SystemSKUNumber, ThermalState, BIOSVersion, BIOSInstallDate,
-        BIOSManufacturer, PrimaryBIOS, BIOSReleaseDate, SMBIOSBIOSVersion, SMBIOSMajorVersion, SMBIOSMinorVersion,
-        SMBIOSPresent, BIOSSerialNumber, SystemBiosMajorVersion, SystemBiosMinorVersion, VirtualizationFirmwareEnabled
+        return $Result | Select-Object Host, DateScanned, CurrentTimeZone, InstallDate, LastBootUpTime, UpTime, LocalDateTime, BootDevice, BootROMSupported, BootupState, ChassisBootupState, DataExecutionPrevention_32BitApplications, DataExecutionPrevention_Available, DataExecutionPrevention_Drivers, DataExecutionPrevention_SupportPolicy, MinimumPasswordLength, USBStorageLock, Debug, EncryptionLevel, AdminPasswordStatus, Description, Distributed, OSArchitecture, OSProductSuite, OSType, OperatingSystemSKU, Organization, OtherTypeDescription, PortableOperatingSystem, ProductType, RegisteredUser, ServicePackMajorVersion, ServicePackMinorVersion, Status, SuiteMask, BuildNumber, Caption, LicenseType, LicenseStatus, SystemDevice, SystemDirectory, SystemDrive, MUILanguages, Version, WindowsDirectory, DNSHostName, DaylightInEffect, Domain, DomainRole, EnableDaylightSavingsTime, PrimaryOwnerContact, PrimaryOwnerName, SupportContactDescription, UserName, Manufacturer, Model, NetworkServerModeEnabled, HypervisorPresent, SystemSKUNumber, ThermalState, BIOSVersion, BIOSInstallDate, BIOSManufacturer, PrimaryBIOS, BIOSReleaseDate, SMBIOSBIOSVersion, SMBIOSMajorVersion, SMBIOSMinorVersion, SMBIOSPresent, BIOSSerialNumber, SystemBiosMajorVersion, SystemBiosMinorVersion, VirtualizationFirmwareEnabled
     }
     catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
-
-    # end{
-
-    #     $elapsed = $stopwatch.Elapsed
-
-    #     Write-Verbose ("Total time elapsed: {0}" -f $elapsed)
-    #     Write-Verbose ("Ended at {0}" -f ((Get-Date).ToUniversalTime()).ToString("yyyy-MM-dd HH:mm:ssZ"))
-    # }
 }
-
 
 Export-ModuleMember -Function Get-ComputerDetails

@@ -11,9 +11,12 @@ $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 # 5-001
 function Get-ADS {
     [CmdletBinding()]
-    param ([string]$Num = "5-001")
+    param (
+        [string]$Num = "5-001",
+        [string]$FileName = "ADSData.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ADSData.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -21,7 +24,9 @@ function Get-ADS {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-ADSData
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -40,16 +45,18 @@ function Get-ADS {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-002
 function Get-OpenFiles {
     [CmdletBinding()]
-    param ([string]$Num = "5-002")
+    param (
+        [string]$Num = "5-002",
+        [string]$FileName = "ListOfOpenFiles.csv"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ListOfOpenFiles.csv"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -57,8 +64,10 @@ function Get-OpenFiles {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             # Get list of open files with openfiles.exe, output it to CSV format
             $Data = openfiles.exe /query /FO CSV /V
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -77,16 +86,18 @@ function Get-OpenFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-003
 function Get-OpenShares {
     [CmdletBinding()]
-    param ([string]$Num = "5-003")
+    param (
+        [string]$Num = "5-003",
+        [string]$FileName = "OpenShares.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_OpenShares.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -94,7 +105,9 @@ function Get-OpenShares {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_Share | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -113,16 +126,18 @@ function Get-OpenShares {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-004
 function Get-MappedNetworkDriveMRU {
     [CmdletBinding()]
-    param ([string]$Num = "5-004")
+    param (
+        [string]$Num = "5-004",
+        [string]$FileName = "MappedNetworkDriveMRU.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_MappedNetworkDriveMRU.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -130,7 +145,15 @@ function Get-MappedNetworkDriveMRU {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object * -ExcludeProperty PS*
+            try {
+
+                $Data = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object * -ExcludeProperty PS*
+
+            }
+            catch [PathNotFound] {
+                Show-Message("$KeyNotFoundMsg") -Red
+                Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
+            }
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -149,16 +172,18 @@ function Get-MappedNetworkDriveMRU {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-005
 function Get-ScheduledJobs {
     [CmdletBinding()]
-    param ([string]$Num = "5-005")
+    param (
+        [string]$Num = "5-005",
+        [string]$FileName = "ScheduledJobs.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ScheduledJobs.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -166,7 +191,9 @@ function Get-ScheduledJobs {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_ScheduledJob
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -185,16 +212,18 @@ function Get-ScheduledJobs {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-006
 function Get-ScheduledTasks {
     [CmdletBinding()]
-    param ([string]$Num = "5-006")
+    param (
+        [string]$Num = "5-006",
+        [string]$FileName = "ScheduledTasks.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ScheduledTasks.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -202,7 +231,9 @@ function Get-ScheduledTasks {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-ScheduledTask | Select-Object -Property * | Where-Object { ($_.State -ne 'Disabled') }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -221,16 +252,18 @@ function Get-ScheduledTasks {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-007
 function Get-ScheduledTasksRunInfo {
     [CmdletBinding()]
-    param ([string]$Num = "5-007")
+    param (
+        [string]$Num = "5-007",
+        [string]$FileName = "ScheduledTasksRunInfo.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ScheduledTasksRunInfo.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -238,7 +271,9 @@ function Get-ScheduledTasksRunInfo {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" } | Get-ScheduledTaskInfo | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -257,16 +292,18 @@ function Get-ScheduledTasksRunInfo {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-008
 function Get-HotFixesData {
     [CmdletBinding()]
-    param ([string]$Num = "5-008")
+    param (
+        [string]$Num = "5-008",
+        [string]$FileName = "HotFixes.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_HotFixes.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -274,7 +311,9 @@ function Get-HotFixesData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
+
+            $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn  -Descending
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -300,9 +339,12 @@ function Get-HotFixesData {
 # 5-009
 function Get-InstalledAppsFromReg {
     [CmdletBinding()]
-    param ([string]$Num = "5-009")
+    param (
+        [string]$Num = "5-009",
+        [string]$FileName = "InstalledAppsFromReg.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_InstalledAppsFromReg.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -310,7 +352,15 @@ function Get-InstalledAppsFromReg {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWAREMicrosoft\Windows\CurrentVersion\Uninstall\*" | Select-Object -Property * | Sort-Object InstallDate -Descending
+            try {
+
+                $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object -Property * | Sort-Object InstallDate -Descending
+
+            }
+            catch [PathNotFound] {
+                Show-Message("$KeyNotFoundMsg") -Red
+                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
+            }
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -329,16 +379,18 @@ function Get-InstalledAppsFromReg {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-010
 function Get-InstalledAppsFromAppx {
     [CmdletBinding()]
-    param ([string]$Num = "5-010")
+    param (
+        [string]$Num = "5-010",
+        [string]$FileName = "InstalledAppsFromAppx.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_InstalledAppsFromAppx.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -346,7 +398,9 @@ function Get-InstalledAppsFromAppx {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-AppxPackage | Format-List
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -365,16 +419,18 @@ function Get-InstalledAppsFromAppx {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-011
 function Get-VolumeShadowsData {
     [CmdletBinding()]
-    param ([string]$Num = "5-011")
+    param (
+        [string]$Num = "5-011",
+        [string]$FileName = "VolumeShadowCopies.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_VolumeShadowCopies.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -382,7 +438,9 @@ function Get-VolumeShadowsData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -401,16 +459,18 @@ function Get-VolumeShadowsData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-012
 function Get-DnsCacheDataTxt {
     [CmdletBinding()]
-    param ([string]$Num = "5-012")
+    param (
+        [string]$Num = "5-012",
+        [string]$FileName = "DnsCache.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_DnsCache.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -418,7 +478,9 @@ function Get-DnsCacheDataTxt {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = ipconfig /displaydns
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -437,16 +499,18 @@ function Get-DnsCacheDataTxt {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-013
 function Get-DnsCacheDataCsv {
     [CmdletBinding()]
-    param ([string]$Num = "5-013")
+    param (
+        [string]$Num = "5-013",
+        [string]$FileName = "DnsClientCache.csv"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_DnsClientCache.csv"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -454,7 +518,9 @@ function Get-DnsCacheDataCsv {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-DnsClientCache | ConvertTo-Csv -NoTypeInformation
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -473,16 +539,18 @@ function Get-DnsCacheDataCsv {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-014
 function Get-TempInternetFiles {
     [CmdletBinding()]
-    param ([string]$Num = "5-014")
+    param (
+        [string]$Num = "5-014",
+        [string]$FileName = "TempInternetFiles.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_TempInternetFiles.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -490,8 +558,9 @@ function Get-TempInternetFiles {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" |
-            Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
+
+            $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -510,16 +579,18 @@ function Get-TempInternetFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-015
 function Get-StoredCookiesData {
     [CmdletBinding()]
-    param ([string]$Num = "5-015")
+    param (
+        [string]$Num = "5-015",
+        [string]$FileName = "StoredCookies.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_StoredCookies.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -527,12 +598,10 @@ function Get-StoredCookiesData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $AppData = $Env:LOCALAPPDATA
-            $Data = Get-ChildItem -Recurse -Force "$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies" |
-            Select-Object Name |
-            ForEach-Object {
-                $N = $_.Name; Get-Content "$($AppData)\Microsoft\Windows\cookies\$N" | Select-String "/"
-            }
+            $Data = Get-ChildItem -Recurse -Force "$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies" | Select-Object Name |ForEach-Object { $N = $_.Name; Get-Content "$($AppData)\Microsoft\Windows\cookies\$N" | Select-String "/" }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -551,16 +620,18 @@ function Get-StoredCookiesData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-016
 function Get-TypedUrls {
     [CmdletBinding()]
-    param ([string]$Num = "5-016")
+    param (
+        [string]$Num = "5-016",
+        [string]$FileName = "TypedUrls.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)__TypedUrls.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -568,8 +639,9 @@ function Get-TypedUrls {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -588,16 +660,18 @@ function Get-TypedUrls {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-017
 function Get-InternetSettings {
     [CmdletBinding()]
-    param ([string]$Num = "5-017")
+    param (
+        [string]$Num = "5-017",
+        [string]$FileName = "InternetSettings.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_InternetSettings.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -605,8 +679,9 @@ function Get-InternetSettings {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -625,16 +700,18 @@ function Get-InternetSettings {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-018
 function Get-TrustedInternetDomains {
     [CmdletBinding()]
-    param ([string]$Num = "5-018")
+    param (
+        [string]$Num = "5-018",
+        [string]$FileName = "TrustedInternetDomains.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_TrustedInternetDomains.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -642,8 +719,9 @@ function Get-TrustedInternetDomains {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains" |
-            Select-Object PSChildName
+
+            $Data = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains" | Select-Object PSChildName
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -662,16 +740,18 @@ function Get-TrustedInternetDomains {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-019
 function Get-AppInitDllKeys {
     [CmdletBinding()]
-    param ([string]$Num = "5-019")
+    param (
+        [string]$Num = "5-019",
+        [string]$FileName = "AppInitDllKey.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_AppInitDllKey.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -679,8 +759,9 @@ function Get-AppInitDllKeys {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" |
-            Select-Object -Property *
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -699,16 +780,18 @@ function Get-AppInitDllKeys {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-020
 function Get-UacGroupPolicy {
     [CmdletBinding()]
-    param ([string]$Num = "5-020")
+    param (
+        [string]$Num = "5-020",
+        [string]$FileName = "UacGroupPolicy.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_UacGroupPolicy.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -716,8 +799,9 @@ function Get-UacGroupPolicy {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -736,16 +820,18 @@ function Get-UacGroupPolicy {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-021
 function Get-GroupPolicy {
     [CmdletBinding()]
-    param ([string]$Num = "5-021")
+    param (
+        [string]$Num = "5-021",
+        [string]$FileName = "GroupPolicy.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_GroupPolicy.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -753,7 +839,9 @@ function Get-GroupPolicy {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = gpresult.exe /z
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -772,16 +860,18 @@ function Get-GroupPolicy {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-022
 function Get-ActiveSetupInstalls {
     [CmdletBinding()]
-    param ([string]$Num = "5-022")
+    param (
+        [string]$Num = "5-022",
+        [string]$FileName = "ActiveSetupInstalls.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ActiveSetupInstalls.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -789,8 +879,9 @@ function Get-ActiveSetupInstalls {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*" |
-            Select-Object -Property *
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*" | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -809,16 +900,18 @@ function Get-ActiveSetupInstalls {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-023
 function Get-AppPathRegKeys {
     [CmdletBinding()]
-    param ([string]$Num = "5-023")
+    param (
+        [string]$Num = "5-023",
+        [string]$FileName = "AppPathRegKeys.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_AppPathRegKeys.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -826,8 +919,9 @@ function Get-AppPathRegKeys {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*" |
-            Select-Object -Property * | Sort-Object '(default)'
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*" | Select-Object -Property * | Sort-Object '(default)'
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -846,16 +940,18 @@ function Get-AppPathRegKeys {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-024
 function Get-DllsLoadedByExplorer {
     [CmdletBinding()]
-    param ([string]$Num = "5-024")
+    param (
+        [string]$Num = "5-024",
+        [string]$FileName = "DllsLoadedByExplorerShell.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_DllsLoadedByExplorerShell.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -863,8 +959,9 @@ function Get-DllsLoadedByExplorer {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*" |
-            Select-Object -Property *
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*" | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -883,16 +980,18 @@ function Get-DllsLoadedByExplorer {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-025
 function Get-ShellUserInitValues {
     [CmdletBinding()]
-    param ([string]$Num = "5-025")
+    param (
+        [string]$Num = "5-025",
+        [string]$FileName = "ShellAndUserInitValues.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ShellAndUserInitValues.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -900,8 +999,9 @@ function Get-ShellUserInitValues {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -920,16 +1020,18 @@ function Get-ShellUserInitValues {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-026
 function Get-SecurityCenterSvcValuesData {
     [CmdletBinding()]
-    param ([string]$Num = "5-026")
+    param (
+        [string]$Num = "5-026",
+        [string]$FileName = "SvcValues.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_SvcValues.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -937,8 +1039,9 @@ function Get-SecurityCenterSvcValuesData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Security Center\Svc" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Security Center\Svc" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -957,16 +1060,18 @@ function Get-SecurityCenterSvcValuesData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-027
 function Get-DesktopAddressBarHst {
     [CmdletBinding()]
-    param ([string]$Num = "5-027")
+    param (
+        [string]$Num = "5-027",
+        [string]$FileName = "DesktopAddressBar.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_DesktopAddressBar.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -974,8 +1079,9 @@ function Get-DesktopAddressBarHst {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -994,16 +1100,18 @@ function Get-DesktopAddressBarHst {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-028
 function Get-RunMruKeyData {
     [CmdletBinding()]
-    param ([string]$Num = "5-028")
+    param (
+        [string]$Num = "5-028",
+        [string]$FielName = "RunMruKeyInfo.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_RunMruKeyInfo.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1011,8 +1119,9 @@ function Get-RunMruKeyData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1031,16 +1140,18 @@ function Get-RunMruKeyData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-029
 function Get-StartMenuData {
     [CmdletBinding()]
-    param ([string]$Num = "5-029")
+    param (
+        [string]$Num = "5-029",
+        [string]$FileName = "StartMenuData.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_StartMenuData.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1048,8 +1159,9 @@ function Get-StartMenuData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1068,16 +1180,18 @@ function Get-StartMenuData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-030
 function Get-ProgramsExeBySessionManager {
     [CmdletBinding()]
-    param ([string]$Num = "5-030")
+    param (
+        [string]$Num = "5-030",
+        [string]$FielName = "ProgExeBySessionManager.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ProgExeBySessionManager.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1085,8 +1199,9 @@ function Get-ProgramsExeBySessionManager {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1105,16 +1220,18 @@ function Get-ProgramsExeBySessionManager {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-031
 function Get-ShellFoldersData {
     [CmdletBinding()]
-    param ([string]$Num = "5-031")
+    param (
+        [string]$Num = "5-031",
+        [string]$FileName = "ShellFolderInfo.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ShellFolderInfo.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1122,8 +1239,9 @@ function Get-ShellFoldersData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1142,16 +1260,18 @@ function Get-ShellFoldersData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-032
 function Get-UserStartupShellFolders {
     [CmdletBinding()]
-    param ([string]$Num = "5-032")
+    param (
+        [string]$Num = "5-032",
+        [string]$FileName = "StartUpShellFolderInfo.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_StartUpShellFolderInfo.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1159,8 +1279,9 @@ function Get-UserStartupShellFolders {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" |
-            Select-Object startup
+
+            $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object startup
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1179,16 +1300,18 @@ function Get-UserStartupShellFolders {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-033
 function Get-ApprovedShellExts {
     [CmdletBinding()]
-    param ([string]$Num = "5-033")
+    param (
+        [string]$Num = "5-033",
+        [string]$FileName = "ApprovedShellExts.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ApprovedShellExts.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1196,8 +1319,9 @@ function Get-ApprovedShellExts {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1216,16 +1340,18 @@ function Get-ApprovedShellExts {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-034
 function Get-AppCertDlls {
     [CmdletBinding()]
-    param ([string]$Num = "5-034")
+    param (
+        [string]$Num = "5-034",
+        [string]$FileName = "AppCertDlls.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_AppCertDlls.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1233,8 +1359,16 @@ function Get-AppCertDlls {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls" |
-            Select-Object * -ExcludeProperty PS*
+            try {
+
+                $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls" | Select-Object * -ExcludeProperty PS*
+
+            }
+            catch [PathNotFound] {
+                $KeyNotFoundMsg = "Cannot find the listed registry key because it does not exist."
+                Show-Message("$KeyNotFoundMsg") -Red
+                Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
+            }
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1253,16 +1387,18 @@ function Get-AppCertDlls {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-035
 function Get-ExeFileShellCommands {
     [CmdletBinding()]
-    param ([string]$Num = "5-035")
+    param (
+        [string]$Num = "5-035",
+        [string]$FileName = "ExeFileShellCommands.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ExeFileShellCommands.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1270,8 +1406,9 @@ function Get-ExeFileShellCommands {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\exefile\shell\open\command" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\exefile\shell\open\command" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1290,16 +1427,18 @@ function Get-ExeFileShellCommands {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-036
 function Get-ShellOpenCommands {
     [CmdletBinding()]
-    param ([string]$Num = "5-036")
+    param (
+        [string]$Num = "5-036",
+        [string]$FileName = "ShellCommands.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ShellCommands.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1307,8 +1446,9 @@ function Get-ShellOpenCommands {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\http\shell\open\command" |
-            Select-Object "(Default)"
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\http\shell\open\command" | Select-Object "(Default)"
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1327,16 +1467,18 @@ function Get-ShellOpenCommands {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-037
 function Get-BcdRelatedData {
     [CmdletBinding()]
-    param ([string]$Num = "5-037")
+    param (
+        [string]$Num = "5-037",
+        [string]$FileName = "BcdRelatedData.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_BcdRelatedData.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1344,8 +1486,9 @@ function Get-BcdRelatedData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\BCD00000000\*\*\*\*" |
-            Select-Object Element | Select-String "exe" | Select-Object Line
+
+            $Data = Get-ItemProperty "HKLM:\BCD00000000\*\*\*\*" | Select-Object Element | Select-String "exe" | Select-Object Line
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1364,16 +1507,18 @@ function Get-BcdRelatedData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-038
 function Get-LsaData {
     [CmdletBinding()]
-    param ([string]$Num = "5-038")
+    param (
+        [string]$Num = "5-038",
+        [string]$FileName = "LoadedLsaPackages.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_LoadedLsaPackages.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1381,8 +1526,9 @@ function Get-LsaData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" |
-            Select-Object * -ExcludeProperty PS*
+
+            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" | Select-Object * -ExcludeProperty PS*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1401,16 +1547,18 @@ function Get-LsaData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-039
 function Get-BrowserHelperFile {
     [CmdletBinding()]
-    param ([string]$Num = "5-039")
+    param (
+        [string]$Num = "5-039",
+        [string]$FileName = "BrowserHelperObjects.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_BrowserHelperObjects.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1418,8 +1566,9 @@ function Get-BrowserHelperFile {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" |
-            Select-Object "(Default)"
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1445,9 +1594,12 @@ function Get-BrowserHelperFile {
 # 5-040
 function Get-BrowserHelperx64File {
     [CmdletBinding()]
-    param ([string]$Num = "5-040")
+    param (
+        [string]$Num = "5-040",
+        [string]$FileName = "BrowserHelperObjectsx64.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_BrowserHelperObjectsx64.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1455,8 +1607,9 @@ function Get-BrowserHelperx64File {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" |
-            Select-Object "(Default)"
+
+            $Data = Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1475,7 +1628,6 @@ function Get-BrowserHelperx64File {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1485,7 +1637,7 @@ function Get-IeExtensions {
     param (
         [string]$Num = "5-041",
         [string]$FileName = "IeExtensions.txt"
-        )
+    )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
@@ -1495,8 +1647,16 @@ function Get-IeExtensions {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data1 = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' |
-                Select-Object ButtonText, Icon
+            try {
+
+                $Data1 = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
+                $Data2 = Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
+
+            }
+            catch [PathNotFound] {
+                Show-Message("$KeyNotFoundMsg") -Red
+                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
+            }
             if ($Data1.Count -eq 0) {
                 Write-NoDataFound $Data1
             }
@@ -1504,8 +1664,6 @@ function Get-IeExtensions {
                 Save-Output $Data1 $File
                 Show-OutputSavedToFile $File
             }
-            $Data2 = Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' |
-            Select-Object ButtonText, Icon
             if ($Data2.Count -eq 0) {
                 Write-NoDataFound $Data2
             }
@@ -1524,16 +1682,18 @@ function Get-IeExtensions {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-042
 function Get-UsbDevices {
     [CmdletBinding()]
-    param ([string]$Num = "5-042")
+    param (
+        [string]$Num = "5-042",
+        [string]$FileName = "UsbDevices.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_UsbDevices.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1541,8 +1701,9 @@ function Get-UsbDevices {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*" |
-            Select-Object FriendlyName, PSChildName, ContainerID
+
+            $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*" | Select-Object FriendlyName, PSChildName, ContainerID
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1561,16 +1722,18 @@ function Get-UsbDevices {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 5-043
 function Get-AuditPolicy {
     [CmdletBinding()]
-    param ([string]$Num = "5-043")
+    param (
+        [string]$Num = "5-043",
+        [string]$FileName = "AuditPolicy.txt"
+    )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_AuditPolicy.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1578,7 +1741,9 @@ function Get-AuditPolicy {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = auditpol /get /category:*
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1597,7 +1762,6 @@ function Get-AuditPolicy {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1606,10 +1770,11 @@ function Get-RecentAddedExeFiles {
     [CmdletBinding()]
     param (
         [string]$Num = "5-044",
+        [string]$FileName = "RecentSoftwareRegistryChanges.txt",
         [int]$NumberOfRecords = 5
     )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_RecentSoftwareRegistryChanges.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1618,13 +1783,12 @@ function Get-RecentAddedExeFiles {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
-                $Data = Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object {
-                    $_.Name -like "*.exe"
-                    } | Sort-Object -Property LastWriteTime -Descending |
-                    Select-Object -First $NumberOfRecords | Format-Table PSPath, LastWriteTime
+
+                $Data = Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object { $_.Name -like "*.exe" } | Sort-Object -Property LastWriteTime -Descending | Select-Object -First $NumberOfRecords | Format-Table PSPath, LastWriteTime
+
             }
             catch [System.Security.SecurityException] {
-                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                $ErrorMessage = "Requested registry access is not allowed"
                 Show-Message("$ErrorMessage") -Red
                 Write-LogEntry("$ErrorMessage") -ErrorMessage
             }
@@ -1646,7 +1810,6 @@ function Get-RecentAddedExeFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1655,10 +1818,11 @@ function Get-HiddenFiles {
     [CmdletBinding()]
     param (
         [string]$Num = "5-045",
+        [string]$FileName = "HiddenFiles.txt",
         [string]$Path = "C:\"
     )
 
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_HiddenFiles.txt"
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1670,8 +1834,10 @@ function Get-HiddenFiles {
             if (-not (Test-Path $Path)) {
                 throw "The specified path `"$Path`" does not exist"
             }
+
             $Data = Get-ChildItem -Path $Path -Attributes Hidden -Recurse -Force
             $Count = $Data.Count
+
             Show-Message("Found $Count hidden files within $Path")
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -1691,7 +1857,6 @@ function Get-HiddenFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
@@ -1700,9 +1865,11 @@ function Get-ExecutableFiles {
     [CmdletBinding()]
     param (
         [string]$Num = "5-046",
+        [string]$FileName = "ExecutableFiles.txt",
         [string]$Path = "C:\"
     )
-    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_ExecutableFiles.txt"
+
+    $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -1715,6 +1882,7 @@ function Get-ExecutableFiles {
             if (-not (Test-Path $Path)) {
                 throw "The specified path `"$Path`" does not exist"
             }
+
             $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object { $_.Extension -eq ".exe" }
             $Count = $Data.Count
 
@@ -1738,7 +1906,6 @@ function Get-ExecutableFiles {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 

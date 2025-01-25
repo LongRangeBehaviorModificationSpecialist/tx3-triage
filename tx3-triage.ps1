@@ -140,7 +140,7 @@ function Get-RecentlyInstalledSoftwareEventLogs {
 
 .NOTES
     Author: Michael A Sponheimer
-    Date:   2025-01-22
+    Date:   2025-01-24
 #>
 
 

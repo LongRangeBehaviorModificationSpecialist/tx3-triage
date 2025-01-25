@@ -61,14 +61,6 @@ function Get-TPMDetails {
 
     begin{
 
-        # $DateScanned = ((Get-Date).ToUniversalTime()).ToString("yyyy-MM-dd HH:mm:ssZ")
-        # Write-Information -InformationAction Continue -MessageData ("Started Get-TPMDetails at {0}" -f $DateScanned)
-
-        # Show-Message("$(Split-Path $($MyInvocation.MyCommand.Path) -Leaf) module accessed successfully") -Yellow
-
-        # $stopwatch = New-Object System.Diagnostics.Stopwatch
-        # $stopwatch.Start()
-
         $Manufacturers = @{
             0x414D4400 = "AMD"
             0x41544D4C = "Atmel"
@@ -94,38 +86,40 @@ function Get-TPMDetails {
         }
     }
 
-    process{
+    process {
 
-        $ResultsArray =  Get-Tpm -ErrorAction SilentlyContinue
+        try {
 
-        foreach ($Result in $ResultsArray) {
+            $ResultsArray =  Get-Tpm -ErrorAction SilentlyContinue
 
-            $Result | Add-Member -MemberType NoteProperty -Name "Host" -Value $env:COMPUTERNAME
-            $Result | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
+            foreach ($Result in $ResultsArray) {
 
-            $Result | Add-Member -MemberType NoteProperty -Name "FirmwareVersionAtLastProvision" -Value (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\TPM\WMI" -Name "FirmwareVersionAtLastProvision" -ErrorAction SilentlyContinue).FirmwareVersionAtLastProvision
-            $Result | Add-Member -MemberType NoteProperty -Name "ManufacturerName" -Value ""
+                $Result | Add-Member -MemberType NoteProperty -Name "Host" -Value $env:COMPUTERNAME
 
-            foreach ($Key in $Manufacturers.Keys) {
+                $Result | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
 
-                if ($Key -eq $Result.ManufacturerId) {
+                $Result | Add-Member -MemberType NoteProperty -Name "FirmwareVersionAtLastProvision" -Value (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\TPM\WMI" -Name "FirmwareVersionAtLastProvision" -ErrorAction SilentlyContinue).FirmwareVersionAtLastProvision
 
-                    $Result.ManufacturerName = $Manufacturers[$Key]
+                $Result | Add-Member -MemberType NoteProperty -Name "ManufacturerName" -Value ""
+
+                foreach ($Key in $Manufacturers.Keys) {
+
+                    if ($Key -eq $Result.ManufacturerId) {
+
+                        $Result.ManufacturerName = $Manufacturers[$Key]
+                    }
                 }
             }
+
+            return $ResultsArray | Select-Object Host, DateScanned, TpmPresent, TpmReady, ManufacturerId, ManufacturerName, ManufacturerVersion, ManagedAuthLevel, OwnerAuth, OwnerClearDisabled, AutoProvisioning, LockedOut, LockoutCount, LockoutMax, SelfTest, FirmwareVersionAtLastProvision
         }
-
-        return $ResultsArray | Select-Object Host, DateScanned, TpmPresent, TpmReady, ManufacturerId, ManufacturerName, ManufacturerVersion,
-        ManagedAuthLevel, OwnerAuth, OwnerClearDisabled, AutoProvisioning, LockedOut, LockoutCount, LockoutMax, SelfTest, FirmwareVersionAtLastProvision
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            Write-LogEntry("$ErrorMessage") -ErrorMessage
+        }
     }
-
-    # end{
-
-    #     $elapsed = $stopwatch.Elapsed
-
-    #     Write-Verbose ("Total time elapsed: {0}" -f $elapsed)
-    #     Write-Verbose ("Ended at {0}" -f ((Get-Date).ToUniversalTime()).ToString("yyyy-MM-dd HH:mm:ssZ"))
-    # }
 }
 
 Export-ModuleMember -Function Get-TPMDetails

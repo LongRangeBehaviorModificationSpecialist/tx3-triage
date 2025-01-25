@@ -11,9 +11,12 @@ $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 # 2-001
 function Get-WhoAmI {
     [CmdletBinding()]
-    param ([string]$Num = "2-001")
+    param (
+        [string]$Num = "2-001",
+        [string]$FileName = "WhoAmI.txt"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_WhoAmI.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -21,7 +24,9 @@ function Get-WhoAmI {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = whoami /ALL /FO LIST
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -40,16 +45,18 @@ function Get-WhoAmI {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 2-002
 function Get-UserProfile {
     [CmdletBinding()]
-    param ([string]$Num = "2-002")
+    param (
+        [string]$Num = "2-002",
+        [string]$FileName = "UserProfile.txt"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_UserProfile.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -57,7 +64,9 @@ function Get-UserProfile {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -76,16 +85,18 @@ function Get-UserProfile {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 2-003
 function Get-UserInfo {
     [CmdletBinding()]
-    param ([string]$Num = "2-003")
+    param (
+        [string]$Num = "2-003",
+        [string]$FileName = "UserAccounts.txt"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_UserAccounts.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -93,7 +104,9 @@ function Get-UserInfo {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -112,16 +125,18 @@ function Get-UserInfo {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 2-004
 function Get-LocalUserData {
     [CmdletBinding()]
-    param ([string]$Num = "2-004")
+    param (
+        [string]$Num = "2-004",
+        [string]$FileName = "LocalUsers.txt"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_LocalUsers.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -129,7 +144,9 @@ function Get-LocalUserData {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-LocalUser | Format-Table
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -148,16 +165,18 @@ function Get-LocalUserData {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 2-005
 function Get-LogonSession {
     [CmdletBinding()]
-    param ([string]$Num = "2-005")
+    param (
+        [string]$Num = "2-005",
+        [string]$FileName = "LogonSessions.txt"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_LogonSessions.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -165,7 +184,9 @@ function Get-LogonSession {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             $Data = Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -184,16 +205,20 @@ function Get-LogonSession {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 2-006
 function Get-PowershellConsoleHistoryAllUsers {
     [CmdletBinding()]
-    param ([string]$Num = "2-006")
+    param (
+        [string]$Num = "2-006",
+        [string]$FileName = "PowerShellHistory.txt",
+        # Specify the directory where user profiles are stored
+        [string]$UserDirs = "C:\Users"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_PowerShellHistory.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -201,8 +226,7 @@ function Get-PowershellConsoleHistoryAllUsers {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            # Specify the directory where user profiles are stored
-            $UsersDir = "C:\Users"
+
             # Get a list of all user directories in C:\Users
             $UserDirs = Get-ChildItem -Path $UsersDir -Directory
             foreach ($UserDir in $UserDirs) {
@@ -232,16 +256,18 @@ function Get-PowershellConsoleHistoryAllUsers {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
 # 2-007
 function Get-LastLogons {
     [CmdletBinding()]
-    param ([string]$Num = "2-007")
+    param (
+        [string]$Num = "2-007",
+        [string]$FileName = "LastLogons.txt"
+    )
 
-    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_LastLogons.txt"
+    $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running `"$FunctionName`" function"
     try {
@@ -253,6 +279,7 @@ function Get-LastLogons {
             Show-Message("$Header") -Header
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $LogonEvents = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
+
             $Data = @()
             foreach ($LogonEvent in $LogonEvents) {
                 $Data += [PSCustomObject]@{
@@ -261,6 +288,7 @@ function Get-LastLogons {
                     Message   = $LogonEvent.Message
                 }
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -279,7 +307,6 @@ function Get-LastLogons {
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("$ErrorMessage") -ErrorMessage
-        throw $PSItem
     }
 }
 
