@@ -58,7 +58,7 @@ $ModulesFolder = "modules"
 
 
 Import-Module .\functions\functions.psm1 -Force -Global
-Show-Message("Module file: `"functions.psm1`" was imported successfully") -NoTime -Blue
+Show-Message("Module file: ``functions.psm1`` was imported successfully") -NoTime -Blue
 
 
 # # Get the directory of the current script
@@ -71,8 +71,8 @@ $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
     Import-Module -Name $file.FullName -Force -Global
-    Show-Message("Module file: `"$($file.Name)`" was imported successfully") -NoTime -Blue
-    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: `"$($file.Name)`" was imported successfully")
+    Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
 }
 
 Write-Host "All modules from ``$ModulesDirectory`` have been imported successfully."
@@ -99,7 +99,7 @@ function Get-ParameterValues {
         throw "Get-ParameterValues must be dot-sourced, like this: . Get-ParameterValues"
     }
     if ($PSBoundParameters.Count -gt 0) {
-        throw "You should not pass parameters to Get-ParameterValues, just dot-source it like this: `". Get-ParameterValues`""
+        throw "You should not pass parameters to Get-ParameterValues, just dot-source it like this: ``. Get-ParameterValues``"
     }
     [Hashtable]$ParameterValues = @{}
     foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator()) {
@@ -158,16 +158,19 @@ Show-Message("
 INSTRUCTIONS
 =============
 
-[A] You are about to run the tx3-triage DFIR Powershell Script.
-[B] PURPOSE: Gather information from the target machine and
-    save the data to outside storage device.
-[C] The results will automatically be stored in a directory that
-    is automatically created in the same directory from where this
-    script is run.
-[D] **DO NOT** close any pop-up windows that may appear.
-[E] To get help for this script, run ``Get-Help .\tx3-triage.ps1``
-    command from a PowerShell CLI prompt.
-[F] To exit this script at anytime, press ``Ctrl + C``.`n"
+[A]  You are about to run the tx3-triage DFIR Powershell Script.
+[B]  PURPOSE: TO gather information from the target machine and
+     save the data to outside storage device.
+[C]  The results will automatically be stored in a directory that
+     is automatically created in the same directory from where this
+     script is run.
+[D]  **IMPORTANT** DO NOT VIEW THE RESULTS OF THE SCAN ON THE TARGET
+     MACHINE. MOVE THE COLLECTION DEVICE TO A FORENSIC MACHINE BEFORE
+     OPENING ANY FILES!
+[E]  DO NOT close any pop-up windows that may appear.
+[F]  To get help for this script, run ``Get-Help .\tx3-triage.ps1``
+     command from a PowerShell CLI prompt.
+[G]  To exit this script at anytime, press ``Ctrl + C``.`n"
 ) -NoTime -Yellow
 
 
@@ -354,12 +357,12 @@ function Invoke-ListAllFiles {
         $DrivesToScan = switch ($true) {
             $ListDrives {
                 if (-not $DriveList) {
-                    Show-Message "[ERROR] ``-IncludeDrives`` requires a valid drive list [example `"-IncludeDrives @(C,D,F)`"" -Red
+                    Show-Message "[ERROR] ``-IncludeDrives`` requires a valid drive list [example ``-IncludeDrives @(C,D,F)``" -Red
                     return
                 }
                 $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object {
                     if ($_ -notin $AvailableDrives) {
-                        Show-Message "[WARNING] Drive `"$($_):\`" is not available and will be skipped." -Yellow
+                        Show-Message "[WARNING] Drive ``$($_):\`` is not available and will be skipped." -Yellow
                     }
                     $_
                 }
@@ -441,6 +444,21 @@ Invoke-Yolo
 #* RUNNING ALL THE COMMANDS
 #*
 #* ======================================
+
+
+#! -------------------------------
+#! (0) Run the TESTING commands
+#! -------------------------------
+
+Get-ForensicData
+Get-SuspiciousFiles
+Get-BrowserHistory
+Compare-FileHashes
+Get-USBHistory
+Get-RecentlyAccessedFiles
+Get-SuspiciousFilePermissions
+Get-PrefetchAnalysis
+Get-ThumbnailCache
 
 
 #! -------------------------------
@@ -677,12 +695,59 @@ $DurationForShow = New-TimeSpan -Start $StartTime -End $EndTimeForShow
 $DiffForShow = "$($DurationForShow.Days) days $($DurationForShow.Hours) hours $($DurationForShow.Minutes) minutes $($DurationForShow.Seconds) seconds"
 
 Show-Message("Script execution completed in: $DiffForShow") -Header -Green
-Show-Message("The results are available in the `"\$(($CaseFolderName).Name)\`" directory") -Header -Green
+Show-Message("The results are available in the ``\$(($CaseFolderName).Name)\`` directory") -Header -Green
 
 
 # Stop the transcript
 Show-Message("`n$(Stop-Transcript)") -NoTime
 
 
+# Stop the keylogger job when the script is finished
+# Ensures the keylogger process is terminated
+try {
+    Get-Job | Stop-Job
+    Remove-Job *
+    Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+}
+catch {
+    # Error handling
+    $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+    Show-Message("$ErrorMessage") -Red
+    Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+}
+
+
 # Show a popup message when script is complete
 (New-Object -ComObject Wscript.Shell).popup("The Script has finished running", 0, "Done", 0x1) | Out-Null
+
+# SIG # Begin signature block
+# MIIFZwYJKoZIhvcNAQcCoIIFWDCCBVQCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7/xjTL30K+3Or7UPK36EK2Kb
+# D42gggMEMIIDADCCAeigAwIBAgIQGKLs86JnC6ZL8ZC0RGujlDANBgkqhkiG9w0B
+# AQsFADAYMRYwFAYDVQQDDA10eDNUcmlhZ2VDZXJ0MB4XDTI1MDEyNjE1NDIzMFoX
+# DTI2MDEyNjE2MDIzMFowGDEWMBQGA1UEAwwNdHgzVHJpYWdlQ2VydDCCASIwDQYJ
+# KoZIhvcNAQEBBQADggEPADCCAQoCggEBALTiMUg44inftEcjD6aEAeJ+5vOx7hZe
+# ym1BhxGR+NgO7c90FZths+PW9YLoxCyZBrzL1n0GuoDcnwkfd8H0BFb/FWCvEj1W
+# 9c0a5mTWlJ24v0xnwEM806s+MXVtEz8wvtb8ApIsizKzzIJtvjBA8ZRXGRwX4Hxj
+# Lj5ZNoI3bc/ty5BiOSPDnwhzXm5/n7gF/qS3uPxFcPgL1vZ3W6zqNrKxC5wbxRAz
+# f1JLPEIcet4uS6lHY2IIVOEkIioCBjS6A4bxw0mGHzWwtNRXX6lG17m6dR5NC0HB
+# de+ug+EPNPrAu/K87SnYMXzT4PTAcMvMmF22F7hvbR9z7D+oCNR+4PUCAwEAAaNG
+# MEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMDMB0GA1UdDgQW
+# BBTqGt0uVBnBkXeqXuQbyfalOvfzSjANBgkqhkiG9w0BAQsFAAOCAQEAItBglcz1
+# AIOph2OqhbF3hLGRTqRsTLLywUMaqm6aZEsOgvyCVwsWMh39PIrHJ4w+/rmrUUwJ
+# 6gaWMPdan27xM5M84PJMU2DCVmBptUf5IJDUfbwanGKO+3sq153hFyGcm/+a5009
+# yh2RDypQR6UfJm0iySwT8GbAJsPOOMX0X0qNEs4cUIys3UxEzygJw4Fp9cM/T99D
+# XyHjbzrFrimOyW1qYDTfcZvhzW/wzJRqwP1xR+tFo9/k0UeGq//5aStEwEypNpf7
+# M9hkxZnTn+AmTn3xLicMkCTXe24Kczt24xnSpMPJ36acd+vrTZsHsWOlzWbidbU1
+# F1a/8Y+HaZTqJjGCAc0wggHJAgEBMCwwGDEWMBQGA1UEAwwNdHgzVHJpYWdlQ2Vy
+# dAIQGKLs86JnC6ZL8ZC0RGujlDAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEK
+# MAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3
+# AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUuBjqbXrDgdUSj813
+# UAsGfIE1yg4wDQYJKoZIhvcNAQEBBQAEggEAhsbDbcfPEZYp+wlmZENVQNCt86Gp
+# Iwi10d2lRyNnc8QxgcHd39QPbL4+9tfwgs8z71HoI5Cx1B172VwDQP4BWZkXtJT3
+# vmQrHd1w+47CULK7RJ1WFT27P6nmJpEwQetbKnYO77/Ba0Ww8zve3ho49e3374Xf
+# Fm6S19EV+Sb8So1ErPXxubHB+9k7oMHsw4MieCiPMztJtjkK9mTjFyW7/ryFsxzU
+# gaBM80NTJXGLICTT56B2YP2jXAx2KlLAbAzwCPxspZ/NMqoubQGOh3r/Ph+cz38U
+# biN06kbVTD449cgq3gYw9CkxUZZc0RoxrN4WSU0I050KGmqZrePBM8w+Pw==
+# SIG # End signature block

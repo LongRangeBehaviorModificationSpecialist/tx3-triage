@@ -4,6 +4,10 @@ temp.txt
 script-help.txt
 
 
+modules/000-Testing.psm1
+modules/Get-KeyLogger.psm1
+
+
 # Directories to temporarily exclude
 20250124_130147_169.254.31.28_MAS-4N6-BOX/
 20250124_130148_169.254.31.28_MAS-4N6-BOX/

@@ -18,7 +18,7 @@ function Get-VariousData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -44,7 +44,7 @@ function Get-VariousData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -58,7 +58,7 @@ function Get-TPMData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -84,7 +84,7 @@ function Get-TPMData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -98,7 +98,7 @@ function Get-PSInfo {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Measure the time it takes to run the PsInfo command
         $ExecutionTime = Measure-Command {
@@ -125,7 +125,7 @@ function Get-PSInfo {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -139,7 +139,7 @@ function Get-PSDriveData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -165,7 +165,7 @@ function Get-PSDriveData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -179,7 +179,7 @@ function Get-LogicalDiskData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -205,7 +205,7 @@ function Get-LogicalDiskData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -219,7 +219,7 @@ function Get-ComputerData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -245,7 +245,7 @@ function Get-ComputerData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -259,7 +259,7 @@ function Get-SystemDataCMD {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -285,7 +285,7 @@ function Get-SystemDataCMD {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -299,7 +299,7 @@ function Get-SystemDataPS {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -325,7 +325,7 @@ function Get-SystemDataPS {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -339,7 +339,7 @@ function Get-OperatingSystemData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the first command
         $ExecutionTime = Measure-Command {
@@ -365,7 +365,7 @@ function Get-OperatingSystemData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -379,7 +379,7 @@ function Get-PhysicalMemory {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -405,7 +405,7 @@ function Get-PhysicalMemory {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -419,7 +419,7 @@ function Get-EnvVars {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -445,7 +445,7 @@ function Get-EnvVars {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -459,7 +459,7 @@ function Get-PhysicalDiskData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -485,7 +485,7 @@ function Get-PhysicalDiskData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -499,7 +499,7 @@ function Get-DiskPartitions {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -525,7 +525,7 @@ function Get-DiskPartitions {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -539,7 +539,7 @@ function Get-Win32DiskParts {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -565,7 +565,7 @@ function Get-Win32DiskParts {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -579,7 +579,7 @@ function Get-Win32StartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -605,7 +605,7 @@ function Get-Win32StartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -619,7 +619,7 @@ function Get-HKLMSoftwareCVRunStartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -651,7 +651,7 @@ function Get-HKLMSoftwareCVRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -665,7 +665,7 @@ function Get-HKLMSoftwareCVPoliciesExpRunStartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         #Run the command
         $ExecutionTime = Measure-Command {
@@ -697,7 +697,7 @@ function Get-HKLMSoftwareCVPoliciesExpRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -711,7 +711,7 @@ function Get-HKLMSoftwareCVRunOnceStartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -743,7 +743,7 @@ function Get-HKLMSoftwareCVRunOnceStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -757,7 +757,7 @@ function Get-HKCUSoftwareCVRunStartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -789,7 +789,7 @@ function Get-HKCUSoftwareCVRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -803,7 +803,7 @@ function Get-HKCUSoftwareCVPoliciesExpRunStartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -835,7 +835,7 @@ function Get-HKCUSoftwareCVPoliciesExpRunStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -849,7 +849,7 @@ function Get-HKCUSoftwareCVRunOnceStartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -881,7 +881,7 @@ function Get-HKCUSoftwareCVRunOnceStartupApps {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -895,7 +895,7 @@ function Get-SoftwareLicenseData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -921,7 +921,7 @@ function Get-SoftwareLicenseData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -935,7 +935,7 @@ function Get-AutoRunsData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -961,7 +961,7 @@ function Get-AutoRunsData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -975,7 +975,7 @@ function Get-BiosData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -1001,7 +1001,7 @@ function Get-BiosData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -1015,7 +1015,7 @@ function Get-ConnectedDevices {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -1041,7 +1041,7 @@ function Get-ConnectedDevices {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -1055,7 +1055,7 @@ function Get-HardwareInfo {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -1086,7 +1086,7 @@ function Get-HardwareInfo {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -1104,7 +1104,7 @@ function Get-Win32Products {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -1130,7 +1130,7 @@ function Get-Win32Products {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -1148,7 +1148,7 @@ function Get-OpenWindowTitles {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -1174,7 +1174,7 @@ function Get-OpenWindowTitles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 

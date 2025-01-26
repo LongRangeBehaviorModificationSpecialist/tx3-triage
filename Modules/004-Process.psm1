@@ -18,7 +18,7 @@ function Get-RunningProcessesAll {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -44,7 +44,7 @@ function Get-RunningProcessesAll {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -58,7 +58,7 @@ function Get-RunningProcessesCsv {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -84,7 +84,7 @@ function Get-RunningProcessesCsv {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -98,7 +98,7 @@ function Get-UniqueProcessHash {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -138,7 +138,7 @@ function Get-UniqueProcessHash {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -152,7 +152,7 @@ function Get-SvcHostsAndProcesses {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -178,7 +178,7 @@ function Get-SvcHostsAndProcesses {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -192,7 +192,7 @@ function Get-RunningServices {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -218,7 +218,7 @@ function Get-RunningServices {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -232,7 +232,7 @@ function Get-InstalledDrivers {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -258,7 +258,7 @@ function Get-InstalledDrivers {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 

@@ -7,11 +7,11 @@ function Get-CaseArchive {
     try {
         $ExecutionTime = Measure-Command {
             # Show beginning message
-            Show-Message("Creating Case Archive file -> `"$($CaseFolderName.Name).zip`"") -Header
+            Show-Message("Creating Case Archive file -> ``$($CaseFolderName.Name).zip``") -Header
             $CaseFolderParent = Split-Path -Path $CaseFolderName -Parent
             $CaseFolderTitle = (Get-Item -Path $CaseFolderName).Name
             Compress-Archive -Path $CaseFolderName -DestinationPath "$CaseFolderParent\$CaseFolderTitle.zip" -Force
-            Show-Message("Case Archive file -> `"$($CaseFolderName.Name).zip`" created successfully`n") -Magenta
+            Show-Message("Case Archive file -> ``$($CaseFolderName.Name).zip`` created successfully`n") -Magenta
         }
         # Finish logging
         Show-FinishMessage $CaseArchiveFuncName $ExecutionTime
@@ -21,7 +21,7 @@ function Get-CaseArchive {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($CaseFolderName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($CaseArchiveFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 

@@ -32,18 +32,18 @@ function Get-RunningProcesses {
             $ProcessesFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $ProcessesFolderName
 
             if (-not (Test-Path $ProcessesFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> `"$ProcessesFolder`""
+                throw "[ERROR] The necessary folder does not exist -> ``$ProcessesFolder``"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created `"$($ProcessesFolder.Name)`" folder in the case directory"
+            $CreateDirMsg = "Created ``$($ProcessesFolder.Name)`` folder in the case directory"
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($ProcessFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Run MAGNETProcessCapture.exe from the \bin directory and save the output to the results folder.
             # The program will create its own directory to save the results with the following naming convention:
             # 'MagnetProcessCapture-YYYYMMDD-HHMMSS'
-            Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall `"$ProcessesFolder`"" -Wait
+            Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall ``$ProcessesFolder``" -Wait
 
             # Show & log $SuccessMsg message
             $SuccessMsg = "Process Capture completed successfully from computer: $ComputerName"

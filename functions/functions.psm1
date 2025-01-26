@@ -142,10 +142,10 @@ function Show-FinishMessage {
     )
 
     if ($Header) {
-        Show-Message("`"$($FunctionName)`" function finished in $($ExecutionTime.TotalSeconds) seconds") -Header -Blue
+        Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds") -Header -Blue
     }
     else {
-        Show-Message("`"$($FunctionName)`" function finished in $($ExecutionTime.TotalSeconds) seconds") -Blue
+        Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds") -Blue
     }
 }
 
@@ -158,10 +158,11 @@ function Write-LogFinishedMessage {
         [timespan]$ExecutionTime
     )
 
-    Write-LogEntry("Function `"$FunctionName`" finished in $($ExecutionTime.TotalSeconds) seconds`n")
+    Write-LogEntry("Function ``$FunctionName`` finished in $($ExecutionTime.TotalSeconds) seconds`n")
 }
 
 $Folders = @(
+    "000_Testing",
     "001_DeviceInfo",
     "002_UserInfo",
     "003_Network",
@@ -179,16 +180,17 @@ foreach ($Folder in $Folders) {
     Write-Host "Created ``$($Folder)`` Folder" -ForegroundColor Green
 }
 
-$global:DeviceFolder = "$CaseFolderName\$($Folders[0])"
-$global:UserFolder = "$CaseFolderName\$($Folders[1])"
-$global:NetworkFolder = "$CaseFolderName\$($Folders[2])"
-$global:ProcessFolder = "$CaseFolderName\$($Folders[3])"
-$global:SystemFolder = "$CaseFolderName\$($Folders[4])"
-$global:PrefetchFolder = "$CaseFolderName\$($Folders[5])"
-$global:EventLogFolder = "$CaseFolderName\$($Folders[6])"
-$global:FirewallFolder = "$CaseFolderName\$($Folders[7])"
+$global:TestingFolder = "$CaseFolderName\$($Folders[0])"
+$global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
+$global:UserFolder = "$CaseFolderName\$($Folders[2])"
+$global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
+$global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
+$global:SystemFolder = "$CaseFolderName\$($Folders[5])"
+$global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
+$global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
+$global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
 $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
-$global:LogFolder = "$CaseFolderName\$($Folders[9])"
+$global:LogFolder = "$CaseFolderName\$($Folders[10])"
 
 function Get-LineNum {
     return $MyInvocation.ScriptLineNumber
@@ -240,10 +242,10 @@ function Show-OutputSavedToFile {
     )
 
     if ($NoTime) {
-        Show-Message("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"") -NoTime -Green
+        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -NoTime -Green
     }
     else {
-        Show-Message("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"") -Green
+        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -Green
     }
 }
 
@@ -254,7 +256,7 @@ function Write-LogOutputAppended {
         [string]$File
     )
 
-    Write-LogEntry("Output appended to -> `"$([System.IO.Path]::GetFileName($File))`"")
+    Write-LogEntry("Output appended to -> ``$([System.IO.Path]::GetFileName($File))``")
 }
 
 function Write-LogOutputSaved {
@@ -264,7 +266,7 @@ function Write-LogOutputSaved {
         [string]$File
     )
 
-    Write-LogEntry("Output saved to -> `"$([System.IO.Path]::GetFileName($File))`"")
+    Write-LogEntry("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``")
 }
 
 function Write-NoDataFound {
@@ -274,7 +276,7 @@ function Write-NoDataFound {
         [string]$FunctionName
     )
 
-    $NoDataMsg = "No data found for `"$($FunctionName)`" function"
+    $NoDataMsg = "No data found for ``$($FunctionName)`` function"
     Show-Message("$NoDataMsg") -Yellow
     Write-LogEntry("$NoDataMsg")
 }
@@ -310,11 +312,11 @@ function Get-FileHashes {
             $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
 
             if (-not (Test-Path $HashResultsFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> `"$HashResultsFolder`""
+                throw "[ERROR] The necessary folder does not exist -> ``$HashResultsFolder``"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created `"$($HashResultsFolder.Name)`" folder in the case directory"
+            $CreateDirMsg = "Created ``$($HashResultsFolder.Name)`` folder in the case directory"
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
@@ -349,7 +351,7 @@ function Get-FileHashes {
                 Show-Message("$ProgressMsg") -Header
 
                 # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
-                $HashMsgFileName = "Completed hashing file: `"$($_.Name)`" -> [SHA256] $($FileHash)"
+                $HashMsgFileName = "Completed hashing file: ``$($_.Name)`` -> [SHA256] $($FileHash)"
                 Show-Message("$HashMsgFileName") -Blue
                 Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName`n")
             }
@@ -358,7 +360,7 @@ function Get-FileHashes {
             $Results | Export-Csv -Path $HashOutputFilePath -NoTypeInformation -Encoding UTF8
 
             # Show & log $FileMsg message
-            $FileMsg = "Hash values saved to -> `"$HashOutputFileName`""
+            $FileMsg = "Hash values saved to -> ``$HashOutputFileName``"
             Show-Message("$FileMsg") -Header -Blue
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
         }
@@ -374,4 +376,4 @@ function Get-FileHashes {
     }
 }
 
-Export-ModuleMember -Function Set-CaseFolders, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogEntry, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-EncryptedDiskDetector, Get-FileHashes -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, CaseFolderName, LogFile, NoMatchingEventsMsg, ExecutableFileTypes, DeviceFolder, UserFolder, NetworkFolder, ProcessFolder, SystemFolder, PrefetchFolder, EventLogFolder, FirewallFolder, BitLockerFolder, LogFolder
+Export-ModuleMember -Function Set-CaseFolders, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogEntry, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-EncryptedDiskDetector, Get-FileHashes -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, CaseFolderName, LogFile, NoMatchingEventsMsg, ExecutableFileTypes, TestingFolder, DeviceFolder, UserFolder, NetworkFolder, ProcessFolder, SystemFolder, PrefetchFolder, EventLogFolder, FirewallFolder, BitLockerFolder, LogFolder

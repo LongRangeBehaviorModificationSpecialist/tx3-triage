@@ -18,7 +18,7 @@ function Get-WhoAmI {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -44,7 +44,7 @@ function Get-WhoAmI {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -58,7 +58,7 @@ function Get-UserProfile {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -84,7 +84,7 @@ function Get-UserProfile {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -98,7 +98,7 @@ function Get-UserInfo {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -124,7 +124,7 @@ function Get-UserInfo {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -138,7 +138,7 @@ function Get-LocalUserData {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -164,7 +164,7 @@ function Get-LocalUserData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -178,7 +178,7 @@ function Get-LogonSession {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -204,7 +204,7 @@ function Get-LogonSession {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -220,7 +220,7 @@ function Get-PowershellConsoleHistoryAllUsers {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -255,7 +255,7 @@ function Get-PowershellConsoleHistoryAllUsers {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -269,10 +269,10 @@ function Get-LastLogons {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         if (-not (Test-Path $UserFolder)) {
-            throw "The user folder `"$UserFolder`" does not exist."
+            throw "The user folder ``$UserFolder`` does not exist."
         }
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -306,7 +306,7 @@ function Get-LastLogons {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 

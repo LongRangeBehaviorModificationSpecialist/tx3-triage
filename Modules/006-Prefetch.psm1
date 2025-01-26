@@ -18,7 +18,7 @@ function Get-PrefetchFilesList {
 
     $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -44,7 +44,7 @@ function Get-PrefetchFilesList {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -58,7 +58,7 @@ function Get-DetailedPrefetchData {
 
     $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -84,7 +84,7 @@ function Get-DetailedPrefetchData {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 

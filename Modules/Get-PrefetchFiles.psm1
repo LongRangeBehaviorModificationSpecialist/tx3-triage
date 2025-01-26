@@ -34,11 +34,11 @@ function Get-PrefetchFiles {
             $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $PFFolderName
 
             if (-not (Test-Path $PFFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> `"$PFFolder`""
+                throw "[ERROR] The necessary folder does not exist -> ``$PFFolder``"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created `"$($PFFolder.Name)`" folder in the case directory"
+            $CreateDirMsg = "Created ``$($PFFolder.Name)`` folder in the case directory"
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
@@ -64,7 +64,7 @@ function Get-PrefetchFiles {
                     return
                 }
                 # Show & log $CopyMsg messages of each file copied
-                $CopyMsg = "Copied file -> `"$($File.Name)`""
+                $CopyMsg = "Copied file -> ``$($File.Name)``"
                 Show-Message($CopyMsg) -Magenta
                 Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CopyMsg")
             }

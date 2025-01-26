@@ -20,7 +20,7 @@ function Get-RecentDllFiles {
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -45,7 +45,7 @@ function Get-RecentDllFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -60,7 +60,7 @@ function Get-RecentLinkFiles {
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -93,7 +93,7 @@ function Get-RecentLinkFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -110,7 +110,7 @@ function Get-CompressedFiles {
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -136,7 +136,7 @@ function Get-CompressedFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -151,7 +151,7 @@ function Get-EncryptedFiles {
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -176,7 +176,7 @@ function Get-EncryptedFiles {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -192,7 +192,7 @@ function Get-ExeTimeline {
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -219,7 +219,7 @@ function Get-ExeTimeline {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
@@ -234,7 +234,7 @@ function Get-DownloadedExecutables {
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running `"$FunctionName`" function"
+    $Header = "$Num Running ``$FunctionName`` function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -259,7 +259,7 @@ function Get-DownloadedExecutables {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 
