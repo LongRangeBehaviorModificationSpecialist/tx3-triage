@@ -1,13 +1,13 @@
-# Exclude the 'test.ps1' file
+# Exclude the file listed below
 test.ps1
 temp.txt
-script-help.txt
+script-help.ps1
+tx3TriageCert.cer
+tx3TriageCert.pfx
 
 
 modules/000-Testing.psm1
 modules/Get-KeyLogger.psm1
 
 
-# Directories to temporarily exclude
-20250124_130147_169.254.31.28_MAS-4N6-BOX/
-20250124_130148_169.254.31.28_MAS-4N6-BOX/
+# Directories to ignore

@@ -15,7 +15,7 @@ function Get-EventLogs {
         [string]$EventLogFolderName = "00E_EventLogs",
         # Set variable for Event Logs folder on the examined machine
         [string]$EventLogDir = "$Env:HOMEDRIVE\Windows\System32\winevt\Logs",
-        [int]$NumberOfRecords = 5,
+        [int]$NumOfEventLogs = 5,
 
         # Path to the RawCopy executable
         [string]$RawCopyPath = ".\bin\RawCopy.exe"
@@ -42,7 +42,15 @@ function Get-EventLogs {
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
-            $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File | Select-Object -First $NumberOfRecords
+            # If no number is passed for the number of event logs to copy then copy all of the files
+            if (-not $NumOfEventLogs) {
+                Write-Information "No value passed for the `$NumOfEventLogs value."
+                $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File
+            }
+            else {
+                # Set variables for the files in the prefetch folder of the examined device
+                $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File | Select-Object -First $NumOfEventLogs
+            }
 
             if (-not (Test-Path $RawCopyPath)) {
                 $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"

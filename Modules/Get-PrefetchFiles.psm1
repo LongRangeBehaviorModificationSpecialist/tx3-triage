@@ -15,7 +15,7 @@ function Get-PrefetchFiles {
         [string]$PFFolderName = "00G_PrefetchFiles",
         # Variable for Windows Prefetch folder location
         [string]$WinPrefetchDir = "$Env:HOMEDRIVE\Windows\Prefetch",
-        [int]$NumberOfRecords = 5,
+        [int]$NumOfPFRecords,
 
         # Path to the RawCopy executable
         [string]$RawCopyPath = ".\bin\RawCopy.exe"
@@ -42,8 +42,15 @@ function Get-PrefetchFiles {
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
-            # Set variables for the files in the prefetch folder of the examined device
-            $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File | Select-Object -First $NumberOfRecords
+            # If no number is passed for the number of prefetch records to copy then copy all of the files
+            if (-not $NumOfPFRecords) {
+                Write-Information "No value passed for the `$NumOFPFRecords value."
+                $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File
+            }
+            else {
+                # Set variables for the files in the prefetch folder of the examined device
+                $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File | Select-Object -First $NumOfPFRecords
+            }
 
             if (-not (Test-Path $RawCopyPath)) {
                 Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"

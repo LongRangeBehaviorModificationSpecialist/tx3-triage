@@ -2,7 +2,7 @@
 
 <#
 
-.\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -HashResults -Srum -Edd -AllDrives -ListDrives -DriveList @("J","N") -NTUser -Registry -Prefetch -EventLogs -Archive
+.\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -HashResults -Srum -Edd -Prefetch -NumOfPFRecords 5 -AllDrives -ListDrives -DriveList @("J","N") -NTUser -Registry -EventLogs -Archive
 
 .\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -Edd -HashResults -Srum -Prefetch -EventLogs -Archive -NTUser -AllDrives -ListDrives -DriveList @("G","K","J")
 
@@ -27,14 +27,20 @@ param (
     [switch]$Ram,
     [switch]$NTUser,
     [switch]$Registry,
+
     [switch]$Prefetch,
+    [int]$NumOfPFRecords,
+
     [switch]$EventLogs,
+    [int]$NumOfEventLogs,
+
     [switch]$AllDrives,
     # If set, only include specific drives
     [switch]$ListDrives,
     # If set, exclude specific drives
     [switch]$NoListDrives,
     [string[]]$DriveList,
+
     [switch]$Srum,
     [switch]$HashResults,
     [switch]$Archive,
@@ -212,133 +218,110 @@ Show-Message("Data acquisition started. This may take a hot minute...") -Header
 Write-LogEntry("Data acquisition started. This may take a hot minute...`n") -Header
 
 
-function Invoke-Edd {
-    # Running Encrypted Disk Detector
-    if ($Edd) {
-        Get-EncryptedDiskDetector $CaseFolderName $ComputerName
+# Running Encrypted Disk Detector
+if ($Edd) {
+    Get-EncryptedDiskDetector $CaseFolderName $ComputerName
 
-        # Read the contents of the EDD text file and show the results on the screen
-        Get-Content -Path "$CaseFolderName\00A_EncryptedDiskDetector\EncryptedDiskDetector.txt" -Force
+    # Read the contents of the EDD text file and show the results on the screen
+    Get-Content -Path "$CaseFolderName\00A_EncryptedDiskDetector\EncryptedDiskDetector.txt" -Force
 
-        Show-Message("`nEncrypted Disk Detector has finished - Review the results before proceeding") -NoTime -Yellow
-        Write-Host ""
-        Read-Host -Prompt "Press ENTER to continue data collection -> "
-    }
-    else {
-        # If the user does not want to execute EDD
-        Show-Message("[WARNING] (A) Encrypted Disk Detector will NOT be run") -Yellow
-
-        # Write message that EDD was not run to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Encrypted Disk Detector option was not enabled") -WarningMessage
-    }
+    Show-Message("`nEncrypted Disk Detector has finished - Review the results before proceeding") -NoTime -Yellow
+    Write-Host ""
+    Read-Host -Prompt "Press ENTER to continue data collection -> "
 }
-Invoke-Edd
+else {
+    # If the user does not want to execute EDD
+    Show-Message("[WARNING] (A) Encrypted Disk Detector will NOT be run") -Yellow
 
-
-function Invoke-ProcessCapture {
-    # Run the scripts that collect the optional data that was included in the command line switches
-    if ($Process) {
-        Get-RunningProcesses $CaseFolderName $ComputerName
-    }
-    else {
-        # If the user does not want to execute ProcessCapture
-        Show-Message("[WARNING] (B) Process Capture will NOT be run") -Yellow
-
-        # Write message that Processes Capture was not collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Process Capture option was not enabled") -WarningMessage
-    }
+    # Write message that EDD was not run to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Encrypted Disk Detector option was not enabled") -WarningMessage
 }
-Invoke-ProcessCapture
 
 
-function Invoke-RamCapture {
-    if ($Ram) {
-        Get-ComputerRam $CaseFolderName $ComputerName
-    }
-    else {
-        # Display message that the RAM was not collected
-        Show-Message("[WARNING] (C) RAM will NOT be collected") -Yellow
-
-        # Write message that RAM was not collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The RAM Capture option was not enabled") -WarningMessage
-    }
+# Run the scripts that collect the optional data that was included in the command line switches
+if ($Process) {
+    Get-RunningProcesses $CaseFolderName $ComputerName
 }
-Invoke-RamCapture
+else {
+    # If the user does not want to execute ProcessCapture
+    Show-Message("[WARNING] (B) Process Capture will NOT be run") -Yellow
 
-
-function Invoke-RegistryCopy {
-    if ($Registry) {
-        Get-RegistryHives $CaseFolderName $ComputerName
-    }
-    else {
-        # Display message that Registry Hive files will not be collected
-        Show-Message("[WARNING] (D) Registry Hive files will NOT be collected") -Yellow
-
-        # Write message that Registry Hive files will not be collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Registry Hive file collection option was not enabled") -WarningMessage
-    }
+    # Write message that Processes Capture was not collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Process Capture option was not enabled") -WarningMessage
 }
-Invoke-RegistryCopy
 
 
-function Invoke-EventLogCopy {
-    if ($EventLogs) {
-        Get-EventLogs $CaseFolderName $ComputerName
-    }
-    else {
-        # Display message that event logs will not be collected
-        Show-Message("[WARNING] (E) Windows Event Logs will NOT be collected") -Yellow
 
-        # Write message that event logs will not be collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Event Log collection option was not enabled") -WarningMessage
-    }
+if ($Ram) {
+    Get-ComputerRam $CaseFolderName $ComputerName
 }
-Invoke-EventLogCopy
+else {
+    # Display message that the RAM was not collected
+    Show-Message("[WARNING] (C) RAM will NOT be collected") -Yellow
 
-
-function Invoke-CopyNTUserFiles {
-    if ($NTUser) {
-        Get-NTUserDatFiles $CaseFolderName $ComputerName
-    }
-    else {
-        # Display message that NTUSER.DAT file will not be collected
-        Show-Message("[WARNING] (F) NTUSER.DAT files will NOT be collected") -Yellow
-
-        # Write message that NTUSER.DAT files will not be collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The NTUSER.DAT file collection option was not enabled") -WarningMessage
-    }
+    # Write message that RAM was not collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The RAM Capture option was not enabled") -WarningMessage
 }
-Invoke-CopyNTUserFiles
 
 
-function Invoke-PrefetchCopy {
-    if ($Prefetch) {
-        Get-PrefetchFiles $CaseFolderName $ComputerName
-    }
-    else {
-        # Display message that prefetch files will not be collected
-        Show-Message("[WARNING] (G) Windows Prefetch files will NOT be collected") -Yellow
-
-        # Write message that prefetch files will not be collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Prefetch file collection option was not enabled") -WarningMessage
-    }
+if ($Registry) {
+    Get-RegistryHives $CaseFolderName $ComputerName
 }
-Invoke-PrefetchCopy
+else {
+    # Display message that Registry Hive files will not be collected
+    Show-Message("[WARNING] (D) Registry Hive files will NOT be collected") -Yellow
 
-
-function Invoke-SrumDBCopy {
-    if ($Srum) {
-        Get-SrumDB $CaseFolderName $ComputerName
-    }
-    else {
-        # Display message that file lists will not be collected
-        Show-Message("[WARNING] (H) SRUM.dat database will NOT be collected") -Yellow
-
-        # Write message that file lists will not be collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The SRUM database collection option was not enabled") -WarningMessage
-    }
+    # Write message that Registry Hive files will not be collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Registry Hive file collection option was not enabled") -WarningMessage
 }
-Invoke-SrumDBCopy
+
+
+if ($EventLogs) {
+    Get-EventLogs $CaseFolderName $ComputerName -NumOfEventLogs $NumOfEventLogs
+}
+else {
+    # Display message that event logs will not be collected
+    Show-Message("[WARNING] (E) Windows Event Logs will NOT be collected") -Yellow
+
+    # Write message that event logs will not be collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Event Log collection option was not enabled") -WarningMessage
+}
+
+
+if ($NTUser) {
+    Get-NTUserDatFiles $CaseFolderName $ComputerName
+}
+else {
+    # Display message that NTUSER.DAT file will not be collected
+    Show-Message("[WARNING] (F) NTUSER.DAT files will NOT be collected") -Yellow
+
+    # Write message that NTUSER.DAT files will not be collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The NTUSER.DAT file collection option was not enabled") -WarningMessage
+}
+
+
+if ($Prefetch) {
+    Get-PrefetchFiles $CaseFolderName $ComputerName -NumOfPFRecords $NumOfPFRecords
+}
+else {
+    # Display message that prefetch files will not be collected
+    Show-Message("[WARNING] (G) Windows Prefetch files will NOT be collected") -Yellow
+
+    # Write message that prefetch files will not be collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Prefetch file collection option was not enabled") -WarningMessage
+}
+
+
+if ($Srum) {
+    Get-SrumDB $CaseFolderName $ComputerName
+}
+else {
+    # Display message that file lists will not be collected
+    Show-Message("[WARNING] (H) SRUM.dat database will NOT be collected") -Yellow
+
+    # Write message that file lists will not be collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The SRUM database collection option was not enabled") -WarningMessage
+}
 
 
 function Invoke-ListAllFiles {
@@ -398,28 +381,23 @@ function Invoke-ListAllFiles {
 Invoke-ListAllFiles
 
 
-function Invoke-HashResults {
-    if (-not $HashResults) {
-        # Display message that output files will not be hashed
-        Show-Message("[WARNING] Saved files will NOT be hashed") -Yellow
+if (-not $HashResults) {
+    # Display message that output files will not be hashed
+    Show-Message("[WARNING] Saved files will NOT be hashed") -Yellow
 
-        # Write message that output files will not be hashed to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Hash Results Files option was not enabled") -WarningMessage
-    }
+    # Write message that output files will not be hashed to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Hash Results Files option was not enabled") -WarningMessage
 }
-Invoke-HashResults
 
 
-function Invoke-CaseArchive {
-    if (-not $Archive) {
-        # Display message that prefetch files will not be collected
-        Show-Message("[WARNING] Case archive (.zip) file will NOT be created") -Yellow
+if (-not $Archive) {
+    # Display message that prefetch files will not be collected
+    Show-Message("[WARNING] Case archive (.zip) file will NOT be created") -Yellow
 
-        # Write message that prefetch files will not be collected to the .log file
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The create Case Archive file option was not enabled") -WarningMessage
-    }
+    # Write message that prefetch files will not be collected to the .log file
+    Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The create Case Archive file option was not enabled") -WarningMessage
 }
-Invoke-CaseArchive
+
 
 
 function Invoke-Yolo {
@@ -450,15 +428,15 @@ Invoke-Yolo
 #! (0) Run the TESTING commands
 #! -------------------------------
 
-Get-ForensicData
-Get-SuspiciousFiles
-Get-BrowserHistory
-Compare-FileHashes
-Get-USBHistory
-Get-RecentlyAccessedFiles
-Get-SuspiciousFilePermissions
-Get-PrefetchAnalysis
-Get-ThumbnailCache
+# Get-ForensicData
+# Get-SuspiciousFiles
+# Get-BrowserHistory
+# Compare-FileHashes
+Get-USBSTOR
+# Get-RecentlyAccessedFiles
+# Get-SuspiciousFilePermissions
+# Get-PrefetchAnalysis
+# Get-ThumbnailCache
 
 
 #! -------------------------------
