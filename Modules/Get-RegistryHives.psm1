@@ -33,7 +33,7 @@ function Get-RegistryHives {
 
             # Show & log $CreateDirMsg message
             $CreateDirMsg = "Created ``$($RegHiveFolder.Name)`` folder in the case directory"
-            Show-Message("$CreateDirMsg")
+            Show-Message("$CreateDirMsg") -Green
             Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Show & log $SoftwareMsg message

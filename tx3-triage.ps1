@@ -2,7 +2,7 @@
 
 <#
 
-.\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -HashResults -Srum -Edd -Prefetch -NumOfPFRecords 5 -AllDrives -ListDrives -DriveList @("J","N") -NTUser -Registry -EventLogs -Archive
+.\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -HashResults -Srum -Edd -Prefetch -NumOfPFRecords 5 -AllDrives -ListDrives -DriveList @("J","E") -NTUser -Registry -EventLogs -Archive
 
 .\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -Edd -HashResults -Srum -Prefetch -EventLogs -Archive -NTUser -AllDrives -ListDrives -DriveList @("G","K","J")
 
@@ -35,8 +35,10 @@ param (
     [int]$NumOfEventLogs,
 
     [switch]$AllDrives,
+
     # If set, only include specific drives
     [switch]$ListDrives,
+
     # If set, exclude specific drives
     [switch]$NoListDrives,
     [string[]]$DriveList,
@@ -330,7 +332,7 @@ function Invoke-ListAllFiles {
     if ($AllDrives) {
         # Validate conflicting switches
         if ($ListDrives -and $NoListDrives) {
-            Show-Message("[WARNING] (I) You cannot use both ``-IncludeDrives`` and ``-ExcludeDrives`` together") -Red
+            Show-Message("[ERROR] (I) You cannot use both ``-ListDrives`` and ``-NoListDrives`` switches in the same command") -Red
             return
         }
         # Get a list of available drives on the examined machine
@@ -340,19 +342,19 @@ function Invoke-ListAllFiles {
         $DrivesToScan = switch ($true) {
             $ListDrives {
                 if (-not $DriveList) {
-                    Show-Message "[ERROR] ``-IncludeDrives`` requires a valid drive list [example ``-IncludeDrives @(C,D,F)``" -Red
+                    Show-Message "[ERROR] ``-ListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`",`"D`",`"F`")``" -Red
                     return
                 }
                 $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object {
                     if ($_ -notin $AvailableDrives) {
-                        Show-Message "[WARNING] Drive ``$($_):\`` is not available and will be skipped." -Yellow
+                        Show-Message "[WARNING] Drive ``$($_):\`` is not available and will be skipped" -Yellow
                     }
                     $_
                 }
             }
             $NoListDrives {
                 if (-not $DriveList) {
-                    Show-Message "[ERROR] ``-ExcludeDrives`` requires a valid drive list (e.g., C, D, etc.)" -Red
+                    Show-Message "[ERROR] ``-NoListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`", `"D`")``" -Red
                     return
                 }
                 $AvailableDrives | Where-Object { $_ -notin $DriveList }
@@ -367,7 +369,7 @@ function Invoke-ListAllFiles {
             Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
         }
         else {
-            Show-Message "[ERROR] No valid drives selected for scanning." -Red
+            Show-Message "[ERROR] No valid drives selected for scanning" -Red
         }
     }
     else {
@@ -678,21 +680,6 @@ Show-Message("The results are available in the ``\$(($CaseFolderName).Name)\`` d
 
 # Stop the transcript
 Show-Message("`n$(Stop-Transcript)") -NoTime
-
-
-# Stop the keylogger job when the script is finished
-# Ensures the keylogger process is terminated
-try {
-    Get-Job | Stop-Job
-    Remove-Job *
-    Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-}
-catch {
-    # Error handling
-    $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-    Show-Message("$ErrorMessage") -Red
-    Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-}
 
 
 # Show a popup message when script is complete
