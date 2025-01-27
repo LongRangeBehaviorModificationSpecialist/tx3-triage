@@ -77,11 +77,13 @@ $ScriptDirectory = $(Get-Location)
 $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 
-foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
+foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
+{
     Import-Module -Name $file.FullName -Force -Global
     Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
 }
+
 
 Write-Host "All modules from ``$ModulesDirectory`` have been imported successfully."
 
@@ -94,31 +96,42 @@ Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] PowerShell transcript start
 Write-Host ""
 
 
-function Get-ParameterValues {
+function Get-ParameterValues
+{
     [CmdletBinding()]
-    param(
+    param
+    (
         # The $MyInvocation for the caller -- DO NOT pass this (dot-source Get-ParameterValues instead)
         $Invocation = $MyInvocation,
         # The $PSBoundParameters for the caller -- DO NOT pass this (dot-source Get-ParameterValues instead)
         $BoundParameters = $PSBoundParameters
     )
 
-    if ($MyInvocation.Line[($MyInvocation.OffsetInLine - 1)] -ne '.') {
+    if ($MyInvocation.Line[($MyInvocation.OffsetInLine - 1)] -ne '.')
+    {
         throw "Get-ParameterValues must be dot-sourced, like this: . Get-ParameterValues"
     }
-    if ($PSBoundParameters.Count -gt 0) {
+
+    if ($PSBoundParameters.Count -gt 0)
+    {
         throw "You should not pass parameters to Get-ParameterValues, just dot-source it like this: ``. Get-ParameterValues``"
     }
+
     [Hashtable]$ParameterValues = @{}
-    foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator()) {
-        try {
+    foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator())
+    {
+        try
+        {
             $Key = $Parameter.Key
-            if ($Null -ne ($Value = Get-Variable -Name $Key -ValueOnly -ErrorAction Ignore)) {
-                if ($Value -ne ($Null -as $Parameter.Value.ParameterType)) {
+            if ($Null -ne ($Value = Get-Variable -Name $Key -ValueOnly -ErrorAction Ignore))
+            {
+                if ($Value -ne ($Null -as $Parameter.Value.ParameterType))
+                {
                     $ParameterValues[$Key] = $Value
                 }
             }
-            if ($BoundParameters.ContainsKey($Key)) {
+            if ($BoundParameters.ContainsKey($Key))
+            {
                 $ParameterValues[$Key] = $BoundParameters[$Key]
             }
         }
@@ -183,7 +196,6 @@ INSTRUCTIONS
 
 
 Write-Host ""
-
 Show-Message("--> Please read the instructions before executing the script! <--") -NoTime -RedOnGray
 
 
@@ -191,17 +203,20 @@ Show-Message("--> Please read the instructions before executing the script! <--"
 Read-Host -Prompt "`nPress [ENTER] to begin data collection -> "
 
 
-if ($Null -eq $User) {
+if ($Null -eq $User)
+{
     [String]$User = Read-Host -Prompt "[*] Enter user's name -> "
 }
 
 
-if ($Null -eq $Agency) {
+if ($Null -eq $Agency)
+{
     [String]$Agency = Read-Host -Prompt "`n[*] Enter agency name -> "
 }
 
 
-if ($Null -eq $CaseNumber) {
+if ($Null -eq $CaseNumber)
+{
     [String]$CaseNumber = Read-Host -Prompt "`n[*] Enter case number -> "
 }
 
@@ -221,7 +236,8 @@ Write-LogEntry("Data acquisition started. This may take a hot minute...`n") -Hea
 
 
 # Running Encrypted Disk Detector
-if ($Edd) {
+if ($Edd)
+{
     Get-EncryptedDiskDetector $CaseFolderName $ComputerName
 
     # Read the contents of the EDD text file and show the results on the screen
@@ -231,9 +247,10 @@ if ($Edd) {
     Write-Host ""
     Read-Host -Prompt "Press ENTER to continue data collection -> "
 }
-else {
+else
+{
     # If the user does not want to execute EDD
-    Show-Message("[WARNING] (A) Encrypted Disk Detector will NOT be run") -Yellow
+    Show-Message("[WARNING] Encrypted Disk Detector will NOT be run") -Yellow
 
     # Write message that EDD was not run to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Encrypted Disk Detector option was not enabled") -WarningMessage
@@ -241,141 +258,159 @@ else {
 
 
 # Run the scripts that collect the optional data that was included in the command line switches
-if ($Process) {
+if ($Process)
+{
     Get-RunningProcesses $CaseFolderName $ComputerName
 }
-else {
+else
+{
     # If the user does not want to execute ProcessCapture
-    Show-Message("[WARNING] (B) Process Capture will NOT be run") -Yellow
-
+    Show-Message("[WARNING] Process Capture will NOT be run") -Yellow
     # Write message that Processes Capture was not collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Process Capture option was not enabled") -WarningMessage
 }
 
 
 
-if ($Ram) {
+if ($Ram)
+{
     Get-ComputerRam $CaseFolderName $ComputerName
 }
-else {
+else
+{
     # Display message that the RAM was not collected
-    Show-Message("[WARNING] (C) RAM will NOT be collected") -Yellow
-
+    Show-Message("[WARNING] RAM will NOT be collected") -Yellow
     # Write message that RAM was not collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The RAM Capture option was not enabled") -WarningMessage
 }
 
 
-if ($Registry) {
+if ($Registry)
+{
     Get-RegistryHives $CaseFolderName $ComputerName
 }
-else {
+else
+{
     # Display message that Registry Hive files will not be collected
-    Show-Message("[WARNING] (D) Registry Hive files will NOT be collected") -Yellow
-
+    Show-Message("[WARNING] Registry Hive files will NOT be collected") -Yellow
     # Write message that Registry Hive files will not be collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Registry Hive file collection option was not enabled") -WarningMessage
 }
 
 
-if ($EventLogs) {
+if ($EventLogs)
+{
     Get-EventLogs $CaseFolderName $ComputerName -NumOfEventLogs $NumOfEventLogs
 }
-else {
+else
+{
     # Display message that event logs will not be collected
-    Show-Message("[WARNING] (E) Windows Event Logs will NOT be collected") -Yellow
-
+    Show-Message("[WARNING] Windows Event Logs will NOT be collected") -Yellow
     # Write message that event logs will not be collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Event Log collection option was not enabled") -WarningMessage
 }
 
 
-if ($NTUser) {
+if ($NTUser)
+{
     Get-NTUserDatFiles $CaseFolderName $ComputerName
 }
-else {
+else
+{
     # Display message that NTUSER.DAT file will not be collected
-    Show-Message("[WARNING] (F) NTUSER.DAT files will NOT be collected") -Yellow
-
+    Show-Message("[WARNING] NTUSER.DAT files will NOT be collected") -Yellow
     # Write message that NTUSER.DAT files will not be collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The NTUSER.DAT file collection option was not enabled") -WarningMessage
 }
 
 
-if ($Prefetch) {
+if ($Prefetch)
+{
     Get-PrefetchFiles $CaseFolderName $ComputerName -NumOfPFRecords $NumOfPFRecords
 }
-else {
+else
+{
     # Display message that prefetch files will not be collected
-    Show-Message("[WARNING] (G) Windows Prefetch files will NOT be collected") -Yellow
-
+    Show-Message("[WARNING] Windows Prefetch files will NOT be collected") -Yellow
     # Write message that prefetch files will not be collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Prefetch file collection option was not enabled") -WarningMessage
 }
 
 
-if ($Srum) {
+if ($Srum)
+{
     Get-SrumDB $CaseFolderName $ComputerName
 }
-else {
+else
+{
     # Display message that file lists will not be collected
-    Show-Message("[WARNING] (H) SRUM.dat database will NOT be collected") -Yellow
-
+    Show-Message("[WARNING] SRUM.dat database will NOT be collected") -Yellow
     # Write message that file lists will not be collected to the .log file
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The SRUM database collection option was not enabled") -WarningMessage
 }
 
 
-function Invoke-ListAllFiles {
-
+function Invoke-ListAllFiles
+{
     # If -AllDrives is used, invoke Get-AllFilesList with additional parameters
     if ($AllDrives) {
         # Validate conflicting switches
-        if ($ListDrives -and $NoListDrives) {
-            Show-Message("[ERROR] (I) You cannot use both ``-ListDrives`` and ``-NoListDrives`` switches in the same command") -Red
+        if ($ListDrives -and $NoListDrives)
+        {
+            Show-Message("[ERROR] You cannot use both ``-ListDrives`` and ``-NoListDrives`` switches in the same command") -Red
             return
         }
         # Get a list of available drives on the examined machine
         $AvailableDrives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name
 
         # Determine drives to scan based on user input
-        $DrivesToScan = switch ($true) {
-            $ListDrives {
-                if (-not $DriveList) {
+        $DrivesToScan = switch ($true)
+        {
+            $ListDrives
+            {
+                if (-not $DriveList)
+                {
                     Show-Message "[ERROR] ``-ListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`",`"D`",`"F`")``" -Red
                     return
                 }
-                $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object {
-                    if ($_ -notin $AvailableDrives) {
+                $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object
+                {
+                    if ($_ -notin $AvailableDrives)
+                    {
                         Show-Message "[WARNING] Drive ``$($_):\`` is not available and will be skipped" -Yellow
                     }
                     $_
                 }
             }
-            $NoListDrives {
-                if (-not $DriveList) {
+            $NoListDrives
+            {
+                if (-not $DriveList)
+                {
                     Show-Message "[ERROR] ``-NoListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`", `"D`")``" -Red
                     return
                 }
                 $AvailableDrives | Where-Object { $_ -notin $DriveList }
             }
-            default {
+            default
+            {
                 $AvailableDrives
             }
         }
         # Log selected drives and run the function
-        if ($DrivesToScan) {
+        if ($DrivesToScan)
+        {
             Show-Message "Scanning the following drives: $($DrivesToScan -join ', ')" -Green
             Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
         }
-        else {
+        else
+        {
             Show-Message "[ERROR] No valid drives selected for scanning" -Red
         }
     }
-    else {
+    else
+    {
         # Display message that file lists will not be collected
         Show-Message("[WARNING] All file listings will NOT be collected") -Yellow
-
         # Write message that file lists will not be collected to the .log file
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The All File Listings collection option was not enabled") -WarningMessage
     }
@@ -383,7 +418,8 @@ function Invoke-ListAllFiles {
 Invoke-ListAllFiles
 
 
-if (-not $HashResults) {
+if (-not $HashResults)
+{
     # Display message that output files will not be hashed
     Show-Message("[WARNING] Saved files will NOT be hashed") -Yellow
 
@@ -392,7 +428,8 @@ if (-not $HashResults) {
 }
 
 
-if (-not $Archive) {
+if (-not $Archive)
+{
     # Display message that prefetch files will not be collected
     Show-Message("[WARNING] Case archive (.zip) file will NOT be created") -Yellow
 
@@ -402,9 +439,11 @@ if (-not $Archive) {
 
 
 
-function Invoke-Yolo {
+function Invoke-Yolo
+{
     # Run all the collection options
-    if ($Yolo) {
+    if ($Yolo)
+    {
         Get-EncryptedDiskDetector $CaseFolderName $ComputerName
         Get-RunningProcesses $CaseFolderName $ComputerName
         Get-ComputerRam $CaseFolderName $ComputerName
@@ -445,14 +484,14 @@ Get-USBSTOR
 #! (1) Run the DEVICE commands
 #! -------------------------------
 
-# Get-VariousData
-# Get-TPMData
-# Get-PSInfo
-# Get-PSDriveData
-# Get-LogicalDiskData
-# Get-ComputerData
-# Get-SystemDataCMD
-# Get-SystemDataPS
+Get-VariousData
+Get-TPMData
+Get-PSInfo
+Get-PSDriveData
+Get-LogicalDiskData
+Get-ComputerData
+Get-SystemDataCMD
+Get-SystemDataPS
 # Get-OperatingSystemData
 # Get-PhysicalMemory
 # Get-EnvVars
@@ -641,12 +680,13 @@ Get-USBSTOR
 
 
 # Get the time the script was completed
-
-$EndTimeForLog = Get-Date
+$EndTimeForLog = (Get-Date).ToUniversalTime()
 $DurationForLog = New-TimeSpan -Start $StartTime -End $EndTimeForLog
+
 
 # Calculate the total run time of the script and formats the results
 $DiffForLog = "$($DurationForLog.Days) days $($DurationForLog.Hours) hours $($DurationForLog.Minutes) minutes $($DurationForLog.Seconds) seconds"
+
 
 # Display a message that the script has completed and list the total time run time on the screen
 Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Script execution completed in: $DiffForLog")
@@ -659,20 +699,23 @@ Hashing result files...
 
 
 # If the user wanted to get hash values for the saved output files
-if ($HashResults) {
+if ($HashResults)
+{
     Get-FileHashes $CaseFolderName $ComputerName
 }
 
 
 # Ask the user if they wish to make a .zip file of the results folder when script is complete
-if ($Archive) {
+if ($Archive)
+{
     Get-CaseArchive
 }
 
 
-$EndTimeForShow = Get-Date
+$EndTimeForShow = (Get-Date).ToUniversalTime()
 $DurationForShow = New-TimeSpan -Start $StartTime -End $EndTimeForShow
 $DiffForShow = "$($DurationForShow.Days) days $($DurationForShow.Hours) hours $($DurationForShow.Minutes) minutes $($DurationForShow.Seconds) seconds"
+
 
 Show-Message("Script execution completed in: $DiffForShow") -Header -Green
 Show-Message("The results are available in the ``\$(($CaseFolderName).Name)\`` directory") -Header -Green
@@ -684,6 +727,7 @@ Show-Message("`n$(Stop-Transcript)") -NoTime
 
 # Show a popup message when script is complete
 (New-Object -ComObject Wscript.Shell).popup("The Script has finished running", 0, "Done", 0x1) | Out-Null
+
 
 # SIG # Begin signature block
 # MIIFZwYJKoZIhvcNAQcCoIIFWDCCBVQCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

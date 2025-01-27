@@ -1,11 +1,14 @@
-function Get-CaseArchive {
+function Get-CaseArchive
+{
 
     [CmdletBinding()]
 
     $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
 
-    try {
-        $ExecutionTime = Measure-Command {
+    try
+    {
+        $ExecutionTime = Measure-Command
+        {
             # Show beginning message
             Show-Message("Creating Case Archive file -> ``$($CaseFolderName.Name).zip``") -Header
             $CaseFolderParent = Split-Path -Path $CaseFolderName -Parent
@@ -17,7 +20,8 @@ function Get-CaseArchive {
         Show-FinishMessage $CaseArchiveFuncName $ExecutionTime
         Write-LogFinishedMessage $CaseArchiveFuncName $ExecutionTime
     }
-    catch {
+    catch
+    {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

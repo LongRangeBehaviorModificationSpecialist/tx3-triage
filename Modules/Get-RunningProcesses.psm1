@@ -1,8 +1,8 @@
-function Get-RunningProcesses {
-
+function Get-RunningProcesses
+{
     [CmdletBinding()]
-
-    param (
+    param
+    (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
@@ -20,8 +20,10 @@ function Get-RunningProcesses {
     $ProcessFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     # If the user wants to execute the ProcessCapture
-    try {
-        $ExecutionTime = Measure-Command {
+    try
+    {
+        $ExecutionTime = Measure-Command
+        {
 
             # Show & log $BeginMessage message
             $BeginMessage = "Starting Process Capture from: $ComputerName.  Please wait..."
@@ -31,7 +33,8 @@ function Get-RunningProcesses {
             # Make new directory to store the files list
             $ProcessesFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $ProcessesFolderName
 
-            if (-not (Test-Path $ProcessesFolder)) {
+            if (-not (Test-Path $ProcessesFolder))
+            {
                 throw "[ERROR] The necessary folder does not exist -> ``$ProcessesFolder``"
             }
 
@@ -54,7 +57,8 @@ function Get-RunningProcesses {
         Show-FinishMessage $ProcessFuncName $ExecutionTime
         Write-LogFinishedMessage $ProcessFuncName $ExecutionTime
     }
-    catch {
+    catch
+    {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

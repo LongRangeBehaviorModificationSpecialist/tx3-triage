@@ -1,8 +1,8 @@
-function Get-ComputerRam {
-
+function Get-ComputerRam
+{
     [CmdletBinding()]
-
-    param (
+    param
+    (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
@@ -20,8 +20,10 @@ function Get-ComputerRam {
     $RamFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     # If the user wants to collect the RAM
-    try {
-        $ExecutionTime = Measure-Command {
+    try
+    {
+        $ExecutionTime = Measure-Command
+        {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
             Show-Message("$BeginMessage") -Header
@@ -30,7 +32,8 @@ function Get-ComputerRam {
             # Create a folder called "RAM" to store the captured RAM file
             $RamFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $RamFolderName -Force
 
-            if (-not (Test-Path $RamFolder)) {
+            if (-not (Test-Path $RamFolder))
+            {
                 throw "[ERROR] The necessary folder does not exist -> ``$RamFolder``"
             }
 
@@ -54,7 +57,8 @@ function Get-ComputerRam {
         Show-FinishMessage $RamFuncName $ExecutionTime
         Write-LogFinishedMessage $RamFuncName $ExecutionTime
     }
-    catch {
+    catch
+    {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

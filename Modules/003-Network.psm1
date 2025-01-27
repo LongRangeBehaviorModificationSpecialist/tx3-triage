@@ -148,7 +148,7 @@ function Get-NetstatDetailed {
                 ConvertTo-Html -Head $Head -Body "<h3>
 Active Connections, Associated Processes and DLLs
 <p>Computer Name : $ComputerName</p>
-<p>User ID : $User</p>
+<p>User ID : $((Get-Item env:\USERNAME).value)</p>
 </h3>
 
 <h4> Current Date and Time : $DateTime</h4>" | Out-File -FilePath $TempFile -Encoding UTF8

@@ -1,4 +1,5 @@
-function Get-ADSData {
+function Get-ADSData
+{
 <#
 .SYNOPSIS
     Performs a search for alternate data streams (ADS) in a given folder.
@@ -27,22 +28,28 @@ function Get-ADSData {
 #>
 
     [CmdletBinding()]
-    param(
+    param
+    (
         [string]$Path = "C:\Users"
     )
 
     $ErrorActionPreference = "SilentlyContinue"
 
-    try {
+    try
+    {
         $Files = Get-ChildItem -Path $Path -Recurse -Force -File
         $Results = @()
-        foreach ($File in $Files) {
+        foreach ($File in $Files)
+        {
             $Streams = Get-Item -Path $File.FullName -Stream * | Where-Object { $_.Stream -notlike "*DATA" -and $_.Stream -ne "Zone.Identifier" }
-            foreach ($Stream in $Streams) {
-                $StreamContent = try {
+            foreach ($Stream in $Streams)
+            {
+                $StreamContent = try
+                {
                     Get-Content -Path $File.FullName -Stream $Stream.Stream
                 }
-                catch {
+                catch
+                {
                     Show-Message("Error reading stream content: $($PSItem)") -Red
                 }
                 $Results += [PSCustomObject]@{
@@ -61,7 +68,8 @@ function Get-ADSData {
         }
         return $Results | Select-Object Host, DateScanned, FileName, Stream, StreamLength, StreamContent, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc, Attributes
     }
-    catch {
+    catch
+    {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

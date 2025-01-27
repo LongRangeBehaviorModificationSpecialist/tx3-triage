@@ -1,8 +1,8 @@
-function Get-PrefetchFiles {
-
+function Get-PrefetchFiles
+{
     [CmdletBinding()]
-
-    param (
+    param
+    (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
@@ -23,8 +23,10 @@ function Get-PrefetchFiles {
 
     $PFCopyFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
-    try {
-        $ExecutionTime = Measure-Command {
+    try
+    {
+        $ExecutionTime = Measure-Command
+        {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Prefetch files from computer: $ComputerName"
             Show-Message("$BeginMessage") -Header
@@ -33,7 +35,8 @@ function Get-PrefetchFiles {
             # Make new directory to store the prefetch files
             $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $PFFolderName
 
-            if (-not (Test-Path $PFFolder)) {
+            if (-not (Test-Path $PFFolder))
+            {
                 throw "[ERROR] The necessary folder does not exist -> ``$PFFolder``"
             }
 
@@ -43,48 +46,60 @@ function Get-PrefetchFiles {
             Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # If no number is passed for the number of prefetch records to copy then copy all of the files
-            if (-not $NumOfPFRecords) {
+            if (-not $NumOfPFRecords)
+            {
                 Write-Information "No value passed for the `$NumOFPFRecords value."
                 $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File
             }
-            else {
+            else
+            {
                 # Set variables for the files in the prefetch folder of the examined device
                 $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File | Select-Object -First $NumOfPFRecords
             }
 
-            if (-not (Test-Path $RawCopyPath)) {
+            if (-not (Test-Path $RawCopyPath))
+            {
                 Write-Error "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
                 return
             }
 
-            foreach ($File in $Files) {
-                try {
+            foreach ($File in $Files)
+            {
+                try
+                {
                     $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:"$WinPrefetchDir\$File" /OutputPath:"$PFFolder" /OutputName:"$File" }
 
-                    if ($LASTEXITCODE -ne 0) {
+                    if ($LASTEXITCODE -ne 0)
+                    {
                         Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
                         return
                     }
                 }
-                catch {
+                catch
+                {
                     Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
                     return
                 }
+
                 # Show & log $CopyMsg messages of each file copied
                 $CopyMsg = "Copied file -> ``$($File.Name)``"
                 Show-Message($CopyMsg) -Magenta
                 Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CopyMsg")
             }
+
             # Show & log $SuccessMsg message
             $SuccessMsg = "Prefetch files copied successfully from computer: $ComputerName"
             Show-Message("$SuccessMsg")
             Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
+
         # Show & log finish messages
         Show-FinishMessage $PFCopyFuncName $ExecutionTime
         Write-LogFinishedMessage $PFCopyFuncName $ExecutionTime
     }
-    catch {
+
+    catch
+    {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

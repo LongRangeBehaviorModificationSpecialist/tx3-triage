@@ -1,12 +1,9 @@
-
 # Date Last Updated
-[string]$Dlu = "2025-01-25"
+[string]$Dlu = "2025-01-27"
 
-# Time the script started
-[datetime]$StartTime = Get-Date
+[datetime]$StartTime = (Get-Date).ToUniversalTime()
 
-# Get date and time values to use in the naming of the output directory and the output .html file
-[string]$RunDate = (Get-Date).ToString("yyyyMMdd_HHmmss")
+[string]$RunDate = (Get-Date).ToUniversalTime().ToString("yyyyMMdd_HHmmss")
 
 # Get the current IP addresses of the machine from on this script is run
 [string]$Ipv4 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV4Address | Select-Object -ExpandProperty IPAddressToString
@@ -31,14 +28,18 @@ $ExecutableFileTypes = @(
     "*.VBSCRIPT", "*.WS", "*.WSF"
 )
 
-function Get-TimeStamp {
-    return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date)
+
+function Get-TimeStamp
+{
+    return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date).ToUniversalTime()
 }
 
-function Write-LogEntry {
 
+function Write-LogEntry
+{
     [CmdletBinding()]
-    param (
+    param
+    (
         [Parameter(Mandatory = $True)]
         [string]$Message,
         [string]$LogFile = $LogFile,
@@ -53,24 +54,47 @@ function Write-LogEntry {
 
     $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    if (-not $Message) {
+    if (-not $Message)
+    {
         throw "The message parameter cannot be empty."
     }
 
-    $MsgLevel = switch ($True) {
+    $MsgLevel = switch ($True)
+    {
         $DebugMessage { " [DEBUG] "; break }
         $WarningMessage { " [WARNING] "; break }
         $ErrorMessage { " [ERROR] "; break }
         default { " [INFO] " }
     }
 
-    $MsgLevel = if (-not $NoLevel) { $MsgLevel } else { "" }
+    $MsgLevel = if (-not $NoLevel)
+    {
+        $MsgLevel
+    }
+    else
+    {
+        ""
+    }
 
     # Generate timestamp if -NoTime is not provided
-    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
+    $DisplayTimeStamp = if (-not $NoTime)
+    {
+        $(Get-TimeStamp)
+    }
+    else
+    {
+        ""
+    }
 
     # If the -header switch is used, prepend a newline and header text
-    $HeaderText = if ($Header) { "`n" } else { "" }
+    $HeaderText = if ($Header)
+    {
+        "`n"
+    }
+    else
+    {
+        ""
+    }
 
     # Format the full message
     $FormattedMessage = $HeaderText + $DisplayTimeStamp + $MsgLevel + $Message
@@ -78,9 +102,11 @@ function Write-LogEntry {
     Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
 }
 
-function Show-Message {
 
-    param (
+function Show-Message
+{
+    param
+    (
         [Parameter(Mandatory)]
         [string]$Message,
 
@@ -95,7 +121,6 @@ function Show-Message {
         [switch]$RedOnGray,
         [switch]$YellowOnRed
     )
-
     # Determine the color based on the switches
     $Color = if ($Blue) { "Blue" }
     elseif ($White) { "White" }
@@ -108,16 +133,31 @@ function Show-Message {
     else { "Gray" }
 
     # Generate timestamp if -NoTime is not provided
-    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { $Null }
+    $DisplayTimeStamp = if (-not $NoTime)
+    {
+        $(Get-TimeStamp)
+    }
+    else
+    {
+        $Null
+    }
 
     # If the -header switch is used, prepend a newline and header text
-    $HeaderText = if ($Header) { "`n" } else { $Null }
+    $HeaderText = if ($Header)
+    {
+        "`n"
+    }
+    else
+    {
+        $Null
+    }
 
     # Format the full message
     $FormattedMessage = "$HeaderText" + "$DisplayTimeStamp $Message"
 
     # Display the message with the appropriate color
-    switch ($Color) {
+    switch ($Color)
+    {
         "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
         "White" { Write-Host $FormattedMessage -ForegroundColor White }
         "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
@@ -130,9 +170,11 @@ function Show-Message {
     }
 }
 
-function Show-FinishMessage {
 
-    param (
+function Show-FinishMessage
+{
+    param
+    (
         [Parameter(Mandatory, Position = 0)]
         [string]$FunctionName,
         [Parameter(Mandatory, Position = 1)]
@@ -140,26 +182,29 @@ function Show-FinishMessage {
 
         [switch]$Header
     )
-
-    if ($Header) {
+    if ($Header)
+    {
         Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds") -Header -Blue
     }
-    else {
+    else
+    {
         Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds") -Blue
     }
 }
 
-function Write-LogFinishedMessage {
 
-    param (
+function Write-LogFinishedMessage
+{
+    param
+    (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$FunctionName,
         [Parameter(Mandatory = $True, Position = 1)]
         [timespan]$ExecutionTime
     )
-
     Write-LogEntry("Function ``$FunctionName`` finished in $($ExecutionTime.TotalSeconds) seconds`n")
 }
+
 
 $Folders = @(
     "000_Testing",
@@ -175,10 +220,13 @@ $Folders = @(
     "Logs"
 )
 
-foreach ($Folder in $Folders) {
+
+foreach ($Folder in $Folders)
+{
     New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
     Write-Host "Created ``$($Folder)`` Folder" -ForegroundColor Green
 }
+
 
 $global:TestingFolder = "$CaseFolderName\$($Folders[0])"
 $global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
@@ -192,100 +240,121 @@ $global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
 $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
 $global:LogFolder = "$CaseFolderName\$($Folders[10])"
 
-function Get-LineNum {
+
+function Get-LineNum
+{
     return $MyInvocation.ScriptLineNumber
 }
 
-function Save-Output {
 
-    param (
+function Save-Output
+{
+    param
+    (
         [Parameter(Mandatory, Position = 0)]
         [object]$Data,
         [Parameter(Mandatory, Position = 1)]
         [string]$File
     )
-
-    process { $Data | Out-File -FilePath $File -Encoding UTF8 }
+    process
+    {
+        $Data | Out-File -FilePath $File -Encoding UTF8
+    }
 }
 
-function Save-OutputAppend {
 
-    param (
+function Save-OutputAppend
+{
+    param
+    (
         [Parameter(Mandatory ,Position = 0)]
         [object]$Data,
         [Parameter(Mandatory, Position = 1)]
         [string]$File
     )
-
-    process { $Data | Out-File -Append -FilePath $File -Encoding UTF8 }
+    process
+    {
+        $Data | Out-File -Append -FilePath $File -Encoding UTF8
+    }
 }
 
-function Save-OutputAsCsv {
 
-    param (
+function Save-OutputAsCsv
+{
+    param
+    (
         [Parameter(Mandatory, Position = 0)]
         [object]$Data,
         [Parameter(Mandatory, Position = 1)]
         [string]$File
     )
-
-    process { $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8 }
+    process
+    {
+        $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
+    }
 }
 
-function Show-OutputSavedToFile {
 
-    param (
+function Show-OutputSavedToFile
+{
+    param
+    (
         [Parameter(Mandatory, Position = 0)]
         [string]$File,
 
         [switch]$NoTime
     )
-
-    if ($NoTime) {
+    if ($NoTime)
+    {
         Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -NoTime -Green
     }
-    else {
+    else
+    {
         Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -Green
     }
 }
 
-function Write-LogOutputAppended {
 
-    param (
+function Write-LogOutputAppended
+{
+    param
+    (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$File
     )
-
     Write-LogEntry("Output appended to -> ``$([System.IO.Path]::GetFileName($File))``")
 }
 
-function Write-LogOutputSaved {
 
-    param (
+function Write-LogOutputSaved
+{
+    param
+    (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$File
     )
-
     Write-LogEntry("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``")
 }
 
-function Write-NoDataFound {
 
-    param (
+function Write-NoDataFound
+{
+    param
+    (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$FunctionName
     )
-
     $NoDataMsg = "No data found for ``$($FunctionName)`` function"
     Show-Message("$NoDataMsg") -Yellow
     Write-LogEntry("$NoDataMsg")
 }
 
-function Get-FileHashes {
 
+function Get-FileHashes
+{
     [CmdletBinding()]
-
-    param (
+    param
+    (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
@@ -301,8 +370,10 @@ function Get-FileHashes {
 
     $FileHashFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
-    try {
-        $ExecutionTime = Measure-Command {
+    try
+    {
+        $ExecutionTime = Measure-Command
+        {
             # Show & log $beginMessage message
             $beginMessage = "Hashing files for computer: $ComputerName"
             Show-Message("$beginMessage") -Header
@@ -311,7 +382,8 @@ function Get-FileHashes {
             # Make new directory to store the prefetch files
             $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
 
-            if (-not (Test-Path $HashResultsFolder)) {
+            if (-not (Test-Path $HashResultsFolder))
+            {
                 throw "[ERROR] The necessary folder does not exist -> ``$HashResultsFolder``"
             }
 
@@ -330,7 +402,9 @@ function Get-FileHashes {
             $Results = @()
 
             # Exclude the PowerShell transcript file from being included in the file that are hashed
-            $Results = Get-ChildItem -Path $CaseFolderName -Recurse -Force -File | Where-Object { $_.Name -notlike $ExcludedFiles } | ForEach-Object { $FileHash = (Get-FileHash -Algorithm SHA256 -Path $_.FullName).Hash
+            $Results = Get-ChildItem -Path $CaseFolderName -Recurse -Force -File | Where-Object { $_.Name -notlike $ExcludedFiles } | ForEach-Object
+            {
+                $FileHash = (Get-FileHash -Algorithm SHA256 -Path $_.FullName).Hash
                 [PSCustomObject]@{
                     DirectoryName      = $_.DirectoryName
                     BaseName           = $_.BaseName
@@ -351,9 +425,12 @@ function Get-FileHashes {
                 Show-Message("$ProgressMsg") -Header
 
                 # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
-                $HashMsgFileName = "Completed hashing file: ``$($_.Name)`` -> [SHA256] $($FileHash)"
+                $HashMsgFileName = "Completed hashing file: ``$($_.Name)``"
+                $HashValueMsg = "[SHA256] $($FileHash)"
                 Show-Message("$HashMsgFileName") -Blue
-                Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName`n")
+                Show-Message("$HashValueMsg") -Blue
+                Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName")
+                Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashValueMsg`n")
             }
 
             # Export the results to the CSV file
@@ -368,12 +445,14 @@ function Get-FileHashes {
         Show-FinishMessage $FileHashFuncName $ExecutionTime
         Write-LogFinishedMessage $FileHashFuncName $ExecutionTime
     }
-    catch {
+    catch
+    {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
         Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
+
 
 Export-ModuleMember -Function Set-CaseFolders, Show-Message, Show-FinishMessage, Show-OutputSavedToFile, Get-LineNum, Save-Output, Save-OutputAppend, Write-LogEntry, Write-LogFinishedMessage, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound, Get-EncryptedDiskDetector, Get-FileHashes -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, CaseFolderName, LogFile, NoMatchingEventsMsg, ExecutableFileTypes, TestingFolder, DeviceFolder, UserFolder, NetworkFolder, ProcessFolder, SystemFolder, PrefetchFolder, EventLogFolder, FirewallFolder, BitLockerFolder, LogFolder
