@@ -61,31 +61,314 @@ $ErrorActionPreference = "SilentlyContinue"
 $ScriptName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 
+function Get-TimeStamp {
+    return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date).ToUniversalTime()
+}
+
+
+function Show-Message {
+    param (
+        [Parameter(Mandatory)]
+        [string]$Message,
+
+        [switch]$Header,
+        [switch]$NoTime,
+        [switch]$Blue,
+        [switch]$Green,
+        [switch]$White,
+        [switch]$Magenta,
+        [switch]$Red,
+        [switch]$Yellow,
+        [switch]$BlueOnGray,
+        [switch]$YellowOnRed
+    )
+    # Determine the color based on the switches
+    $Color = if ($Blue) { "Blue" }
+    elseif ($White) { "White" }
+    elseif ($Green) { "Green" }
+    elseif ($Magenta) { "Magenta" }
+    elseif ($Red) { "Red" }
+    elseif ($Yellow) { "Yellow" }
+    elseif ($BlueOnGray) { "BlueOnGray" }
+    elseif ($YellowOnRed) { "YellowOnRed" }
+    else { "Gray" }
+
+    # Generate timestamp if -NoTime is not provided
+    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { $Null }
+
+    # If the -header switch is used, prepend a newline and header text
+    $HeaderText = if ($Header) { "`n" } else { $Null }
+
+    # Format the full message
+    $FormattedMessage = "$HeaderText" + "$DisplayTimeStamp $Message"
+
+    # Display the message with the appropriate color
+    switch ($Color) {
+        "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
+        "White" { Write-Host $FormattedMessage -ForegroundColor White }
+        "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
+        "Magenta" { Write-Host $FormattedMessage -ForegroundColor DarkMagenta }
+        "Red" { Write-Host $FormattedMessage -ForegroundColor DarkRed }
+        "Yellow" { Write-Host $FormattedMessage -ForegroundColor DarkYellow }
+        "BlueOnGray" { Write-Host $FormattedMessage -ForegroundColor Blue -BackgroundColor Gray }
+        "YellowOnRed" { Write-Host $FormattedMessage -ForegroundColor DarkYellow -BackgroundColor DarkRed }
+        "Gray" { Write-Host $FormattedMessage -ForegroundColor Gray }
+    }
+}
+
+
+# Date Last Updated
+[string]$Dlu = "2025-01-28"
+
+
+[datetime]$StartTime = (Get-Date).ToUniversalTime()
+
+
+$Cwd = Get-Location
+
+
+[string]$RunDate = (Get-Date).ToUniversalTime().ToString("yyyyMMdd_HHmmss")
+
+
+# Get the current IP addresses of the machine from on this script is run
+[string]$Ipv4 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV4Address | Select-Object -ExpandProperty IPAddressToString
+[string]$Ipv6 = (Test-Connection $Env:COMPUTERNAME -TimeToLive 2 -Count 1).IPV6Address | Select-Object -ExpandProperty IPAddressToString
+
+
+# Getting the computer name
+[string]$ComputerName = $Env:COMPUTERNAME
+
+
+$CaseFolderName = New-Item -ItemType Directory -Path $($Cwd) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
+
+
+# Error messages to use in the various functions
+[string]$KeyNotFoundMsg = "Cannot find the listed registry key because it does not exist."
+[string]$NoMatchingEventsMsg = "No events were found that match the specified selection criteria"
+
+
+# List of file types to use in some commands
+$ExecutableFileTypes = @(
+    "*.BAT", "*.BIN", "*.CGI", "*.CMD", "*.COM", "*.DLL",
+    "*.EXE", "*.JAR", "*.JOB", "*.JSE", "*.MSI", "*.PAF",
+    "*.PS1", "*.SCR", "*.SCRIPT", "*.VB", "*.VBE", "*.VBS",
+    "*.VBSCRIPT", "*.WS", "*.WSF"
+)
+
+
+# Import-Module .\functions\functions.psm1 -Force -Global
+# Show-Message("Module file: ``functions.psm1`` was imported successfully") -NoTime -Blue
+
+
+
+function Write-LogEntry {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $True)]
+        [string]$Message,
+        [string]$LogFile = $LogFile,
+
+        [switch]$NoLevel,
+        [switch]$DebugMessage,
+        [switch]$WarningMessage,
+        [switch]$ErrorMessage,
+        [switch]$NoTime,
+        [switch]$Header
+    )
+
+    $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
+
+    if (-not $Message) {
+        throw "The message parameter cannot be empty."
+    }
+
+    $MsgLevel = switch ($True) {
+        $DebugMessage { " [DEBUG] "; break }
+        $WarningMessage { " [WARNING] "; break }
+        $ErrorMessage { " [ERROR] "; break }
+        default { " [INFO] " }
+    }
+
+    $MsgLevel = if (-not $NoLevel) { $MsgLevel } else { "" }
+
+    # Generate timestamp if -NoTime is not provided
+    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
+
+    # If the -header switch is used, prepend a newline and header text
+    $HeaderText = if ($Header) { "`n" } else { "" }
+
+    # Format the full message
+    $FormattedMessage = $HeaderText + $DisplayTimeStamp + $MsgLevel + $Message
+
+    Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
+}
+
+
+function Show-FinishMessage {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$FunctionName,
+        [Parameter(Mandatory, Position = 1)]
+        [timespan]$ExecutionTime,
+
+        [switch]$Header
+    )
+    if ($Header) {
+        Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds") -Header -Blue
+    }
+    else {
+        Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds") -Blue
+    }
+}
+
+
+function Write-LogFinishedMessage {
+    param (
+        [Parameter(Mandatory = $True, Position = 0)]
+        [string]$FunctionName,
+        [Parameter(Mandatory = $True, Position = 1)]
+        [timespan]$ExecutionTime
+    )
+    Write-LogEntry("Function ``$FunctionName`` finished in $($ExecutionTime.TotalSeconds) seconds`n")
+}
+
+
+$Folders = @(
+    "000_Testing",
+    "001_DeviceInfo",
+    "002_UserInfo",
+    "003_Network",
+    "004_Processes",
+    "005_System",
+    "006_Prefetch",
+    "007_EventLogFiles",
+    "008_Firewall",
+    "009_BitLocker",
+    "Logs"
+)
+
+
+foreach ($Folder in $Folders) {
+    New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
+    Show-Message("Created ``$($Folder)`` Folder") -Green
+}
+
+
+$global:TestingFolder = "$CaseFolderName\$($Folders[0])"
+$global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
+$global:UserFolder = "$CaseFolderName\$($Folders[2])"
+$global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
+$global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
+$global:SystemFolder = "$CaseFolderName\$($Folders[5])"
+$global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
+$global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
+$global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
+$global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
+$global:LogFolder = "$CaseFolderName\$($Folders[10])"
+
+
+function Get-LineNum {
+    return $MyInvocation.ScriptLineNumber
+}
+
+
+function Save-Output {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 1)]
+        [string]$File
+    )
+    process { $Data | Out-File -FilePath $File -Encoding UTF8 }
+}
+
+
+function Save-OutputAppend {
+    param (
+        [Parameter(Mandatory , Position = 0)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 1)]
+        [string]$File
+    )
+    process { $Data | Out-File -Append -FilePath $File -Encoding UTF8 }
+}
+
+
+function Save-OutputAsCsv {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 1)]
+        [string]$File
+    )
+    process { $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8 }
+}
+
+
+function Show-OutputSavedToFile {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$File,
+
+        [switch]$NoTime
+    )
+    if ($NoTime) {
+        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -NoTime -Green
+    }
+    else {
+        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -Green
+    }
+}
+
+
+function Write-LogOutputAppended {
+    param (
+        [Parameter(Mandatory = $True, Position = 0)]
+        [string]$File
+    )
+    Write-LogEntry("Output appended to -> ``$([System.IO.Path]::GetFileName($File))``")
+}
+
+
+function Write-LogOutputSaved {
+    param (
+        [Parameter(Mandatory = $True, Position = 0)]
+        [string]$File
+    )
+    Write-LogEntry("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``")
+}
+
+
+function Write-NoDataFound {
+    param (
+        [Parameter(Mandatory = $True, Position = 0)]
+        [string]$FunctionName
+    )
+    $NoDataMsg = "No data found for ``$($FunctionName)`` function"
+    Show-Message("$NoDataMsg") -Yellow
+    Write-LogEntry("$NoDataMsg")
+}
+
+
 # Name of the folder containing the .psm1 files that are to be imported
 $ModulesFolder = "modules"
 
 
-Import-Module .\functions\functions.psm1 -Force -Global
-Show-Message("Module file: ``functions.psm1`` was imported successfully") -NoTime -Blue
-
-
-# # Get the directory of the current script
+# Get the directory of the current script
 $ScriptDirectory = $(Get-Location)
 
 
-# # Construct the path to the 'modules' directory
+# Construct the path to the 'modules' directory
 $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 
-foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
-{
+foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
     Import-Module -Name $file.FullName -Force -Global
     Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
 }
 
-
-Write-Host "All modules from ``$ModulesDirectory`` have been imported successfully."
+Show-Message("`nAll modules from ``$ModulesDirectory`` have been imported successfully.") -NoTime -Green
 
 
 # Start transcript to record all of the screen output
@@ -96,8 +379,7 @@ Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] PowerShell transcript start
 Write-Host ""
 
 
-function Get-ParameterValues
-{
+function Get-ParameterValues {
     [CmdletBinding()]
     param
     (
@@ -107,31 +389,24 @@ function Get-ParameterValues
         $BoundParameters = $PSBoundParameters
     )
 
-    if ($MyInvocation.Line[($MyInvocation.OffsetInLine - 1)] -ne '.')
-    {
+    if ($MyInvocation.Line[($MyInvocation.OffsetInLine - 1)] -ne '.') {
         throw "Get-ParameterValues must be dot-sourced, like this: . Get-ParameterValues"
     }
 
-    if ($PSBoundParameters.Count -gt 0)
-    {
+    if ($PSBoundParameters.Count -gt 0) {
         throw "You should not pass parameters to Get-ParameterValues, just dot-source it like this: ``. Get-ParameterValues``"
     }
 
     [Hashtable]$ParameterValues = @{}
-    foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator())
-    {
-        try
-        {
+    foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator()) {
+        try {
             $Key = $Parameter.Key
-            if ($Null -ne ($Value = Get-Variable -Name $Key -ValueOnly -ErrorAction Ignore))
-            {
-                if ($Value -ne ($Null -as $Parameter.Value.ParameterType))
-                {
+            if ($Null -ne ($Value = Get-Variable -Name $Key -ValueOnly -ErrorAction Ignore)) {
+                if ($Value -ne ($Null -as $Parameter.Value.ParameterType)) {
                     $ParameterValues[$Key] = $Value
                 }
             }
-            if ($BoundParameters.ContainsKey($Key))
-            {
+            if ($BoundParameters.ContainsKey($Key)) {
                 $ParameterValues[$Key] = $BoundParameters[$Key]
             }
         }
@@ -196,7 +471,7 @@ INSTRUCTIONS
 
 
 Write-Host ""
-Show-Message("--> Please read the instructions before executing the script! <--") -NoTime -RedOnGray
+Show-Message("--> Please read the instructions before executing the script! <--") -NoTime -BlueOnGray
 
 
 # Stops the script until the user presses the ENTER key so the script does not begin before the user is ready
@@ -232,12 +507,11 @@ Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Device IPv6 address: $Ipv6"
 
 
 Show-Message("Data acquisition started. This may take a hot minute...") -Header
-Write-LogEntry("Data acquisition started. This may take a hot minute...`n") -Header
+Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Data acquisition started. This may take a hot minute...`n") -Header
 
 
 # Running Encrypted Disk Detector
-if ($Edd)
-{
+if ($Edd) {
     Get-EncryptedDiskDetector $CaseFolderName $ComputerName
 
     # Read the contents of the EDD text file and show the results on the screen
@@ -247,8 +521,7 @@ if ($Edd)
     Write-Host ""
     Read-Host -Prompt "Press ENTER to continue data collection -> "
 }
-else
-{
+else {
     # If the user does not want to execute EDD
     Show-Message("[WARNING] Encrypted Disk Detector will NOT be run") -Yellow
 
@@ -258,12 +531,10 @@ else
 
 
 # Run the scripts that collect the optional data that was included in the command line switches
-if ($Process)
-{
+if ($Process) {
     Get-RunningProcesses $CaseFolderName $ComputerName
 }
-else
-{
+else {
     # If the user does not want to execute ProcessCapture
     Show-Message("[WARNING] Process Capture will NOT be run") -Yellow
     # Write message that Processes Capture was not collected to the .log file
@@ -272,12 +543,10 @@ else
 
 
 
-if ($Ram)
-{
+if ($Ram) {
     Get-ComputerRam $CaseFolderName $ComputerName
 }
-else
-{
+else {
     # Display message that the RAM was not collected
     Show-Message("[WARNING] RAM will NOT be collected") -Yellow
     # Write message that RAM was not collected to the .log file
@@ -285,12 +554,10 @@ else
 }
 
 
-if ($Registry)
-{
+if ($Registry) {
     Get-RegistryHives $CaseFolderName $ComputerName
 }
-else
-{
+else {
     # Display message that Registry Hive files will not be collected
     Show-Message("[WARNING] Registry Hive files will NOT be collected") -Yellow
     # Write message that Registry Hive files will not be collected to the .log file
@@ -298,12 +565,10 @@ else
 }
 
 
-if ($EventLogs)
-{
+if ($EventLogs) {
     Get-EventLogs $CaseFolderName $ComputerName -NumOfEventLogs $NumOfEventLogs
 }
-else
-{
+else {
     # Display message that event logs will not be collected
     Show-Message("[WARNING] Windows Event Logs will NOT be collected") -Yellow
     # Write message that event logs will not be collected to the .log file
@@ -311,12 +576,10 @@ else
 }
 
 
-if ($NTUser)
-{
+if ($NTUser) {
     Get-NTUserDatFiles $CaseFolderName $ComputerName
 }
-else
-{
+else {
     # Display message that NTUSER.DAT file will not be collected
     Show-Message("[WARNING] NTUSER.DAT files will NOT be collected") -Yellow
     # Write message that NTUSER.DAT files will not be collected to the .log file
@@ -324,12 +587,10 @@ else
 }
 
 
-if ($Prefetch)
-{
+if ($Prefetch) {
     Get-PrefetchFiles $CaseFolderName $ComputerName -NumOfPFRecords $NumOfPFRecords
 }
-else
-{
+else {
     # Display message that prefetch files will not be collected
     Show-Message("[WARNING] Windows Prefetch files will NOT be collected") -Yellow
     # Write message that prefetch files will not be collected to the .log file
@@ -337,12 +598,10 @@ else
 }
 
 
-if ($Srum)
-{
+if ($Srum) {
     Get-SrumDB $CaseFolderName $ComputerName
 }
-else
-{
+else {
     # Display message that file lists will not be collected
     Show-Message("[WARNING] SRUM.dat database will NOT be collected") -Yellow
     # Write message that file lists will not be collected to the .log file
@@ -350,13 +609,11 @@ else
 }
 
 
-function Invoke-ListAllFiles
-{
+function Invoke-ListAllFiles {
     # If -AllDrives is used, invoke Get-AllFilesList with additional parameters
     if ($AllDrives) {
         # Validate conflicting switches
-        if ($ListDrives -and $NoListDrives)
-        {
+        if ($ListDrives -and $NoListDrives) {
             Show-Message("[ERROR] You cannot use both ``-ListDrives`` and ``-NoListDrives`` switches in the same command") -Red
             return
         }
@@ -364,62 +621,52 @@ function Invoke-ListAllFiles
         $AvailableDrives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name
 
         # Determine drives to scan based on user input
-        $DrivesToScan = switch ($true)
-        {
-            $ListDrives
-            {
-                if (-not $DriveList)
-                {
+        $DrivesToScan = switch ($true) {
+            $ListDrives {
+                if (-not $DriveList) {
                     Show-Message "[ERROR] ``-ListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`",`"D`",`"F`")``" -Red
                     return
                 }
                 $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object
                 {
-                    if ($_ -notin $AvailableDrives)
-                    {
+                    if ($_ -notin $AvailableDrives) {
                         Show-Message "[WARNING] Drive ``$($_):\`` is not available and will be skipped" -Yellow
                     }
                     $_
                 }
             }
-            $NoListDrives
-            {
-                if (-not $DriveList)
-                {
+            $NoListDrives {
+                if (-not $DriveList) {
                     Show-Message "[ERROR] ``-NoListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`", `"D`")``" -Red
                     return
                 }
                 $AvailableDrives | Where-Object { $_ -notin $DriveList }
             }
-            default
-            {
+            default {
                 $AvailableDrives
             }
         }
         # Log selected drives and run the function
-        if ($DrivesToScan)
-        {
+        if ($DrivesToScan) {
             Show-Message "Scanning the following drives: $($DrivesToScan -join ', ')" -Green
             Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
         }
-        else
-        {
+        else {
             Show-Message "[ERROR] No valid drives selected for scanning" -Red
         }
     }
-    else
-    {
+    else {
         # Display message that file lists will not be collected
         Show-Message("[WARNING] All file listings will NOT be collected") -Yellow
         # Write message that file lists will not be collected to the .log file
         Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The All File Listings collection option was not enabled") -WarningMessage
     }
 }
+
 Invoke-ListAllFiles
 
 
-if (-not $HashResults)
-{
+if (-not $HashResults) {
     # Display message that output files will not be hashed
     Show-Message("[WARNING] Saved files will NOT be hashed") -Yellow
 
@@ -428,8 +675,7 @@ if (-not $HashResults)
 }
 
 
-if (-not $Archive)
-{
+if (-not $Archive) {
     # Display message that prefetch files will not be collected
     Show-Message("[WARNING] Case archive (.zip) file will NOT be created") -Yellow
 
@@ -438,12 +684,9 @@ if (-not $Archive)
 }
 
 
-
-function Invoke-Yolo
-{
+function Invoke-Yolo {
     # Run all the collection options
-    if ($Yolo)
-    {
+    if ($Yolo) {
         Get-EncryptedDiskDetector $CaseFolderName $ComputerName
         Get-RunningProcesses $CaseFolderName $ComputerName
         Get-ComputerRam $CaseFolderName $ComputerName
@@ -455,6 +698,7 @@ function Invoke-Yolo
         Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
     }
 }
+
 Invoke-Yolo
 
 
@@ -699,15 +943,13 @@ Hashing result files...
 
 
 # If the user wanted to get hash values for the saved output files
-if ($HashResults)
-{
+if ($HashResults) {
     Get-FileHashes $CaseFolderName $ComputerName
 }
 
 
 # Ask the user if they wish to make a .zip file of the results folder when script is complete
-if ($Archive)
-{
+if ($Archive) {
     Get-CaseArchive
 }
 

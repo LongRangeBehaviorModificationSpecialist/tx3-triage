@@ -1,6 +1,5 @@
-function Get-ComputerDetails
-{
-<#
+function Get-ComputerDetails {
+    <#
 .SYNOPSIS
     Collects multiple points of information from the system from various Windows Management Instrumentation (WMI) classes.
 
@@ -55,10 +54,10 @@ function Get-ComputerDetails
 #>
 
     [CmdletBinding()]
+
     param()
 
-    Enum DomainRole
-    {
+    Enum DomainRole {
         StandaloneWorkstation = 0
         MemberWorkstation = 1
         StandaloneServer = 2
@@ -67,8 +66,7 @@ function Get-ComputerDetails
         PrimaryDomainController = 5
     }
 
-    Enum LicenseStatus
-    {
+    Enum LicenseStatus {
         Unlicensed = 0
         Licensed = 1
         OOBGrace = 2
@@ -78,8 +76,7 @@ function Get-ComputerDetails
         ExtendedGrace = 6
     }
 
-    try
-    {
+    try {
         $Win32_OperatingSystem = Get-CIMinstance -class Win32_OperatingSystem
         $Win32_ComputerSystem = Get-CIMInstance -class Win32_ComputerSystem
         $Win32_BIOS = Get-CIMinstance -class Win32_BIOS
@@ -87,28 +84,24 @@ function Get-ComputerDetails
         $SoftwareLicensingProduct = Get-CimInstance SoftwareLicensingProduct -Filter "Name like 'Windows%'" | Where-Object { $_.PartialProductKey }
         $Result = New-Object -TypeName PSObject
 
-        foreach ($Property in $Win32_OperatingSystem.PSObject.Properties)
-        {
+        foreach ($Property in $Win32_OperatingSystem.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
 
         $Result.CurrentTimeZone = $Result.CurrentTimeZone / 60
 
-        foreach ($Property in $Win32_ComputerSystem.PSObject.Properties)
-        {
+        foreach ($Property in $Win32_ComputerSystem.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
 
         $Result.DomainRole = ([DomainRole]$Result.DomainRole).ToString()
         $UpTime = (Get-Date) - $Result.LastBootUpTime
 
-        foreach ($Property in $Win32_Processor.PSObject.Properties)
-        {
+        foreach ($Property in $Win32_Processor.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
 
-        foreach ($Property in $Win32_BIOS.PSObject.Properties)
-        {
+        foreach ($Property in $Win32_BIOS.PSObject.Properties) {
             $Result | Add-Member -MemberType NoteProperty -Name $Property.Name -Value $Property.value -ErrorAction SilentlyContinue | Out-Null
         }
 
@@ -143,8 +136,7 @@ function Get-ComputerDetails
 
         return $Result | Select-Object Host, DateScanned, CurrentTimeZone, InstallDate, LastBootUpTime, UpTime, LocalDateTime, BootDevice, BootROMSupported, BootupState, ChassisBootupState, DataExecutionPrevention_32BitApplications, DataExecutionPrevention_Available, DataExecutionPrevention_Drivers, DataExecutionPrevention_SupportPolicy, MinimumPasswordLength, USBStorageLock, Debug, EncryptionLevel, AdminPasswordStatus, Description, Distributed, OSArchitecture, OSProductSuite, OSType, OperatingSystemSKU, Organization, OtherTypeDescription, PortableOperatingSystem, ProductType, RegisteredUser, ServicePackMajorVersion, ServicePackMinorVersion, Status, SuiteMask, BuildNumber, Caption, LicenseType, LicenseStatus, SystemDevice, SystemDirectory, SystemDrive, MUILanguages, Version, WindowsDirectory, DNSHostName, DaylightInEffect, Domain, DomainRole, EnableDaylightSavingsTime, PrimaryOwnerContact, PrimaryOwnerName, SupportContactDescription, UserName, Manufacturer, Model, NetworkServerModeEnabled, HypervisorPresent, SystemSKUNumber, ThermalState, BIOSVersion, BIOSInstallDate, BIOSManufacturer, PrimaryBIOS, BIOSReleaseDate, SMBIOSBIOSVersion, SMBIOSMajorVersion, SMBIOSMinorVersion, SMBIOSPresent, BIOSSerialNumber, SystemBiosMajorVersion, SystemBiosMinorVersion, VirtualizationFirmwareEnabled
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

@@ -1,8 +1,8 @@
-function Get-AllFilesList
-{
+function Get-AllFilesList {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
@@ -19,15 +19,12 @@ function Get-AllFilesList
 
     $AllDrivesFuncName = $MyInvocation.MyCommand.Name
 
-    try
-    {
-        if (-not (Test-Path $CaseFolderName))
-        {
+    try {
+        if (-not (Test-Path $CaseFolderName)) {
             throw "Case folder ``$CaseFolderName`` does not exist"
         }
 
-        $ExecutionTime = Measure-Command
-        {
+        $ExecutionTime = Measure-Command {
             # Show & log BeginMessage message
             $BeginMessage = "Collecting list of all files from computer: $($ComputerName)"
             Show-Message("$BeginMessage") -Header
@@ -36,14 +33,12 @@ function Get-AllFilesList
             # Make new directory to store the scan results
             $FilesListsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $FilesListFolderName
 
-            if (-not (Test-Path $FilesListsFolder))
-            {
+            if (-not (Test-Path $FilesListsFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> ``$FilesListsFolder``"
             }
 
             # Iterate over filtered drives
-            foreach ($DriveName in $DriveList)
-            {
+            foreach ($DriveName in $DriveList) {
                 $FileListingSaveFile = "$FilesListsFolder\$RunDate`_$ComputerName`_Files_$DriveName.csv"
 
                 $ScanMessage = "Scanning files on the $($DriveName):\ drive"
@@ -81,8 +76,7 @@ function Get-AllFilesList
         Show-FinishMessage $AllDrivesFuncName $ExecutionTime
         Write-LogFinishedMessage $AllDrivesFuncName $ExecutionTime
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

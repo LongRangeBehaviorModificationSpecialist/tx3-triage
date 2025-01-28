@@ -1,8 +1,8 @@
-function Get-EncryptedDiskDetector
-{
+function Get-EncryptedDiskDetector {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
@@ -22,10 +22,8 @@ function Get-EncryptedDiskDetector
     $EddFuncName = $MyInvocation.MyCommand.Name
 
     # If the user chooses the `-Edd` switch
-    try
-    {
-        $ExecutionTime = Measure-Command
-        {
+    try {
+        $ExecutionTime = Measure-Command {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting Encrypted Disk Detector on: $ComputerName"
             Show-Message("$BeginMessage") -Header
@@ -34,8 +32,7 @@ function Get-EncryptedDiskDetector
             # Make new directory to store the scan results
             $EddFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $EddFolderName
 
-            if (-not (Test-Path $EddFolder))
-            {
+            if (-not (Test-Path $EddFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> ``$EddFolder``"
             }
 
@@ -63,11 +60,10 @@ function Get-EncryptedDiskDetector
         Show-FinishMessage $EddFuncName $ExecutionTime
         Write-LogFinishedMessage $EddFuncName $ExecutionTime
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
+        Show-Message -Message "$ErrorMessage" -Red
         Write-LogEntry("[$($EddFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
