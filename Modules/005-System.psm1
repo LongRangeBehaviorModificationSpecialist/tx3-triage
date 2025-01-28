@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (5) GET SYSTEM INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 # 5-001
 function Get-ADS {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-001",
         [string]$FileName = "ADSData.txt"
@@ -22,7 +20,7 @@ function Get-ADS {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ADSData
@@ -50,7 +48,9 @@ function Get-ADS {
 
 # 5-002
 function Get-OpenFiles {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-002",
         [string]$FileName = "ListOfOpenFiles.csv"
@@ -62,7 +62,7 @@ function Get-OpenFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             # Get list of open files with openfiles.exe, output it to CSV format
@@ -91,7 +91,9 @@ function Get-OpenFiles {
 
 # 5-003
 function Get-OpenShares {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-003",
         [string]$FileName = "OpenShares.txt"
@@ -103,7 +105,7 @@ function Get-OpenShares {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_Share | Select-Object -Property *
@@ -131,7 +133,9 @@ function Get-OpenShares {
 
 # 5-004
 function Get-MappedNetworkDriveMRU {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-004",
         [string]$FileName = "MappedNetworkDriveMRU.txt"
@@ -143,7 +147,7 @@ function Get-MappedNetworkDriveMRU {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -151,7 +155,7 @@ function Get-MappedNetworkDriveMRU {
 
             }
             catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
+                Show-Message("$KeyNotFoundMsg") -Yellow
                 Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
             }
             if ($Data.Count -eq 0) {
@@ -177,7 +181,9 @@ function Get-MappedNetworkDriveMRU {
 
 # 5-005
 function Get-ScheduledJobs {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-005",
         [string]$FileName = "ScheduledJobs.txt"
@@ -189,7 +195,7 @@ function Get-ScheduledJobs {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_ScheduledJob
@@ -217,7 +223,9 @@ function Get-ScheduledJobs {
 
 # 5-006
 function Get-ScheduledTasks {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-006",
         [string]$FileName = "ScheduledTasks.txt"
@@ -229,7 +237,7 @@ function Get-ScheduledTasks {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ScheduledTask | Select-Object -Property * | Where-Object { ($_.State -ne 'Disabled') }
@@ -257,7 +265,9 @@ function Get-ScheduledTasks {
 
 # 5-007
 function Get-ScheduledTasksRunInfo {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-007",
         [string]$FileName = "ScheduledTasksRunInfo.txt"
@@ -269,7 +279,7 @@ function Get-ScheduledTasksRunInfo {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" } | Get-ScheduledTaskInfo | Select-Object -Property *
@@ -297,7 +307,9 @@ function Get-ScheduledTasksRunInfo {
 
 # 5-008
 function Get-HotFixesData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-008",
         [string]$FileName = "HotFixes.txt"
@@ -309,7 +321,7 @@ function Get-HotFixesData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn  -Descending
@@ -338,7 +350,9 @@ function Get-HotFixesData {
 
 # 5-009
 function Get-InstalledAppsFromReg {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-009",
         [string]$FileName = "InstalledAppsFromReg.txt"
@@ -350,7 +364,7 @@ function Get-InstalledAppsFromReg {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -358,7 +372,7 @@ function Get-InstalledAppsFromReg {
 
             }
             catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
+                Show-Message("$KeyNotFoundMsg") -Yellow
                 Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
             }
             if ($Data.Count -eq 0) {
@@ -384,7 +398,9 @@ function Get-InstalledAppsFromReg {
 
 # 5-010
 function Get-InstalledAppsFromAppx {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-010",
         [string]$FileName = "InstalledAppsFromAppx.txt"
@@ -396,7 +412,7 @@ function Get-InstalledAppsFromAppx {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-AppxPackage | Format-List
@@ -424,7 +440,9 @@ function Get-InstalledAppsFromAppx {
 
 # 5-011
 function Get-VolumeShadowsData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-011",
         [string]$FileName = "VolumeShadowCopies.txt"
@@ -436,7 +454,7 @@ function Get-VolumeShadowsData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *
@@ -464,7 +482,9 @@ function Get-VolumeShadowsData {
 
 # 5-012
 function Get-DnsCacheDataTxt {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-012",
         [string]$FileName = "DnsCache.txt"
@@ -476,7 +496,7 @@ function Get-DnsCacheDataTxt {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = ipconfig /displaydns
@@ -504,7 +524,9 @@ function Get-DnsCacheDataTxt {
 
 # 5-013
 function Get-DnsCacheDataCsv {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-013",
         [string]$FileName = "DnsClientCache.csv"
@@ -516,7 +538,7 @@ function Get-DnsCacheDataCsv {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-DnsClientCache | ConvertTo-Csv -NoTypeInformation
@@ -544,7 +566,9 @@ function Get-DnsCacheDataCsv {
 
 # 5-014
 function Get-TempInternetFiles {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-014",
         [string]$FileName = "TempInternetFiles.txt"
@@ -556,7 +580,7 @@ function Get-TempInternetFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
@@ -584,7 +608,9 @@ function Get-TempInternetFiles {
 
 # 5-015
 function Get-StoredCookiesData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-015",
         [string]$FileName = "StoredCookies.txt"
@@ -596,7 +622,7 @@ function Get-StoredCookiesData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $AppData = $Env:LOCALAPPDATA
@@ -625,7 +651,9 @@ function Get-StoredCookiesData {
 
 # 5-016
 function Get-TypedUrls {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-016",
         [string]$FileName = "TypedUrls.txt"
@@ -637,7 +665,7 @@ function Get-TypedUrls {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs" | Select-Object * -ExcludeProperty PS*
@@ -665,7 +693,9 @@ function Get-TypedUrls {
 
 # 5-017
 function Get-InternetSettings {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-017",
         [string]$FileName = "InternetSettings.txt"
@@ -677,7 +707,7 @@ function Get-InternetSettings {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" | Select-Object * -ExcludeProperty PS*
@@ -705,7 +735,9 @@ function Get-InternetSettings {
 
 # 5-018
 function Get-TrustedInternetDomains {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-018",
         [string]$FileName = "TrustedInternetDomains.txt"
@@ -717,7 +749,7 @@ function Get-TrustedInternetDomains {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains" | Select-Object PSChildName
@@ -745,7 +777,9 @@ function Get-TrustedInternetDomains {
 
 # 5-019
 function Get-AppInitDllKeys {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-019",
         [string]$FileName = "AppInitDllKey.txt"
@@ -757,7 +791,7 @@ function Get-AppInitDllKeys {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" | Select-Object -Property *
@@ -785,7 +819,9 @@ function Get-AppInitDllKeys {
 
 # 5-020
 function Get-UacGroupPolicy {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-020",
         [string]$FileName = "UacGroupPolicy.txt"
@@ -797,7 +833,7 @@ function Get-UacGroupPolicy {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" | Select-Object * -ExcludeProperty PS*
@@ -825,7 +861,9 @@ function Get-UacGroupPolicy {
 
 # 5-021
 function Get-GroupPolicy {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-021",
         [string]$FileName = "GroupPolicy.txt"
@@ -837,7 +875,7 @@ function Get-GroupPolicy {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = gpresult.exe /z
@@ -865,7 +903,9 @@ function Get-GroupPolicy {
 
 # 5-022
 function Get-ActiveSetupInstalls {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-022",
         [string]$FileName = "ActiveSetupInstalls.txt"
@@ -877,7 +917,7 @@ function Get-ActiveSetupInstalls {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*" | Select-Object -Property *
@@ -905,7 +945,9 @@ function Get-ActiveSetupInstalls {
 
 # 5-023
 function Get-AppPathRegKeys {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-023",
         [string]$FileName = "AppPathRegKeys.txt"
@@ -917,7 +959,7 @@ function Get-AppPathRegKeys {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*" | Select-Object -Property * | Sort-Object '(default)'
@@ -945,7 +987,9 @@ function Get-AppPathRegKeys {
 
 # 5-024
 function Get-DllsLoadedByExplorer {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-024",
         [string]$FileName = "DllsLoadedByExplorerShell.txt"
@@ -957,7 +1001,7 @@ function Get-DllsLoadedByExplorer {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*" | Select-Object -Property *
@@ -985,7 +1029,9 @@ function Get-DllsLoadedByExplorer {
 
 # 5-025
 function Get-ShellUserInitValues {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-025",
         [string]$FileName = "ShellAndUserInitValues.txt"
@@ -997,7 +1043,7 @@ function Get-ShellUserInitValues {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" | Select-Object * -ExcludeProperty PS*
@@ -1025,7 +1071,9 @@ function Get-ShellUserInitValues {
 
 # 5-026
 function Get-SecurityCenterSvcValuesData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-026",
         [string]$FileName = "SvcValues.txt"
@@ -1037,7 +1085,7 @@ function Get-SecurityCenterSvcValuesData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Security Center\Svc" | Select-Object * -ExcludeProperty PS*
@@ -1065,7 +1113,9 @@ function Get-SecurityCenterSvcValuesData {
 
 # 5-027
 function Get-DesktopAddressBarHst {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-027",
         [string]$FileName = "DesktopAddressBar.txt"
@@ -1077,7 +1127,7 @@ function Get-DesktopAddressBarHst {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths" | Select-Object * -ExcludeProperty PS*
@@ -1105,7 +1155,9 @@ function Get-DesktopAddressBarHst {
 
 # 5-028
 function Get-RunMruKeyData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-028",
         [string]$FielName = "RunMruKeyInfo.txt"
@@ -1117,7 +1169,7 @@ function Get-RunMruKeyData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" | Select-Object * -ExcludeProperty PS*
@@ -1145,7 +1197,9 @@ function Get-RunMruKeyData {
 
 # 5-029
 function Get-StartMenuData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-029",
         [string]$FileName = "StartMenuData.txt"
@@ -1157,7 +1211,7 @@ function Get-StartMenuData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu" | Select-Object * -ExcludeProperty PS*
@@ -1185,7 +1239,9 @@ function Get-StartMenuData {
 
 # 5-030
 function Get-ProgramsExeBySessionManager {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-030",
         [string]$FielName = "ProgExeBySessionManager.txt"
@@ -1197,7 +1253,7 @@ function Get-ProgramsExeBySessionManager {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" | Select-Object * -ExcludeProperty PS*
@@ -1225,7 +1281,9 @@ function Get-ProgramsExeBySessionManager {
 
 # 5-031
 function Get-ShellFoldersData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-031",
         [string]$FileName = "ShellFolderInfo.txt"
@@ -1237,7 +1295,7 @@ function Get-ShellFoldersData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object * -ExcludeProperty PS*
@@ -1265,7 +1323,9 @@ function Get-ShellFoldersData {
 
 # 5-032
 function Get-UserStartupShellFolders {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-032",
         [string]$FileName = "StartUpShellFolderInfo.txt"
@@ -1277,7 +1337,7 @@ function Get-UserStartupShellFolders {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object startup
@@ -1305,7 +1365,9 @@ function Get-UserStartupShellFolders {
 
 # 5-033
 function Get-ApprovedShellExts {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-033",
         [string]$FileName = "ApprovedShellExts.txt"
@@ -1317,7 +1379,7 @@ function Get-ApprovedShellExts {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" | Select-Object * -ExcludeProperty PS*
@@ -1345,7 +1407,9 @@ function Get-ApprovedShellExts {
 
 # 5-034
 function Get-AppCertDlls {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-034",
         [string]$FileName = "AppCertDlls.txt"
@@ -1357,7 +1421,7 @@ function Get-AppCertDlls {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -1366,7 +1430,7 @@ function Get-AppCertDlls {
             }
             catch [PathNotFound] {
                 $KeyNotFoundMsg = "Cannot find the listed registry key because it does not exist."
-                Show-Message("$KeyNotFoundMsg") -Red
+                Show-Message("$KeyNotFoundMsg") -Yellow
                 Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
             }
             if ($Data.Count -eq 0) {
@@ -1392,7 +1456,9 @@ function Get-AppCertDlls {
 
 # 5-035
 function Get-ExeFileShellCommands {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-035",
         [string]$FileName = "ExeFileShellCommands.txt"
@@ -1404,7 +1470,7 @@ function Get-ExeFileShellCommands {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\exefile\shell\open\command" | Select-Object * -ExcludeProperty PS*
@@ -1432,7 +1498,9 @@ function Get-ExeFileShellCommands {
 
 # 5-036
 function Get-ShellOpenCommands {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-036",
         [string]$FileName = "ShellCommands.txt"
@@ -1444,7 +1512,7 @@ function Get-ShellOpenCommands {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\http\shell\open\command" | Select-Object "(Default)"
@@ -1472,7 +1540,9 @@ function Get-ShellOpenCommands {
 
 # 5-037
 function Get-BcdRelatedData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-037",
         [string]$FileName = "BcdRelatedData.txt"
@@ -1484,7 +1554,7 @@ function Get-BcdRelatedData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\BCD00000000\*\*\*\*" | Select-Object Element | Select-String "exe" | Select-Object Line
@@ -1512,7 +1582,9 @@ function Get-BcdRelatedData {
 
 # 5-038
 function Get-LsaData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-038",
         [string]$FileName = "LoadedLsaPackages.txt"
@@ -1524,7 +1596,7 @@ function Get-LsaData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" | Select-Object * -ExcludeProperty PS*
@@ -1552,7 +1624,9 @@ function Get-LsaData {
 
 # 5-039
 function Get-BrowserHelperFile {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-039",
         [string]$FileName = "BrowserHelperObjects.txt"
@@ -1564,7 +1638,7 @@ function Get-BrowserHelperFile {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
@@ -1593,7 +1667,9 @@ function Get-BrowserHelperFile {
 
 # 5-040
 function Get-BrowserHelperx64File {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-040",
         [string]$FileName = "BrowserHelperObjectsx64.txt"
@@ -1605,7 +1681,7 @@ function Get-BrowserHelperx64File {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
@@ -1633,7 +1709,9 @@ function Get-BrowserHelperx64File {
 
 # 5-041
 function Get-IeExtensions {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-041",
         [string]$FileName = "IeExtensions.txt"
@@ -1645,7 +1723,7 @@ function Get-IeExtensions {
     try {
         # Run the commands
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -1654,7 +1732,7 @@ function Get-IeExtensions {
 
             }
             catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
+                Show-Message("$KeyNotFoundMsg") -Yellow
                 Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
             }
             if ($Data1.Count -eq 0) {
@@ -1687,7 +1765,9 @@ function Get-IeExtensions {
 
 # 5-042
 function Get-UsbDevices {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-042",
         [string]$FileName = "UsbDevices.txt"
@@ -1699,7 +1779,7 @@ function Get-UsbDevices {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*" | Select-Object FriendlyName, PSChildName, ContainerID
@@ -1727,7 +1807,9 @@ function Get-UsbDevices {
 
 # 5-043
 function Get-AuditPolicy {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-043",
         [string]$FileName = "AuditPolicy.txt"
@@ -1739,7 +1821,7 @@ function Get-AuditPolicy {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = auditpol /get /category:*
@@ -1767,7 +1849,9 @@ function Get-AuditPolicy {
 
 # 5-044
 function Get-RecentAddedExeFiles {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-044",
         [string]$FileName = "RecentSoftwareRegistryChanges.txt",
@@ -1780,7 +1864,7 @@ function Get-RecentAddedExeFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -1815,7 +1899,9 @@ function Get-RecentAddedExeFiles {
 
 # 5-045
 function Get-HiddenFiles {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-045",
         [string]$FileName = "HiddenFiles.txt",
@@ -1828,7 +1914,7 @@ function Get-HiddenFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Validate the input path
             if (-not (Test-Path $Path)) {
@@ -1862,7 +1948,9 @@ function Get-HiddenFiles {
 
 # 5-046
 function Get-ExecutableFiles {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "5-046",
         [string]$FileName = "ExecutableFiles.txt",
@@ -1875,7 +1963,7 @@ function Get-ExecutableFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Path = "C:\"
             # Validate the input path

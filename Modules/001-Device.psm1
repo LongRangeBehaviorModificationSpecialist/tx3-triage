@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (1) GET DEVICE INFORMATION
-#!
-#! ======================================
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
-# $DeviceFolder = "$CaseFolderName\001_DeviceInfo"
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
 
 # 1-001
 function Get-VariousData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-001",
         [string]$FileName = "VariousData.txt"
@@ -22,7 +20,7 @@ function Get-VariousData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ComputerDetails
@@ -50,7 +48,9 @@ function Get-VariousData {
 
 # 1-002
 function Get-TPMData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-002",
         [string]$FileName = "TPMDetails.txt"
@@ -62,7 +62,7 @@ function Get-TPMData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-TPMDetails
@@ -90,7 +90,9 @@ function Get-TPMData {
 
 # 1-003
 function Get-PSInfo {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-003",
         [string]$FileName = "PSInfo.txt"
@@ -102,7 +104,7 @@ function Get-PSInfo {
     try {
         # Measure the time it takes to run the PsInfo command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             # Run the PsInfo command
@@ -131,7 +133,9 @@ function Get-PSInfo {
 
 # 1-004
 function Get-PSDriveData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-004",
         [string]$FileName = "PSDriveInfo.txt"
@@ -143,7 +147,7 @@ function Get-PSDriveData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-PSDrive -PSProvider FileSystem | Select-Object -Property *
@@ -171,7 +175,9 @@ function Get-PSDriveData {
 
 # 1-005
 function Get-LogicalDiskData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-005",
         [string]$FileName = "LogicalDisks.txt"
@@ -183,7 +189,7 @@ function Get-LogicalDiskData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *
@@ -211,7 +217,9 @@ function Get-LogicalDiskData {
 
 # 1-006
 function Get-ComputerData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-006",
         [string]$FileName = "ComputerInfo.txt"
@@ -223,7 +231,7 @@ function Get-ComputerData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ComputerInfo
@@ -251,7 +259,9 @@ function Get-ComputerData {
 
 # 1-007
 function Get-SystemDataCMD {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-007",
         [string]$FileName = "SystemInfo.txt"
@@ -263,7 +273,7 @@ function Get-SystemDataCMD {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = systeminfo /FO LIST
@@ -291,7 +301,9 @@ function Get-SystemDataCMD {
 
 # 1-008
 function Get-SystemDataPS {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-008",
         [string]$FileName = "ComputerSystem.txt"
@@ -303,7 +315,7 @@ function Get-SystemDataPS {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *
@@ -331,7 +343,9 @@ function Get-SystemDataPS {
 
 # 1-009
 function Get-OperatingSystemData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-009",
         [string]$FileName = "OSInfo.txt"
@@ -343,7 +357,7 @@ function Get-OperatingSystemData {
     try {
         # Run the first command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *
@@ -371,7 +385,9 @@ function Get-OperatingSystemData {
 
 # 1-010
 function Get-PhysicalMemory {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-010",
         [string]$FileName = "PhysicalMemory.txt"
@@ -383,7 +399,7 @@ function Get-PhysicalMemory {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *
@@ -411,7 +427,9 @@ function Get-PhysicalMemory {
 
 # 1-011
 function Get-EnvVars {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-011",
         [string]$FileName = "EnvVars.txt"
@@ -423,7 +441,7 @@ function Get-EnvVars {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ChildItem -Path env: | Format-List
@@ -451,7 +469,9 @@ function Get-EnvVars {
 
 # 1-012
 function Get-PhysicalDiskData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-012",
         [string]$FileName = "PhysicalDisks.txt"
@@ -463,7 +483,7 @@ function Get-PhysicalDiskData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Disk | Select-Object -Property * | Sort-Object DiskNumber
@@ -491,7 +511,9 @@ function Get-PhysicalDiskData {
 
 # 1-013
 function Get-DiskPartitions {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-013",
         [string]$FileName = "DiskPartitions.txt"
@@ -503,7 +525,7 @@ function Get-DiskPartitions {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber
@@ -531,7 +553,9 @@ function Get-DiskPartitions {
 
 # 1-014
 function Get-Win32DiskParts {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-014",
         [string]$FileName = "Win32DiskPartitions.txt"
@@ -543,7 +567,7 @@ function Get-Win32DiskParts {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name | Format-List
@@ -571,7 +595,9 @@ function Get-Win32DiskParts {
 
 # 1-015
 function Get-Win32StartupApps {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-015",
         [string]$FileName = "Win32StartupApps.txt"
@@ -583,7 +609,7 @@ function Get-Win32StartupApps {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *
@@ -610,38 +636,72 @@ function Get-Win32StartupApps {
 }
 
 # 1-016
-function Get-HKLMSoftwareCVRunStartupApps {
+function Get-DataFromReg {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-016",
-        [string]$FileName = "HKLMSoftwareCVRunStartupApps.txt"
+        [string]$FileName = "StartUpDataFromRegistry.txt"
+    )
+
+    $RegistryPaths = @(
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce",
+        "HKCU:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run",
+        "HKCU:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run",
+        "HKCU:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnce",
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run",
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
+        "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run",
+        "HKLM:\SOFTWARE\Wow6432Node\microsoft\windows\CurrentVersion\RunOnce"
     )
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
+
     try {
-        # Run the command
+
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            try {
+            $Counter = 1
 
-                $Data = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | Select-Object * -ExcludeProperty PS*
+            foreach ($RegPath in $RegistryPaths) {
 
+                if (Test-Path -Path $RegPath) {
+
+                    $Data = Get-ItemProperty $RegPath | Select-Object * -ExcludeProperty PS* | Format-List
+
+                    if ($Data.Count -eq 0) {
+                        $NoDataMsg = "[$Counter] No data found in [$RegPath] registry key"
+                        Add-Content -Path $File -Value "[$Counter] No data found in [$RegPath] registry key`n"
+                        Show-Message($NoDataMsg) -Yellow
+                        Write-LogEntry($NoDataMsg)
+
+                    }
+                    else {
+                        $DataSavedMsg = "[$Counter] Data from [$RegPath] saved to $($FileName)"
+                        Add-Content -Path $File -Value "[$Counter] Data from [$RegPath] Registry key"
+                        $Data | Out-File -Append -FilePath $File -Encoding UTF8
+                        Show-Message($DataSavedMsg) -Green
+                        Write-LogEntry($DataSavedMsg)
+                    }
+                }
+                else {
+                    $KeyDneMsg = "[$Counter] Cannot find key [$RegPath] because it does not exist"
+                    Add-Content -Path $File -Value "[$Counter] Key [$RegPath] does not exist on this system`n"
+                    Show-Message($KeyDneMsg) -Yellow
+                    Write-LogEntry($KeyDneMsg) -WarningMessage
+                }
+                $Counter++
             }
-            catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
-                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-            }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
-            }
-            else {
-                Save-Output $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
-            }
+            Show-OutputSavedToFile $File
+            Write-LogOutputSaved $File
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -656,240 +716,12 @@ function Get-HKLMSoftwareCVRunStartupApps {
 }
 
 # 1-017
-function Get-HKLMSoftwareCVPoliciesExpRunStartupApps {
+function Get-SoftwareLicenseData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "1-017",
-        [string]$FileName = "HKLMSoftwareCVPoliciesExpRunStartupApps.txt"
-    )
-
-    $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
-    try {
-        #Run the command
-        $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            try {
-
-                $Data = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run | Select-Object * -ExcludeProperty PS*
-
-            }
-            catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
-                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-            }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
-            }
-            else {
-                Save-Output $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
-            }
-        }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
-    }
-    catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-    }
-}
-
-# 1-018
-function Get-HKLMSoftwareCVRunOnceStartupApps {
-    [CmdletBinding()]
-    param (
-        [string]$Num = "1-018",
-        [string]$FileName = "HKLMSoftwareCVRunOnceStartupApps.txt"
-    )
-
-    $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
-    try {
-        # Run the command
-        $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            try {
-
-                $Data = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce | Select-Object * -ExcludeProperty PS*
-
-            }
-            catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
-                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-            }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
-            }
-            else {
-                Save-Output $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
-            }
-        }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
-    }
-    catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-    }
-}
-
-# 1-019
-function Get-HKCUSoftwareCVRunStartupApps {
-    [CmdletBinding()]
-    param (
-        [string]$Num = "1-019",
-        [string]$FileName = "HKCUSoftwareCVRunStartupApps.txt"
-    )
-
-    $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
-    try {
-        # Run the command
-        $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            try {
-
-                $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | Select-Object * -ExcludeProperty PS*
-
-            }
-            catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
-                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-            }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
-            }
-            else {
-                Save-Output $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
-            }
-        }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
-    }
-    catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-    }
-}
-
-# 1-020
-function Get-HKCUSoftwareCVPoliciesExpRunStartupApps {
-    [CmdletBinding()]
-    param (
-        [string]$Num = "1-020",
-        [string]$FileName = "HKCUSoftwareCVPoliciesExpRunStartupApps.txt"
-    )
-
-    $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
-    try {
-        # Run the command
-        $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            try {
-
-                $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run | Select-Object * -ExcludeProperty PS*
-
-            }
-            catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
-                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-            }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
-            }
-            else {
-                Save-Output $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
-            }
-        }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
-    }
-    catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-    }
-}
-
-# 1-021
-function Get-HKCUSoftwareCVRunOnceStartupApps {
-    [CmdletBinding()]
-    param (
-        [string]$Num = "1-021",
-        [string]$FileName = "HKCUSoftwareCVRunOnceStartupApps.txt"
-    )
-
-    $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
-    try {
-        # Run the command
-        $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            try {
-
-                $Data = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce | Select-Object * -ExcludeProperty PS*
-
-            }
-            catch [PathNotFound] {
-                Show-Message("$KeyNotFoundMsg") -Red
-                Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-            }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
-            }
-            else {
-                Save-Output $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
-            }
-        }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
-    }
-    catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-    }
-}
-
-# 1-022
-function Get-SoftwareLicenseData {
-    [CmdletBinding()]
-    param (
-        [string]$Num = "1-022",
         [string]$FileName = "SoftwareLicense.txt"
     )
 
@@ -899,7 +731,7 @@ function Get-SoftwareLicenseData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-WmiObject -ClassName SoftwareLicensingService
@@ -925,11 +757,13 @@ function Get-SoftwareLicenseData {
     }
 }
 
-# 1-023
+# 1-018
 function Get-AutoRunsData {
+
     [CmdletBinding()]
+
     param (
-        [string]$Num = "1-023",
+        [string]$Num = "1-018",
         [string]$FileName = "AutoRuns.csv"
     )
 
@@ -939,7 +773,7 @@ function Get-AutoRunsData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = .\bin\autorunsc64.exe -a * -c -nobanner
@@ -965,11 +799,13 @@ function Get-AutoRunsData {
     }
 }
 
-# 1-024
+# 1-019
 function Get-BiosData {
+
     [CmdletBinding()]
+
     param (
-        [string]$Num = "1-024",
+        [string]$Num = "1-019",
         [string]$FileName = "BiosInfo.txt"
     )
 
@@ -979,7 +815,7 @@ function Get-BiosData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *
@@ -1005,11 +841,13 @@ function Get-BiosData {
     }
 }
 
-# 1-025
+# 1-020
 function Get-ConnectedDevices {
+
     [CmdletBinding()]
+
     param (
-        [string]$Num = "1-025",
+        [string]$Num = "1-020",
         [string]$FileName = "ConnectedDevices.csv"
     )
 
@@ -1019,7 +857,7 @@ function Get-ConnectedDevices {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-PnpDevice
@@ -1045,11 +883,13 @@ function Get-ConnectedDevices {
     }
 }
 
-# 1-026
+# 1-021
 function Get-HardwareInfo {
+
     [CmdletBinding()]
+
     param (
-        [string]$Num = "1-026",
+        [string]$Num = "1-021",
         [string]$FileName = "Hardware.txt"
     )
 
@@ -1059,7 +899,7 @@ function Get-HardwareInfo {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance Win32_PnPEntity
@@ -1090,15 +930,17 @@ function Get-HardwareInfo {
     }
 }
 
-# 1-027
+# 1-022
 function Get-Win32Products {
 <#
 .SYNOPSIS
     `Get-Win32Products` returns data about products that were installed via the Windows installer.
 #>
+
     [CmdletBinding()]
+
     param (
-        [string]$Num = "1-027",
+        [string]$Num = "1-022",
         [string]$FileName = "Win32Products.txt"
     )
 
@@ -1108,7 +950,7 @@ function Get-Win32Products {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-WmiObject Win32_Product
@@ -1134,15 +976,17 @@ function Get-Win32Products {
     }
 }
 
-# 1-028
+# 1-023
 function Get-OpenWindowTitles {
 <#
 .SYNOPSIS
     `Get-OpenWindowTitles` queries all main window titles and lists them as a table.
 #>
+
     [CmdletBinding()]
+
     param (
-        [string]$Num = "1-028",
+        [string]$Num = "1-023",
         [string]$FileName = "OpenWindowTitles.txt"
     )
 
@@ -1152,7 +996,7 @@ function Get-OpenWindowTitles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Format-Table ID, ProcessName, MainWindowTitle -AutoSize
@@ -1179,4 +1023,4 @@ function Get-OpenWindowTitles {
 }
 
 
-Export-ModuleMember -Function Get-VariousData, Get-TPMData, Get-PSInfo, Get-PSDriveData, Get-LogicalDiskData, Get-ComputerData, Get-SystemDataCMD, Get-SystemDataPS, Get-OperatingSystemData, Get-PhysicalMemory, Get-EnvVars, Get-PhysicalDiskData, Get-DiskPartitions, Get-Win32DiskParts, Get-Win32StartupApps, Get-HKLMSoftwareCVRunStartupApps, Get-HKLMSoftwareCVPoliciesExpRunStartupApps, Get-HKLMSoftwareCVRunOnceStartupApps, Get-HKCUSoftwareCVRunStartupApps, Get-HKCUSoftwareCVPoliciesExpRunStartupApps, Get-HKCUSoftwareCVRunOnceStartupApps, Get-SoftwareLicenseData, Get-AutoRunsData, Get-BiosData, Get-ConnectedDevices, Get-HardwareInfo, Get-Win32Products, Get-OpenWindowTitles
+Export-ModuleMember -Function Get-VariousData, Get-TPMData, Get-PSInfo, Get-PSDriveData, Get-LogicalDiskData, Get-ComputerData, Get-SystemDataCMD, Get-SystemDataPS, Get-OperatingSystemData, Get-PhysicalMemory, Get-EnvVars, Get-PhysicalDiskData, Get-DiskPartitions, Get-Win32DiskParts, Get-Win32StartupApps, Get-DataFromReg, Get-SoftwareLicenseData, Get-AutoRunsData, Get-BiosData, Get-ConnectedDevices, Get-HardwareInfo, Get-Win32Products, Get-OpenWindowTitles

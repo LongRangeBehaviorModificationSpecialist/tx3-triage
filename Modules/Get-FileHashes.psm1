@@ -1,16 +1,17 @@
-function Get-FileHashes
-{
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
+function Get-FileHashes {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-
         [Parameter(Position = 1)]
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
-
         [string[]]$ExcludedFiles = @('*PowerShell_transcript*'),
         # Name of the directory to store the hash results .CSV file
         [string]$HashResultsFolderName = "HashResults"
@@ -18,26 +19,23 @@ function Get-FileHashes
 
     $FileHashFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
-    try
-    {
-        $ExecutionTime = Measure-Command
-        {
+    try {
+        $ExecutionTime = Measure-Command {
             # Show & log $beginMessage message
             $BeginMessage = "Hashing files for computer: $ComputerName"
-            Show-Message("$BeginMessage") -Header
+            Show-Message("$BeginMessage")
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the prefetch files
             $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
 
-            if (-not (Test-Path $HashResultsFolder))
-            {
+            if (-not (Test-Path $HashResultsFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> ``$HashResultsFolder``"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created ``$($HashResultsFolder.Name)`` folder in the case directory"
-            Show-Message("$CreateDirMsg")
+            $CreateDirMsg = "Created ``$($HashResultsFolder.Name)`` folder in the case directory`n"
+            Show-Message("$CreateDirMsg") -Green
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # Add the filename and filetype to the end
@@ -50,8 +48,7 @@ function Get-FileHashes
             $Results = @()
 
             # Exclude the PowerShell transcript file from being included in the file that are hashed
-            $Results = Get-ChildItem -Path $CaseFolderName -Recurse -Force -File | Where-Object { $_.Name -notlike $ExcludedFiles } | ForEach-Object
-            {
+            $Results = Get-ChildItem -Path $CaseFolderName -Recurse -Force -File | Where-Object { $_.Name -notlike $ExcludedFiles } | ForEach-Object {
                 $FileHash = (Get-FileHash -Algorithm SHA256 -Path $_.FullName).Hash
                 [PSCustomObject]@{
                     DirectoryName      = $_.DirectoryName
@@ -70,11 +67,11 @@ function Get-FileHashes
 
                 # Show & log $ProgressMsg message
                 $ProgressMsg = "Hashing file: $($_.Name)"
-                Show-Message("$ProgressMsg") -Header
+                Show-Message("$ProgressMsg")
 
                 # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
                 $HashMsgFileName = "Completed hashing file: ``$($_.Name)``"
-                $HashValueMsg = "[SHA256] $($FileHash)"
+                $HashValueMsg = "[SHA256]: $($FileHash)`n"
                 Show-Message("$HashMsgFileName") -Blue
                 Show-Message("$HashValueMsg") -Blue
                 Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName")
@@ -85,20 +82,21 @@ function Get-FileHashes
             $Results | Export-Csv -Path $HashOutputFilePath -NoTypeInformation -Encoding UTF8
 
             # Show & log $FileMsg message
-            $FileMsg = "Hash values saved to -> ``$HashOutputFileName``"
-            Show-Message("$FileMsg") -Header -Blue
+            $FileMsg = "Hash values saved to -> ``$HashOutputFileName```n"
+            Show-Message("$FileMsg") -Blue
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
         }
+
         # Show & log finish messages
         Show-FinishMessage $FileHashFuncName $ExecutionTime
         Write-LogFinishedMessage $FileHashFuncName $ExecutionTime
     }
-    catch
-    {
+
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
     }
 }
 

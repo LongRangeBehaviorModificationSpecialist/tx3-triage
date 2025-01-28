@@ -1,3 +1,6 @@
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
 function Get-AllFilesList {
 
     [CmdletBinding()]
@@ -6,11 +9,9 @@ function Get-AllFilesList {
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-
         [Parameter(Position = 1)]
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
-
         # List of drives to be included or excluded depending on the switch value that is entered
         [string[]]$DriveList,
         # Create folder to store the compiled file lists
@@ -27,7 +28,7 @@ function Get-AllFilesList {
         $ExecutionTime = Measure-Command {
             # Show & log BeginMessage message
             $BeginMessage = "Collecting list of all files from computer: $($ComputerName)"
-            Show-Message("$BeginMessage") -Header
+            Show-Message("$BeginMessage")
             Write-LogEntry("[$($AllDrivesFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the scan results
@@ -46,8 +47,7 @@ function Get-AllFilesList {
                 Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $ScanMessage")
 
                 # Scan and save file details
-                Get-ChildItem -Path "$($DriveName):\" -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | ForEach-Object
-                {
+                Get-ChildItem -Path "$($DriveName):\" -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | ForEach-Object {
                     [PSCustomObject]@{
                         Directory         = $_.DirectoryName
                         BaseName          = $_.BaseName
@@ -72,10 +72,12 @@ function Get-AllFilesList {
                 Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $FileTitle")
             }
         }
+
         # Show & log finish messages
         Show-FinishMessage $AllDrivesFuncName $ExecutionTime
         Write-LogFinishedMessage $AllDrivesFuncName $ExecutionTime
     }
+
     catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"

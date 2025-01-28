@@ -1,16 +1,17 @@
-function Get-RunningProcesses
-{
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
+function Get-RunningProcesses {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-
         [Parameter(Position = 1)]
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
-
         # Name of the directory to store the extracted process files
         [string]$ProcessesFolderName = "00B_Processes",
         # Relative path to the ProcessCapture executable file
@@ -20,21 +21,18 @@ function Get-RunningProcesses
     $ProcessFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     # If the user wants to execute the ProcessCapture
-    try
-    {
-        $ExecutionTime = Measure-Command
-        {
+    try {
+        $ExecutionTime = Measure-Command {
 
             # Show & log $BeginMessage message
             $BeginMessage = "Starting Process Capture from: $ComputerName.  Please wait..."
-            Show-Message("$BeginMessage") -Header
+            Show-Message("$BeginMessage")
             Write-LogEntry("[$($ProcessFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the files list
             $ProcessesFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $ProcessesFolderName
 
-            if (-not (Test-Path $ProcessesFolder))
-            {
+            if (-not (Test-Path $ProcessesFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> ``$ProcessesFolder``"
             }
 
@@ -53,12 +51,13 @@ function Get-RunningProcesses
             Show-Message("$SuccessMsg")
             Write-LogEntry("[$($ProcessFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
+
         # Show & log finish messages
         Show-FinishMessage $ProcessFuncName $ExecutionTime
         Write-LogFinishedMessage $ProcessFuncName $ExecutionTime
     }
-    catch
-    {
+
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

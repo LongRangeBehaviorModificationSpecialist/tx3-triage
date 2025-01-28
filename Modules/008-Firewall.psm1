@@ -1,19 +1,15 @@
-#! ======================================
-#!
-#! (8) GET WINDOWS FIREWALL INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
 # 8-001
-function Get-FirewallRules
-{
+function Get-FirewallRules {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [string]$Num = "8-001",
         [string]$FileName = "FirewallRules.txt"
     )
@@ -22,20 +18,16 @@ function Get-FirewallRules
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
 
-    try
-    {
+    try {
         # Run the command
-        $ExecutionTime = Measure-Command
-        {
-            Show-Message("$Header") -Header
+        $ExecutionTime = Measure-Command {
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-NetFirewallRule
-            if ($Data.Count -eq 0)
-            {
+            if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
-            else
-            {
+            else {
                 Save-Output $Data $File
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
@@ -45,8 +37,7 @@ function Get-FirewallRules
         Show-FinishMessage $FunctionName $ExecutionTime
         Write-LogFinishedMessage $FunctionName $ExecutionTime
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
@@ -54,13 +45,12 @@ function Get-FirewallRules
     }
 }
 
-
 # 8-002
-function Get-AdvFirewallRules
-{
+function Get-AdvFirewallRules {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [string]$Num = "8-002",
         [string]$FileName = "AdvFirewallRules.txt"
     )
@@ -69,20 +59,16 @@ function Get-AdvFirewallRules
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
 
-    try
-    {
+    try {
         # Run the command
-        $ExecutionTime = Measure-Command
-        {
-            Show-Message("$Header") -Header
+        $ExecutionTime = Measure-Command {
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = netsh advfirewall firewall show rule name=all verbose
-            if ($Data.Count -eq 0)
-            {
+            if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
-            else
-            {
+            else {
                 Save-Output $Data $File
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
@@ -92,8 +78,7 @@ function Get-AdvFirewallRules
         Show-FinishMessage $FunctionName $ExecutionTime
         Write-LogFinishedMessage $FunctionName $ExecutionTime
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red
@@ -101,13 +86,12 @@ function Get-AdvFirewallRules
     }
 }
 
-
 # 8-003
-function Get-DefenderExclusions
-{
+function Get-DefenderExclusions {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [string]$Num = "8-003",
         [string]$FileName = "DefenderPreferences.txt"
     )
@@ -116,20 +100,16 @@ function Get-DefenderExclusions
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
 
-    try
-    {
+    try {
         # Run the command
-        $ExecutionTime = Measure-Command
-        {
-            Show-Message("$Header") -Header
+        $ExecutionTime = Measure-Command {
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-MpPreference
-            if ($Data.Count -eq 0)
-            {
+            if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
-            else
-            {
+            else {
                 Save-Output $Data $File
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
@@ -139,8 +119,7 @@ function Get-DefenderExclusions
         Show-FinishMessage $FunctionName $ExecutionTime
         Write-LogFinishedMessage $FunctionName $ExecutionTime
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

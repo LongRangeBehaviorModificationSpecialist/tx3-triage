@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (7) GET WINDOWS EVENT LOG INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 # 7-001
 function Get-EventLogListBasic {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-001",
         [string]$FileName = "ListOfEventLogs.txt"
@@ -22,7 +20,7 @@ function Get-EventLogListBasic {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -30,7 +28,7 @@ function Get-EventLogListBasic {
 
             }
             catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
             if ($Data.Count -eq 0) {
@@ -56,7 +54,9 @@ function Get-EventLogListBasic {
 
 # 7-002
 function Get-EventLogListDetailed {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-002",
         [string]$FileName = "ListOfEventLogsDetailed.txt"
@@ -68,7 +68,7 @@ function Get-EventLogListDetailed {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -76,7 +76,7 @@ function Get-EventLogListDetailed {
 
             }
             catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
             if ($Data.Count -eq 0) {
@@ -102,7 +102,9 @@ function Get-EventLogListDetailed {
 
 # 7-003
 function Get-SecurityEventCount {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-003",
         [string]$FileName = "SecurityEventCount.txt",
@@ -115,7 +117,7 @@ function Get-SecurityEventCount {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -124,7 +126,7 @@ function Get-SecurityEventCount {
 
             }
             catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
             if ($Data.Count -eq 0) {
@@ -150,7 +152,9 @@ function Get-SecurityEventCount {
 
 # 7-004
 function Get-SecurityEventsLast30DaysTxt {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-004",
         [string]$FileName = "SecurityEvents.txt",
@@ -163,7 +167,7 @@ function Get-SecurityEventsLast30DaysTxt {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -172,7 +176,7 @@ function Get-SecurityEventsLast30DaysTxt {
 
             }
             catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
             if ($Data.Count -eq 0) {
@@ -198,7 +202,9 @@ function Get-SecurityEventsLast30DaysTxt {
 
 # 7-005
 function Get-SecurityEventsLast30DaysCsv {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-005",
         [string]$FileName = "SecurityEvents.csv",
@@ -211,7 +217,7 @@ function Get-SecurityEventsLast30DaysCsv {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
@@ -220,7 +226,7 @@ function Get-SecurityEventsLast30DaysCsv {
 
             }
             catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
             if ($Data.Count -eq 0) {
@@ -246,7 +252,9 @@ function Get-SecurityEventsLast30DaysCsv {
 
 # 7-006
 function Get-Application1002Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-006",
         [string]$FileName = "ApplicationLogId1002AppCrashes.txt",
@@ -257,19 +265,21 @@ function Get-Application1002Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             try {
 
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1002 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -278,6 +288,7 @@ function Get-Application1002Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -293,7 +304,9 @@ function Get-Application1002Events {
 
 # 7-007
 function Get-System1014Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-007",
         [string]$FileName = "SystemLogId1014FailedDnsResolution.txt",
@@ -304,19 +317,21 @@ function Get-System1014Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 1014 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -325,6 +340,7 @@ function Get-System1014Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -341,7 +357,9 @@ function Get-System1014Events {
 
 # 7-008
 function Get-Application1102Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-008",
         [string]$FileName = "ApplicationLogId1102AuditLogCleared.txt",
@@ -352,19 +370,21 @@ function Get-Application1102Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1102 } |Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -373,6 +393,7 @@ function Get-Application1102Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -388,7 +409,9 @@ function Get-Application1102Events {
 
 # 7-009
 function Get-Security4616Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-009",
         [string]$FileName = "SecurityLogId4616ChangedSystemTime.txt",
@@ -399,19 +422,21 @@ function Get-Security4616Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4616 } |Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -420,6 +445,7 @@ function Get-Security4616Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -435,7 +461,9 @@ function Get-Security4616Events {
 
 # 7-010
 function Get-Security4624Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-010",
         [string]$FileName = "SecurityLogId4624AccountLogons.txt",
@@ -446,19 +474,21 @@ function Get-Security4624Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4624 } | Select-Object TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -467,6 +497,7 @@ function Get-Security4624Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -482,7 +513,9 @@ function Get-Security4624Events {
 
 # 7-011
 function Get-Security4625Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-011",
         [string]$FileName = "SecurityLogId4625FailedAccountLogons.txt",
@@ -493,19 +526,21 @@ function Get-Security4625Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4625 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -514,6 +549,7 @@ function Get-Security4625Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -529,7 +565,9 @@ function Get-Security4625Events {
 
 # 7-012
 function Get-Security4648Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-012",
         [string]$FileName = "SecurityLogId4648LogonUsingExplicitCreds.txt",
@@ -540,19 +578,21 @@ function Get-Security4648Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4648 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -561,6 +601,7 @@ function Get-Security4648Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -576,7 +617,9 @@ function Get-Security4648Events {
 
 # 7-013
 function Get-Security4672Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-013",
         [string]$FileName = "SecurityLogId4672PrivilegeUse.txt",
@@ -587,19 +630,21 @@ function Get-Security4672Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4672 } | Select-Object TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -608,6 +653,7 @@ function Get-Security4672Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -623,7 +669,9 @@ function Get-Security4672Events {
 
 # 7-014
 function Get-Security4673Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-014",
         [string]$FileName = "SecurityLogId4673PrivilegeUse.txt",
@@ -634,19 +682,21 @@ function Get-Security4673Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4673 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -655,6 +705,7 @@ function Get-Security4673Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -670,7 +721,9 @@ function Get-Security4673Events {
 
 # 7-015
 function Get-Security4674Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-015",
         [string]$FileName = "SecurityLogId4674PrivilegeUse.txt",
@@ -681,19 +734,21 @@ function Get-Security4674Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4674 } |Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -702,6 +757,7 @@ function Get-Security4674Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -717,7 +773,9 @@ function Get-Security4674Events {
 
 # 7-016
 function Get-Security4688Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-016",
         [string]$FileName = "SecurityLogId4688ProcessExecution.txt",
@@ -727,19 +785,21 @@ function Get-Security4688Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4688 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -748,6 +808,7 @@ function Get-Security4688Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -763,7 +824,9 @@ function Get-Security4688Events {
 
 # 7-017
 function Get-Security4720Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-017",
         [string]$FileName = "SecurityLogId4720UserAccountCreated.txt",
@@ -774,19 +837,21 @@ function Get-Security4720Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4720 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -795,6 +860,7 @@ function Get-Security4720Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -810,7 +876,9 @@ function Get-Security4720Events {
 
 # 7-018
 function Get-System7036Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-018",
         [string]$FileName = "SystemLogId7036ServiceControlManagerEvents.txt",
@@ -821,19 +889,21 @@ function Get-System7036Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 7036 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -842,6 +912,7 @@ function Get-System7036Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -857,7 +928,9 @@ function Get-System7036Events {
 
 # 7-019
 function Get-System7045Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-019",
         [string]$FileName = "SystemLogId7045ServiceCreation.txt",
@@ -868,19 +941,21 @@ function Get-System7045Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 7045 } | Select-Object TimeCreated, ID, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -889,6 +964,7 @@ function Get-System7045Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -904,7 +980,9 @@ function Get-System7045Events {
 
 # 7-020
 function Get-System64001Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-020",
         [string]$FileName = "SystemLogId64001WfpEvent.txt",
@@ -915,19 +993,21 @@ function Get-System64001Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 64001 } | Select-Object TimeCreated, ID, Message | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -936,6 +1016,7 @@ function Get-System64001Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -951,7 +1032,9 @@ function Get-System64001Events {
 
 # 7-021
 function Get-AppInvEvts {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-021",
         [string]$FileName = "AppInventoryEvents.txt"
@@ -961,19 +1044,20 @@ function Get-AppInvEvts {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -982,6 +1066,7 @@ function Get-AppInvEvts {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -997,7 +1082,9 @@ function Get-AppInvEvts {
 
 # 7-022
 function Get-TerminalServiceEvents {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-022",
         [string]$FileName = "TerminalServiceEvents.txt"
@@ -1007,19 +1094,21 @@ function Get-TerminalServiceEvents {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending | Format-List
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1028,6 +1117,7 @@ function Get-TerminalServiceEvents {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -1043,7 +1133,9 @@ function Get-TerminalServiceEvents {
 
 # 7-023
 function Get-PSOperational4104Events {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "7-023",
         [string]$FileName = "PSOperational4104Event.txt"
@@ -1053,19 +1145,21 @@ function Get-PSOperational4104Events {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-WinEvent -FilterHashtable @{ LogName = "Microsoft-Windows-PowerShell/Operational"; ID = 4104 } | Format-Table TimeCreated, Message -AutoSize
-
             }
-            catch [NoMatchingEventsFound] {
-                Show-Message("$NoMatchingEventsMsg") -Red
+            catch [System.Exception] {
+                Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -1074,6 +1168,7 @@ function Get-PSOperational4104Events {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime

@@ -1,6 +1,8 @@
-function Get-TPMDetails
-{
-<#
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
+function Get-TPMDetails {
+    <#
 .SYNOPSIS
     Collects information on the Trusted Platform Module (TPM) installed in the system.
     Converts ManufacturerId if the ID is in the list of built-in names.
@@ -56,9 +58,10 @@ function Get-TPMDetails
     https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/ADV170012
 #>
     [CmdletBinding()]
+
     param()
-    begin
-    {
+
+    begin {
         $Manufacturers = @{
             0x414D4400 = "AMD"
             0x41544D4C = "Atmel"
@@ -75,7 +78,7 @@ function Get-TPMDetails
             0x4E545A00 = "Nationz"
             0x51434F4D = "Qualcomm"
             0x524F4343 = "Fuzhou Rockchip"
-            0x534D5343  = "SMSC"
+            0x534D5343 = "SMSC"
             0x534D534E = "Samsung"
             0x534E5300 = "Sinosun"
             0x53544D20 = "ST Microelectronics"
@@ -83,23 +86,18 @@ function Get-TPMDetails
             0x57454300 = "Winbond"
         }
     }
-    process
-    {
-        try
-        {
-            $ResultsArray =  Get-Tpm -ErrorAction SilentlyContinue
-            
-            foreach ($Result in $ResultsArray)
-            {
+    process {
+        try {
+            $ResultsArray = Get-Tpm -ErrorAction SilentlyContinue
+
+            foreach ($Result in $ResultsArray) {
                 $Result | Add-Member -MemberType NoteProperty -Name "Host" -Value $env:COMPUTERNAME
                 $Result | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
                 $Result | Add-Member -MemberType NoteProperty -Name "FirmwareVersionAtLastProvision" -Value (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\TPM\WMI" -Name "FirmwareVersionAtLastProvision" -ErrorAction SilentlyContinue).FirmwareVersionAtLastProvision
                 $Result | Add-Member -MemberType NoteProperty -Name "ManufacturerName" -Value ""
 
-                foreach ($Key in $Manufacturers.Keys)
-                {
-                    if ($Key -eq $Result.ManufacturerId)
-                    {
+                foreach ($Key in $Manufacturers.Keys) {
+                    if ($Key -eq $Result.ManufacturerId) {
                         $Result.ManufacturerName = $Manufacturers[$Key]
                     }
                 }
@@ -107,8 +105,8 @@ function Get-TPMDetails
 
             return $ResultsArray | Select-Object Host, DateScanned, TpmPresent, TpmReady, ManufacturerId, ManufacturerName, ManufacturerVersion, ManagedAuthLevel, OwnerAuth, OwnerClearDisabled, AutoProvisioning, LockedOut, LockoutCount, LockoutMax, SelfTest, FirmwareVersionAtLastProvision
         }
-        catch
-        {
+
+        catch {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red

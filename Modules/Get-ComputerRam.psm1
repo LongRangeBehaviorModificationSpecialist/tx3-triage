@@ -1,3 +1,6 @@
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
 function Get-ComputerRam {
 
     [CmdletBinding()]
@@ -6,11 +9,9 @@ function Get-ComputerRam {
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-
         [Parameter(Position = 1)]
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
-
         # Name of the directory to store the extracted RAM image
         [string]$RamFolderName = "00C_RAM",
         # Relative path to the RAM Capture executable file
@@ -19,12 +20,11 @@ function Get-ComputerRam {
 
     $RamFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
-    # If the user wants to collect the RAM
     try {
         $ExecutionTime = Measure-Command {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
-            Show-Message("$BeginMessage") -Header
+            Show-Message("$BeginMessage")
             Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Create a folder called "RAM" to store the captured RAM file
@@ -50,10 +50,12 @@ function Get-ComputerRam {
             Show-Message("$SuccessMsg")
             Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
         }
+
         # Show & log finish messages
         Show-FinishMessage $RamFuncName $ExecutionTime
         Write-LogFinishedMessage $RamFuncName $ExecutionTime
     }
+
     catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"

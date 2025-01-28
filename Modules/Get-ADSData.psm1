@@ -1,5 +1,8 @@
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
 function Get-ADSData {
-    <#
+<#
 .SYNOPSIS
     Performs a search for alternate data streams (ADS) in a given folder.
 
@@ -27,12 +30,10 @@ function Get-ADSData {
 #>
 
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [string]$Path = "C:\Users"
     )
-
-    $ErrorActionPreference = "SilentlyContinue"
 
     try {
         $Files = Get-ChildItem -Path $Path -Recurse -Force -File
@@ -60,8 +61,10 @@ function Get-ADSData {
                 }
             }
         }
+
         return $Results | Select-Object Host, DateScanned, FileName, Stream, StreamLength, StreamContent, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc, Attributes
     }
+
     catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"

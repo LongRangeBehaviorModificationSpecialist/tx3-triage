@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (3) GET NETWORK INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 # 3-001
 function Get-NetworkConfig {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-001",
         [string]$FileName = "NetworkConfig.txt"
@@ -22,7 +20,7 @@ function Get-NetworkConfig {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Format-List
@@ -35,6 +33,7 @@ function Get-NetworkConfig {
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }
+
         }
         # Finish logging
         Show-FinishMessage $FunctionName $ExecutionTime
@@ -48,9 +47,12 @@ function Get-NetworkConfig {
     }
 }
 
+# TODO -- Check status of the `Get-NetTCPConnection` function // Not working on forensic machine
 # 3-002
 function Get-OpenNetworkConnections {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-002",
         [string]$FileName = "OpenConnections.txt"
@@ -62,7 +64,7 @@ function Get-OpenNetworkConnections {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetTCPConnection -State Established
@@ -90,7 +92,9 @@ function Get-OpenNetworkConnections {
 
 # 3-003
 function Get-NetstatDetailed {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-003",
         [string]$FileName = "NetstatDetailed.html"
@@ -106,7 +110,7 @@ function Get-NetstatDetailed {
         try {
             # Run the command
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header") -Header
+                Show-Message("$Header")
                 Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
                 [datetime]$DateTime = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
@@ -213,7 +217,9 @@ Active Connections, Associated Processes and DLLs
 
 # 3-004
 function Get-NetstatBasic {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-004",
         [string]$FileName = "NetstatBasic.txt"
@@ -225,7 +231,7 @@ function Get-NetstatBasic {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = netstat -nao
@@ -253,7 +259,9 @@ function Get-NetstatBasic {
 
 # 3-005
 function Get-NetTcpConnectionsAllTxt {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-005",
         [string]$FileName = "NetTcpConnections.txt"
@@ -265,7 +273,7 @@ function Get-NetTcpConnectionsAllTxt {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | Format-List
@@ -293,7 +301,9 @@ function Get-NetTcpConnectionsAllTxt {
 
 # 3-006
 function Get-NetTcpConnectionsAllCsv {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-006",
         [string]$FileName = "NetTcpConnections.csv"
@@ -305,7 +315,7 @@ function Get-NetTcpConnectionsAllCsv {
     try {
         # Run the command (to export as CSV)
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetTcpConnection | ConvertTo-Csv -NoTypeInformation
@@ -333,10 +343,12 @@ function Get-NetTcpConnectionsAllCsv {
 
 # 3-007
 function Get-NetworkAdapters {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-007",
-        [string]$FileNme = "NetworkAdapterList.txt"
+        [string]$FileName = "NetworkAdapterList.txt"
     )
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
@@ -345,7 +357,7 @@ function Get-NetworkAdapters {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetAdapter | Select-Object -Property *
@@ -373,7 +385,9 @@ function Get-NetworkAdapters {
 
 # 3-008
 function Get-NetIPConfig {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-008",
         [string]$FileName = "NetIPConfiguration.txt"
@@ -385,7 +399,7 @@ function Get-NetIPConfig {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetIPConfiguration | Select-Object -Property *
@@ -413,7 +427,9 @@ function Get-NetIPConfig {
 
 # 3-009
 function Get-RouteData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-009",
         [string]$FileName = "Routes.txt"
@@ -425,7 +441,7 @@ function Get-RouteData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = route PRINT
@@ -453,10 +469,12 @@ function Get-RouteData {
 
 # 3-010
 function Get-IPConfig {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-010",
-        [string]$FilePath = "IPConfig.txt"
+        [string]$FileName = "IPConfig.txt"
     )
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
@@ -465,7 +483,7 @@ function Get-IPConfig {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = ipconfig /all
@@ -493,7 +511,9 @@ function Get-IPConfig {
 
 # 3-011
 function Get-ARPData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-011",
         [string]$FileName = "ARPData.csv"
@@ -505,7 +525,7 @@ function Get-ARPData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress | ConvertTo-Csv -NoTypeInformation
@@ -533,7 +553,9 @@ function Get-ARPData {
 
 # 3-012
 function Get-NetIPAddrs {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-012",
         [string]$FileName = "NetIpAddresses.txt"
@@ -545,7 +567,7 @@ function Get-NetIPAddrs {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetIPAddress | Sort-Object -Property IPAddress
@@ -573,7 +595,9 @@ function Get-NetIPAddrs {
 
 # 3-013
 function Get-HostsFile {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-013",
         [string]$FileName = "HostsFile.txt"
@@ -585,7 +609,7 @@ function Get-HostsFile {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Content "$Env:windir\system32\drivers\etc\hosts"
@@ -613,7 +637,9 @@ function Get-HostsFile {
 
 # 3-014
 function Get-NetworksFile {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-014",
         [string]$FileName = "NetworksFile.txt"
@@ -625,7 +651,7 @@ function Get-NetworksFile {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Content "$Env:windir\system32\drivers\etc\networks"
@@ -653,7 +679,9 @@ function Get-NetworksFile {
 
 # 3-015
 function Get-ProtocolFile {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-015",
         [string]$FileName = "ProtocolFile.txt"
@@ -665,7 +693,7 @@ function Get-ProtocolFile {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Content "$Env:windir\system32\drivers\etc\protocol"
@@ -693,7 +721,9 @@ function Get-ProtocolFile {
 
 # 3-016
 function Get-ServicesFile {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-016",
         [string]$FileName = "ServiceFile.txt"
@@ -705,7 +735,7 @@ function Get-ServicesFile {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-Content "$Env:windir\system32\drivers\etc\services"
@@ -733,7 +763,9 @@ function Get-ServicesFile {
 
 # 3-017
 function Get-SmbShares {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-017",
         [string]$FileName = "SmbShares.txt"
@@ -745,7 +777,7 @@ function Get-SmbShares {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-SmbShare
@@ -773,7 +805,9 @@ function Get-SmbShares {
 
 # 3-018
 function Get-WifiPasswords {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-018",
         [string]$FileName = "WifiPasswords.txt"
@@ -785,7 +819,7 @@ function Get-WifiPasswords {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } }
@@ -813,10 +847,12 @@ function Get-WifiPasswords {
 
 # 3-019
 function Get-NetInterfaces {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-019",
-        [string]$FilePath = "NetIPInterfaces.txt"
+        [string]$FileName = "NetIPInterfaces.txt"
     )
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
@@ -825,7 +861,7 @@ function Get-NetInterfaces {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetIPInterface | Select-Object -Property *
@@ -853,7 +889,9 @@ function Get-NetInterfaces {
 
 # 3-020
 function Get-NetRouteData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "3-020",
         [string]$FileName = "NetRoute.txt"
@@ -865,7 +903,7 @@ function Get-NetRouteData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-NetRoute | Select-Object -Property *

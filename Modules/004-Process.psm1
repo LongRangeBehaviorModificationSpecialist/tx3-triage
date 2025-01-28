@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (4) GET PROCESS INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 # 4-001
 function Get-RunningProcessesAll {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "4-001",
         [string]$FileName = "RunningProcesses.txt"
@@ -22,7 +20,7 @@ function Get-RunningProcessesAll {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName
@@ -50,7 +48,9 @@ function Get-RunningProcessesAll {
 
 # 4-002
 function Get-RunningProcessesCsv {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "4-002",
         [string]$FileName = "RunningProcesses.csv"
@@ -62,7 +62,7 @@ function Get-RunningProcessesCsv {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation
@@ -90,7 +90,9 @@ function Get-RunningProcessesCsv {
 
 # 4-003
 function Get-UniqueProcessHash {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "4-003",
         [string]$FileName = "UniqueProcessHash.csv"
@@ -102,7 +104,7 @@ function Get-UniqueProcessHash {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = @()
@@ -144,7 +146,9 @@ function Get-UniqueProcessHash {
 
 # 4-004
 function Get-SvcHostsAndProcesses {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "4-004",
         [string]$FileName = "SvcHostAndProcesses.txt"
@@ -156,7 +160,7 @@ function Get-SvcHostsAndProcesses {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq "svchost.exe" | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path
@@ -184,7 +188,9 @@ function Get-SvcHostsAndProcesses {
 
 # 4-005
 function Get-RunningServices {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "4-005",
         [string]$FileName = "RunningServices.csv"
@@ -196,7 +202,7 @@ function Get-RunningServices {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation
@@ -224,7 +230,9 @@ function Get-RunningServices {
 
 # 4-006
 function Get-InstalledDrivers {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "4-006",
         [string]$FileName = "InstalledDrivers.txt"
@@ -236,7 +244,7 @@ function Get-InstalledDrivers {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = driverquery

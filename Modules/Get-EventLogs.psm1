@@ -1,42 +1,39 @@
-function Get-EventLogs
-{
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+
+function Get-EventLogs {
+
     [CmdletBinding()]
-    param
-    (
+
+    param (
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-
         [Parameter(Position = 1)]
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
-
         # Name of the directory to store the copied Event Logs
         [string]$EventLogFolderName = "00E_EventLogs",
         # Set variable for Event Logs folder on the examined machine
         [string]$EventLogDir = "$Env:HOMEDRIVE\Windows\System32\winevt\Logs",
         [int]$NumOfEventLogs = 5,
-
         # Path to the RawCopy executable
         [string]$RawCopyPath = ".\bin\RawCopy.exe"
     )
 
     $EventLogFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
-    try
-    {
-        $ExecutionTime = Measure-Command
-        {
+    try {
+        $ExecutionTime = Measure-Command {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Windows Event Logs from computer: $ComputerName"
-            Show-Message("$BeginMessage") -Header
+            Show-Message("$BeginMessage")
             Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the Event Logs
             $EventLogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $EventLogFolderName -Force
 
-            if (-not (Test-Path $EventLogFolder))
-            {
+            if (-not (Test-Path $EventLogFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> ``$EventLogFolder``"
             }
 
@@ -46,39 +43,32 @@ function Get-EventLogs
             Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
             # If no number is passed for the number of event logs to copy then copy all of the files
-            if (-not $NumOfEventLogs)
-            {
+            if (-not $NumOfEventLogs) {
                 Write-Information "No value passed for the `$NumOfEventLogs value."
                 $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File
             }
-            else
-            {
+            else {
                 # Set variables for the files in the prefetch folder of the examined device
                 $Files = Get-ChildItem -Path $EventLogDir -Recurse -Force -File | Select-Object -First $NumOfEventLogs
             }
 
-            if (-not (Test-Path $RawCopyPath))
-            {
+            if (-not (Test-Path $RawCopyPath)) {
                 $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
                 Show-Message("$NoRawCopyWarnMsg") -Red
                 Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $NoRawCopyWarnMsg") -WarningMessage
             }
 
-            foreach ($File in $Files)
-            {
-                try
-                {
+            foreach ($File in $Files) {
+                try {
                     $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:"$EventLogDir\$File" /OutputPath:"$EventLogFolder" /OutputName:"$File" }
 
-                    if ($LASTEXITCODE -ne 0)
-                    {
+                    if ($LASTEXITCODE -ne 0) {
                         $NoProperExitMsg = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
                         Show-Message("$NoProperExitMsg") -Red
                         Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $NoProperExitMsg") -WarningMessage
                     }
                 }
-                catch
-                {
+                catch {
                     $RawCopyOtherMsg = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
                     Show-Message("$RawCopyOtherMsg") -Red
                     Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $RawCopyOtherMsg") -WarningMessage
@@ -98,8 +88,7 @@ function Get-EventLogs
         Show-FinishMessage $EventLogFuncName $ExecutionTime
         Write-LogFinishedMessage $EventLogFuncName $ExecutionTime
     }
-    catch
-    {
+    catch {
         # Error handling
         $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
         Show-Message("$ErrorMessage") -Red

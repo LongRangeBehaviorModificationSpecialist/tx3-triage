@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (6) GET PREFETCH INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 # 6-001
 function Get-PrefetchFilesList {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "6-001",
         [string]$FileName = "PrefetchFilesList.txt"
@@ -22,7 +20,7 @@ function Get-PrefetchFilesList {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object Name, LastAccessTime, CreationTime | Sort-Object LastAccessTime | Format-List
@@ -50,7 +48,9 @@ function Get-PrefetchFilesList {
 
 # 6-002
 function Get-DetailedPrefetchData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "6-002",
         [string]$FileName = "PrefetchFilesDetailed.txt"
@@ -62,7 +62,7 @@ function Get-DetailedPrefetchData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime

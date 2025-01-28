@@ -1,16 +1,14 @@
-#! ======================================
-#!
-#! (2) GET USER INFORMATION
-#!
-#! ======================================
-
-
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
+
+
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 # 2-001
 function Get-WhoAmI {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-001",
         [string]$FileName = "WhoAmI.txt"
@@ -22,7 +20,7 @@ function Get-WhoAmI {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = whoami /ALL /FO LIST
@@ -50,7 +48,9 @@ function Get-WhoAmI {
 
 # 2-002
 function Get-UserProfile {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-002",
         [string]$FileName = "UserProfile.txt"
@@ -62,7 +62,7 @@ function Get-UserProfile {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *
@@ -90,7 +90,9 @@ function Get-UserProfile {
 
 # 2-003
 function Get-UserInfo {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-003",
         [string]$FileName = "UserAccounts.txt"
@@ -102,7 +104,7 @@ function Get-UserInfo {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *
@@ -130,7 +132,9 @@ function Get-UserInfo {
 
 # 2-004
 function Get-LocalUserData {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-004",
         [string]$FileName = "LocalUsers.txt"
@@ -142,7 +146,7 @@ function Get-LocalUserData {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-LocalUser | Format-Table
@@ -170,7 +174,9 @@ function Get-LocalUserData {
 
 # 2-005
 function Get-LogonSession {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-005",
         [string]$FileName = "LogonSessions.txt"
@@ -182,7 +188,7 @@ function Get-LogonSession {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $Data = Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *
@@ -210,12 +216,14 @@ function Get-LogonSession {
 
 # 2-006
 function Get-PowershellConsoleHistoryAllUsers {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-006",
         [string]$FileName = "PowerShellHistory.txt",
         # Specify the directory where user profiles are stored
-        [string]$UserDirs = "C:\Users"
+        [string]$UserPath = "C:\Users"
     )
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
@@ -224,11 +232,11 @@ function Get-PowershellConsoleHistoryAllUsers {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             # Get a list of all user directories in C:\Users
-            $UserDirs = Get-ChildItem -Path $UsersDir -Directory
+            $UserDirs = Get-ChildItem -Path $UserPath -Directory
             foreach ($UserDir in $UserDirs) {
                 if ($UserDir.Count -eq 0) {
                     Write-NoDataFound $FunctionName
@@ -261,7 +269,9 @@ function Get-PowershellConsoleHistoryAllUsers {
 
 # 2-007
 function Get-LastLogons {
+
     [CmdletBinding()]
+
     param (
         [string]$Num = "2-007",
         [string]$FileName = "LastLogons.txt"
@@ -276,7 +286,7 @@ function Get-LastLogons {
         }
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header") -Header
+            Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $LogonEvents = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
 
