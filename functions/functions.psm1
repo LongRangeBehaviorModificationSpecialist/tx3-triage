@@ -3,9 +3,9 @@
 
 
 [datetime]$StartTime = (Get-Date).ToUniversalTime()
-
-
-[string]$RunDate = (Get-Date).ToUniversalTime().ToString("yyyyMMdd_HHmmss")
+[string]$Date = ($StartTime).ToString("MM-dd-yyyy")
+[string]$Time = ($StartTime).ToString("HH:mm:ss")
+[string]$RunDate = ($StartTime).ToString("yyyyMMdd_HHmmss")
 
 
 # Get the current IP addresses of the machine from on this script is run
@@ -164,38 +164,40 @@ function Write-LogFinishedMessage {
 }
 
 
-$Folders = @(
-    "000_Testing",
-    "001_DeviceInfo",
-    "002_UserInfo",
-    "003_Network",
-    "004_Processes",
-    "005_System",
-    "006_Prefetch",
-    "007_EventLogFiles",
-    "008_Firewall",
-    "009_BitLocker",
-    "Logs"
-)
+function Set-CaseFolders {
+
+    $Folders = @(
+        "000_Testing",
+        "001_DeviceInfo",
+        "002_UserInfo",
+        "003_Network",
+        "004_Processes",
+        "005_System",
+        "006_Prefetch",
+        "007_EventLogFiles",
+        "008_Firewall",
+        "009_BitLocker",
+        "Logs"
+    )
+
+    foreach ($Folder in $Folders) {
+        New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
+        Write-Host "Created ``$($Folder)`` Folder" -ForegroundColor Green
+    }
 
 
-foreach ($Folder in $Folders) {
-    New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
-    Write-Host "Created ``$($Folder)`` Folder" -ForegroundColor Green
+    $global:TestingFolder = "$CaseFolderName\$($Folders[0])"
+    $global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
+    $global:UserFolder = "$CaseFolderName\$($Folders[2])"
+    $global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
+    $global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
+    $global:SystemFolder = "$CaseFolderName\$($Folders[5])"
+    $global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
+    $global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
+    $global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
+    $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
+    $global:LogFolder = "$CaseFolderName\$($Folders[10])"
 }
-
-
-$global:TestingFolder = "$CaseFolderName\$($Folders[0])"
-$global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
-$global:UserFolder = "$CaseFolderName\$($Folders[2])"
-$global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
-$global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
-$global:SystemFolder = "$CaseFolderName\$($Folders[5])"
-$global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
-$global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
-$global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
-$global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
-$global:LogFolder = "$CaseFolderName\$($Folders[10])"
 
 
 function Get-LineNum {
@@ -294,4 +296,4 @@ function Write-NoDataFound {
 }
 
 
-Export-ModuleMember -Function Get-TimeStamp, Write-LogEntry, Show-Message, Show-FinishMessage, Write-LogFinishedMessage, Get-LineNum, Save-Output, Save-OutputAppend, Save-OutputAsCsv, Show-OutputSavedToFile, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound -Variable Dlu, StartTime, RunDate, Ipv4, Ipv6, ComputerName, Cwd, CaseFolderName, KeyNotFoundMsg, NoMatchingEventsMsg, ExecutableFileTypes
+Export-ModuleMember -Function Get-TimeStamp, Write-LogEntry, Show-Message, Show-FinishMessage, Write-LogFinishedMessage, Set-CaseFolders, Get-LineNum, Save-Output, Save-OutputAppend, Save-OutputAsCsv, Show-OutputSavedToFile, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound -Variable Dlu, StartTime, Date, Time, RunDate, Ipv4, Ipv6, ComputerName, Cwd, CaseFolderName, KeyNotFoundMsg, NoMatchingEventsMsg, ExecutableFileTypes
