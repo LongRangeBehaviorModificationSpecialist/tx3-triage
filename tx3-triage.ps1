@@ -61,9 +61,25 @@ $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Contin
 $ScriptName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 
+# Import the functions.psm1 module so the functions are available for use
 Import-Module .\functions\functions.psm1 -Force -Global
-Show-Message("Module file: ``functions.psm1`` was imported successfully") -NoTime -Blue
+Show-Message("Module file: ``.\functions\functions.psm1`` was imported successfully") -NoTime -Blue
 
+
+# Name of the folder containing the .psm1 files that are to be imported
+$ModulesFolder = "modules"
+
+# Get the directory of the current script
+$ScriptDirectory = $(Get-Location)
+
+# Construct the path to the 'modules' directory
+$ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
+
+foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
+    Import-Module -Name $file.FullName -Force -Global
+    # Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
+    # Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
+}
 
 
 if ($Html) {
@@ -72,7 +88,7 @@ if ($Html) {
     Import-Module -Name $HtmlModule -Force
     Show-Message("Module file: ``$($HtmlModule)`` was imported successfully") -NoTime -Blue
 
-    Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $User $Agency $CaseNumber
+    Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
 
 }
 else {
@@ -129,7 +145,7 @@ function Get-ParameterValues {
 
 function Get-TriageData {
 
-    Set-CaseFolders 
+    Set-CaseFolders
 
     # Name of the folder containing the .psm1 files that are to be imported
     $ModulesFolder = "modules"
@@ -142,8 +158,8 @@ function Get-TriageData {
 
     foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
-        Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
-        Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
+        # Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
+        # Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
     }
 
     Show-Message("`nAll modules from ``$ModulesDirectory`` have been imported successfully.") -NoTime -Green

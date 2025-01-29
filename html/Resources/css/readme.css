@@ -1,0 +1,195 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  /* margin: 0; */
+  /* padding: 0; */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-size: 1.3rem;
+  font-family: 'Roboto Light', sans-serif;
+  font-family: 'Cinzel', serif;
+  /* background: #154360; */
+  background: #22313f;
+  color: #FFF;
+  margin: 0 5em;
+}
+
+.container {
+  width: 100%;
+  height: auto;
+  /* margin-left: 2rem; */
+  /* padding: 0rem 1rem; */
+  /* background-color: #9D9D9D; */
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1em 0em;
+  background-color: #22313f;
+  border-bottom: 1px solid #000000
+  /* margin-top: 0.5rem; */
+  /* box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12); */
+}
+
+.print-button,
+.close-button {
+  background-color: #DDD;
+  width: 13rem;
+  height: 3rem;
+  color: black;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: Verdana;
+  text-transform: uppercase;
+  padding: 0.5rem;
+}
+
+.close-button {
+  margin-left: 3em;
+}
+
+.print-button:hover,
+.close-button:hover {
+  background-color: #888888FF;
+  border: 2px dotted #FFFFFF;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.75);
+  /* border-radius: 10px; */
+}
+
+.btn-txt {
+  display: inline;
+  position: relative;
+  font-family: 'Roboto Light';
+}
+
+.btn-txt::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: #FFFFFF;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.2s ease-in;
+}
+
+.buttonTop:hover .btn-txt::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.heading {
+  margin-top: 3.25rem;
+  font-size: 2rem;
+  text-align: center;
+  color: #CB4335;
+  font-family: 'Roboto Light';
+}
+
+.heading p {
+  margin-top: 3em;
+  /* background-color: dodgerblue; */
+}
+
+h3 {
+  font-size: 1.75rem;
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  font-family: 'Roboto Light';
+}
+
+.lineFirst {
+  margin: 1rem 0 0.5rem 0;
+}
+
+.lineSecond {
+  margin: -0.25rem 0 2rem 0;
+}
+
+ol {
+  display: block;
+  list-style: circle;
+  color: #fff;
+  line-height: 1.5rem;
+  /* font-weight: normal; */
+  font-family: 'Roboto Light';
+}
+
+ol li {
+  margin-bottom: 2em;
+}
+
+#dlu {
+  position: fixed;
+  /* Fixed/sticky position */
+  top: 0.5%;
+  /* Place the button at the top of the page */
+  right: 0.5%;
+  /* Place the button 0.5% from the left */
+  z-index: 99;
+  /* Make sure it does not overlap */
+  border: none;
+  /* Remove borders */
+  outline: none;
+  /* Remove outline */
+  background-color: #333;
+  /* Set a background color */
+  color: #fff;
+  /* Text color */
+  padding: 0.5rem;
+  /* Some padding */
+  border-radius: 0.3rem;
+  /* Rounded corners */
+  font-family: Chinzel;
+  font-size: 0.75rem;
+  /* Increase font size */
+  font-weight: 600;
+  width: 14.5rem;
+}
+
+@page {
+  size: A4;
+  @bottom-center = @bottom-center { content: "Page " counter(page); }
+}
+
+@media print {
+  .no-print, .no-print * {
+    display: none;
+  }
+
+  html, body {
+    margin: 0rem;
+    background: transparent;
+  }
+
+  .container {
+    background-color: transparent;
+  }
+
+  .heading {
+    margin-top: 1em;
+  }
+
+  .heading p {
+    margin-top: 0em;
+  }
+
+  h3, ol {
+    color: #000;
+  }
+}

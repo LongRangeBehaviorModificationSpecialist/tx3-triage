@@ -1,0 +1,806 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 300;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  font-size: 16px;
+  color: #181B20;
+  --dropBtnColor: #1E8449;
+  --navBtnPadding: 1px 0px 1px 10px;
+  --navBtnColorHover: #2874A6;
+  --navBtnHoverTextColor: #FFFFFF;
+  /* --navBtnHoverBorder: 1px dashed #FFFFFF; */
+  --navBtnHoverRadius: 5px;
+  --navBtnHeight: 2.5em;
+  --navBtnWidth: 90%;
+  --navBtnFontFamily: 'Roboto Light';
+  --navBtnFontSize: 1.15em;
+}
+
+.data {
+  font-family: 'Helvetica';
+  font-weight: bold;
+  color: #f00;
+  font-size: 1.15em;
+}
+
+/* My Added Style */
+.front__background,
+.case__background,
+.evidence__background {
+  background: #22313f;
+}
+
+/* background: #22313f */
+
+.case__background,
+.evidence__background {
+  color: #FFFFFF;
+}
+
+.case__background h2 {
+  color: #FFFFFF;
+}
+
+.nav__background {
+  background: #BFC9CA;
+}
+
+.heading {
+  text-transform: uppercase;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+.heading li {
+  list-style: none;
+}
+
+.heading>ul {
+  margin: 8px 0px 8px;
+}
+
+.heading a {
+  color: #222;
+  cursor: pointer;
+  display: block;
+  height: 25px;
+  line-height: 25px;
+  text-decoration: none;
+  width: 100%;
+}
+
+.page-header {
+  height: 50px;
+  overflow: hidden;
+  clear: both;
+  color: #FFFFFF;
+  background: #2B2B2B;
+  width: 100%;
+  position: fixed;
+  z-index: 1;
+}
+
+.caseinfo {
+  display: flex;
+  flex-direction: column;
+  margin: 2em 2em 1em 2em;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  border: 1px dashed #FFFFFF;
+}
+
+.topHeading,
+.secondHeading {
+  color: #CB4335;
+  margin: 0.5em 0em 0em 0em;
+  padding: 0;
+  font-weight: 200;
+  text-transform: uppercase
+}
+
+.topHeading {
+  font-size: 2.4em;
+}
+
+.secondHeading {
+  font-size: 2em;
+}
+
+.caseinfo__details {
+  font-weight: 400;
+  vertical-align: center;
+  padding: 0.3em 0.5em 0.3em 0em;
+  text-align: right;
+}
+
+.caseinfo__text {
+  font-weight: 400;
+  vertical-align: center;
+  padding: 0.3em 0em 0.3em 0.5em;
+  text-align: left;
+}
+
+.caseoverview {
+  display: flex;
+  flex-direction: column;
+  margin: 1em 2em 1em 2em;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  border: 1px dashed #FFFFFF;
+  /* background-color: #d9d9d9; */
+}
+
+/* .caseoverview > h3 { color: #FFFFFF; } */
+/* .caseoverview > h4 { color: #FFFFFF; } */
+
+.evidenceoverview {
+  display: flex;
+  flex-direction: column;
+  margin: 1em 2em 1em 2em;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: 1px dashed white;
+  /* background-color: #CCD1D1; */
+}
+
+/* My Added Style */
+.btn__1__top,
+.btn__1,
+.btn__1__bottom {
+  padding: var(--navBtnPadding);
+  width: var(--navBtnWidth);
+  height: var(--navBtnHeight);
+  text-align: left;
+  text-decoration: none;
+  color: black;
+  font-size: var(--navBtnFontSize);
+  font-family: var(--navBtnFontFamily);
+  /* border: 1px solid black; */
+  border: 0px solid transparent;
+  background-color: transparent;
+}
+
+.btn__1__top {
+  margin: 0.5em 0em 0em 1em;
+}
+
+.btn__1 {
+  margin: 0em 0em 0em 1em;
+}
+
+.btn__1__bottom {
+  margin: 0em 0em 0.5em 1em;
+}
+
+/* My Added Style */
+.btn__2 {
+  padding: var(--navBtnPadding);
+  margin: 0.5em 0em 0em 1em;
+  width: var(--navBtnWidth);
+  height: var(--navBtnHeight);
+  text-align: left;
+  text-decoration: none;
+  color: black;
+  font-size: var(--navBtnFontSize);
+  font-family: var(--navBtnFontFamily);
+  font-weight: 750;
+  /* border: 1px solid black; */
+  border: 0px solid transparent;
+  background-color: transparent;
+}
+
+/* My Added Style */
+.btn__1__top:hover,
+.btn__1:hover,
+.btn__1__bottom:hover,
+.btn__2:hover {
+  background-color: var(--navBtnColorHover);
+  /* background-color: #22313f; */
+  color: var(--navBtnHoverTextColor);
+  border: var(--navBtnHoverBorder);
+  border-radius: var(--navBtnHoverRadius);
+  font-weight: 700;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: underline;
+  height: 3em;
+  box-shadow: 5px 5px 5px #7F8C8D;
+}
+
+.btn__1__top a,
+.btn__1 a,
+.btn__1__bottom a,
+.btn__2 a {
+  text-decoration: none
+}
+
+/* .btn__1__top a:hover,
+.btn__1 a:hover,
+.btn__1__bottom a:hover,
+.btn__2 a:hover { text-decoration: underline; color: white; font-size: 1em; transition: all 0.2s ease; } */
+
+.btn__1__top a:active,
+.btn__1 a:active,
+.btn__1__bottom a:active,
+.btn__2 a:active {
+  text-decoration: underline;
+  color: #CB4335;
+}
+
+.btn__1__top a:visited,
+.btn__1 a:visited,
+.btn__1__bottom a:visited,
+.btn__2 a:visited {
+  text-decoration: none;
+  color: #000000;
+}
+
+/* .heading li:hover { position: relative; } */
+
+.frontpage__table {
+  color: #FFFFFF;
+  border-collapse: collapse;
+}
+
+.frontpage__table td {
+  color: #FFFFFF;
+  border-collapse: collapse;
+  font-size: 1.2em;
+}
+
+.dropdown {
+  position: absolute;
+  display: inline-block;
+  width: 90%;
+  margin: 0.5rem 0rem 0rem 1rem;
+  box-shadow: 5px 5px 5px #7F8C8D;
+}
+
+.dropbtn {
+  background-color: var(--dropBtnColor);
+  color: white;
+  padding: 1em;
+  font-size: 1.15em;
+  border: none;
+  width: 100%;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  width: 100%;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+div.dropdown-content {
+  vertical-align: middle;
+  /* Removed by MAS for testing */
+  height: 15em;
+  overflow: scroll;
+}
+
+.dropdown-content a {
+  color: #000000;
+  padding: 0.5rem 1rem;
+  /* padding inside dropdown box - top & bottom are 6px, L & R are 16px */
+  text-decoration: none;
+  display: block;
+  line-height: 1.25rem;
+  font-size: 1em;
+  /* letter-spacing: 1px; */
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+  /* color: red;  color of text in dropdown box when hovered */
+  font-weight: bold;
+  /* font weight in dropdown box when hovered */
+}
+
+.dropdown-content ol li {
+  margin-left: 8px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: var(--navBtnColorHover);
+  /* #4CAF50; */
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+/* .evidence-details { float: left; font-weight: 400; }
+
+.evidence-source { font-style: italic; } */
+
+h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+  font-weight: 200;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 2.4em;
+  color: #20588B;
+  font-weight: 200;
+}
+
+/* old font color = #CB4335 */
+
+h2 {
+  font-size: 2em;
+  color: #20588B;
+  font-weight: 200;
+}
+
+h3 {
+  font-size: 2em;
+  font-family: Arial;
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+h4 {
+  display: block;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0;
+  -webkit-margin-start: 0;
+  -webkit-margin-end: 0;
+}
+
+p.casesummary {
+  word-wrap: break-word;
+  max-width: 800px;
+}
+
+#page-title {
+  float: left;
+  font-size: 22px;
+  font-weight: 400;
+  padding: 16px;
+}
+
+#widgetpage {
+  margin: 3em 3em 3em 3em;
+  width: 100%;
+  text-align: center;
+}
+
+.evidencewidgetimage {
+  max-height: 150px;
+  max-width: 150px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* MCAT Summary Page*/
+.MCATSummary-table {
+  border-collapse: collapse;
+}
+
+.MCATSummary-table thead {
+  font-weight: bold;
+  padding: 5px;
+  background: lightgray;
+}
+
+.MCATSummary-table td {
+  border: 1px solid black;
+  padding: 3px 8px 3px 3px;
+}
+
+/* .widgettablewrapper { width: 85%; } */
+
+/* .widgettable { width: 85%; vertical-align: text-top; } */
+
+/* .widgettable td { color: #FFFFFF; padding: 4px; text-align: left; border: 2px solid red; font-weight:500; vertical-align: text-top; word-wrap: break-word; } */
+
+/* .widgettable td:first-child { padding-left: 1em; text-align: left; font-weight:300; } */
+
+/* .widgettable td span { padding-left: 1em; text-align: left; max-width: 300px; word-wrap: break-word; display: inline-block; } */
+
+/* .magnet-logo { width: 150px; height: 150px; margin: 32px 0px 32px 0px; } */
+
+.magnet-logo {
+  height: 150px;
+  width: 150px;
+  margin: 32px 0px 32px 0px;
+}
+
+#header-search {
+  float: right;
+  margin-right: 10px;
+  margin-top: 7px;
+  font-weight: 200;
+}
+
+tr td {
+  margin: 0;
+  padding: 0;
+}
+
+.dateTimeHeader {
+  background: #2B2B2B;
+  color: #ccc;
+  text-align: left;
+  width: 100%;
+}
+
+#wrapper {
+  padding-top: 50px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+#printer-pic {
+  height: 25px;
+  width: 25px;
+  top: 6px;
+  position: relative;
+  cursor: pointer;
+  padding: 0px 5px 0px 10px;
+}
+
+ul.top-level {
+  background: #666;
+}
+
+ul.top-level li {
+  border-bottom: #fff solid;
+  border-top: #fff solid;
+  border-width: 1px;
+}
+
+.page-breaker {
+  display: block;
+  clear: both;
+  page-break-after: always;
+}
+
+td div, th div {
+  page-break-inside: avoid;
+}
+
+th.header {
+  cursor: pointer;
+  font-weight: 200;
+  font-size: 16px;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 6px);
+  padding-right: 20px;
+  border-right: 1px solid #dad9c7;
+  margin-right: 2px;
+}
+
+th.tablesorter-headerDesc {
+  background-image: url(./images/desc.gif);
+}
+
+th.tablesorter-headerAsc {
+  background-image: url(./images/asc.gif);
+}
+
+#sorter tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#sorter tr:nth-child(odd) {
+  background-color: #FFFFFF;
+}
+
+div>center {
+  background-color: rgb(230, 230, 230);
+  padding: 8px 0px 8px;
+}
+
+center>b {
+  font-size: 16px;
+}
+
+/* table overall */
+.tablesorter {
+  font-size: 13px;
+  margin: 0;
+  width: 100%;
+  background-color: #fff;
+  text-align: left;
+  border-spacing: 0;
+  border: #cdcdcd 1px solid;
+  border-width: 1px 0 0 1px;
+}
+
+.tablesorter th,
+.tablesorter td {
+  font-weight: 400;
+  border: #cdcdcd 1px solid;
+  border-width: 0 1px 1px 0;
+}
+
+/* header */
+.tablesorter th,
+.tablesorter thead td {
+  font: 12px/18px Arial, Sans-serif;
+  font-weight: 200;
+  color: #fff;
+  background-color: #444;
+  border-collapse: collapse;
+  padding: 4px;
+  text-shadow: 0 1px 0 rgba(30, 30, 30, 0.7);
+}
+
+.tablesorter tbody td,
+.tablesorter tfoot th,
+.tablesorter tfoot td {
+  padding: 4px;
+  vertical-align: top;
+}
+
+.tablesorter ul {
+  padding-left: 16px;
+}
+
+.tablesorter .header,
+.tablesorter .tablesorter-header {
+  background-image: none;
+  background-repeat: no-repeat;
+  background-position: center right;
+  padding: 4px 18px 4px 4px;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.tablesorter .headerSortUp,
+.tablesorter .tablesorter-headerSortUp,
+.tablesorter .tablesorter-headerAsc {
+  background-color: #444;
+  background-image: none;
+}
+
+.tablesorter .headerSortDown,
+.tablesorter .tablesorter-headerSortDown,
+.tablesorter .tablesorter-headerDesc {
+  background-color: #555;
+  background-image: none;
+}
+
+.tablesorter thead .sorter-false {
+  background-image: none;
+  cursor: default;
+  padding: 4px;
+}
+
+/* tfoot */
+.tablesorter tfoot .tablesorter-headerSortUp,
+.tablesorter tfoot .tablesorter-headerSortDown,
+.tablesorter tfoot .tablesorter-headerAsc,
+.tablesorter tfoot .tablesorter-headerDesc {
+  background-image: none;
+}
+
+/* tbody */
+.tablesorter td {
+  color: #3d3d3d;
+  background-color: #fff;
+  padding: 4px;
+  vertical-align: top;
+}
+
+.tablesorter tbody>tr.hover>td,
+.tablesorter tbody>tr:hover>td,
+.tablesorter tbody>tr:hover+tr.tablesorter-childRow>td,
+.tablesorter tbody>tr:hover+tr.tablesorter-childRow+tr.tablesorter-childRow>td,
+.tablesorter tbody>tr.even.hover>td,
+.tablesorter tbody>tr.even:hover>td,
+.tablesorter tbody>tr.even:hover+tr.tablesorter-childRow>td,
+.tablesorter tbody>tr.even:hover+tr.tablesorter-childRow+tr.tablesorter-childRow>td {
+  background-color: #d9d9d9;
+}
+
+.tablesorter tbody>tr.odd.hover>td,
+.tablesorter tbody>tr.odd:hover>td,
+.tablesorter tbody>tr.odd:hover+tr.tablesorter-childRow>td,
+.tablesorter tbody>tr.odd:hover+tr.tablesorter-childRow+tr.tablesorter-childRow>td {
+  background-color: #bfbfbf;
+}
+
+/* table processing indicator */
+.tablesorter .tablesorter-processing {
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-image: url('data:image/gif;base64,R0lGODlhFAAUAKEAAO7u7lpaWgAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQBCgACACwAAAAAFAAUAAACQZRvoIDtu1wLQUAlqKTVxqwhXIiBnDg6Y4eyx4lKW5XK7wrLeK3vbq8J2W4T4e1nMhpWrZCTt3xKZ8kgsggdJmUFACH5BAEKAAIALAcAAAALAAcAAAIUVB6ii7jajgCAuUmtovxtXnmdUAAAIfkEAQoAAgAsDQACAAcACwAAAhRUIpmHy/3gUVQAQO9NetuugCFWAAAh+QQBCgACACwNAAcABwALAAACE5QVcZjKbVo6ck2AF95m5/6BSwEAIfkEAQoAAgAsBwANAAsABwAAAhOUH3kr6QaAcSrGWe1VQl+mMUIBACH5BAEKAAIALAIADQALAAcAAAIUlICmh7ncTAgqijkruDiv7n2YUAAAIfkEAQoAAgAsAAAHAAcACwAAAhQUIGmHyedehIoqFXLKfPOAaZdWAAAh+QQFCgACACwAAAIABwALAAACFJQFcJiXb15zLYRl7cla8OtlGGgUADs=') !important;
+}
+
+/* Zebra Widget - row alternating colors */
+.tablesorter tbody tr.odd>td {
+  background-color: #fff;
+}
+
+.tablesorter tbody tr.even>td {
+  background-color: #f2f2f2;
+}
+
+/* Column Widget - column sort colors */
+.tablesorter td.primary,
+.tablesorter tr.odd td.primary {
+  background-color: #444;
+}
+
+.tablesorter tr.even td.primary {
+  background-color: #555;
+}
+
+.tablesorter td.secondary,
+.tablesorter tr.odd td.secondary {
+  background-color: #555;
+}
+
+.tablesorter tr.even td.secondary {
+  background-color: #666;
+}
+
+.tablesorter td.tertiary,
+.tablesorter tr.odd td.tertiary {
+  background-color: #666;
+}
+
+.tablesorter tr.even td.tertiary {
+  background-color: #777;
+}
+
+/* caption */
+caption {
+  background-color: #fff;
+}
+
+/* filter widget */
+.tablesorter .tablesorter-filter-row {
+  background-color: #eee;
+}
+
+.tablesorter .tablesorter-filter-row td {
+  background-color: #eee;
+  line-height: normal;
+  text-align: center;
+  /* center the input */
+  -webkit-transition: line-height 0.1s ease;
+  -moz-transition: line-height 0.1s ease;
+  -o-transition: line-height 0.1s ease;
+  transition: line-height 0.1s ease;
+}
+
+/* optional disabled input styling */
+.tablesorter .tablesorter-filter-row .disabled {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  cursor: not-allowed;
+}
+
+/* hidden filter row */
+.tablesorter .tablesorter-filter-row.hideme td {
+  padding: 2px;
+  margin: 0;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.tablesorter .tablesorter-filter-row.hideme * {
+  height: 1px;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+/* filters */
+.tablesorter input.tablesorter-filter,
+.tablesorter select.tablesorter-filter {
+  width: 98%;
+  height: auto;
+  margin: 0;
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #bbb;
+  color: #333;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transition: height 0.1s ease;
+  -moz-transition: height 0.1s ease;
+  -o-transition: height 0.1s ease;
+  transition: height 0.1s ease;
+}
+
+/* rows hidden by filtering (needed for child rows) */
+.tablesorter .filtered {
+  display: none;
+}
+
+/* ajax error row */
+.tablesorter .tablesorter-errorRow td {
+  text-align: center;
+  cursor: pointer;
+  background-color: #e6bf99;
+}
+
+/* pager wrapper, div */
+.tablesorter-pager {
+  margin: auto;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  display: block;
+  width: 30em;
+}
+
+/* pager wrapper, in thead/tfoot */
+td.tablesorter-pager {
+  background-color: #EEEEEE;
+  margin: 0;
+}
+
+/* needed for bootstrap .pager gets a 18px bottom margin */
+
+/* pager navigation arrows */
+.tablesorter-pager img {
+  vertical-align: middle;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+/* pager output text */
+.tablesorter-pager .pagedisplay {
+  padding: 0 5px 0 5px;
+  width: auto;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* pager element reset (needed for bootstrap) */
+.tablesorter-pager select {
+  margin: 0;
+  padding: 0;
+}
+
+.tablesorter-pager.disabled {
+  display: none;
+}
+
+/* hide or fade out pager arrows when the first or last row is visible */
+.tablesorter-pager .disabled {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  cursor: default;
+}

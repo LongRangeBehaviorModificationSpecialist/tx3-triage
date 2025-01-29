@@ -127,7 +127,7 @@ function Get-UniqueProcessHash {
             }
             else {
                 ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() |
-                Export-Csv -NoTypeInformation -Path  $File -Encoding UTF8
+                Export-Csv -NoTypeInformation -Path $File -Encoding UTF8
                 Show-OutputSavedToFile $File
                 Write-LogOutputSaved $File
             }

@@ -21,6 +21,7 @@ $Cwd = Get-Location
 
 
 $CaseFolderName = New-Item -ItemType Directory -Path $($Cwd) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
+# $CaseFolderName = New-Item -ItemType Directory -Path "$([Environment]::GetFolderPath('Desktop'))\html-test" -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
 
 
 # Error messages to use in the various functions
@@ -87,14 +88,14 @@ function Show-Message {
     param (
         [Parameter(Mandatory)]
         [string]$Message,
-        # [switch]$Header,
+        [switch]$Header,
         [switch]$NoTime,
         [switch]$Blue,
         [switch]$Green,
-        [switch]$White,
         [switch]$Magenta,
         [switch]$Red,
         [switch]$Yellow,
+        [switch]$Gray,
         [switch]$BlueOnGray,
         [switch]$YellowOnRed
     )
@@ -106,34 +107,31 @@ function Show-Message {
     elseif ($Magenta) { "Magenta" }
     elseif ($Red) { "Red" }
     elseif ($Yellow) { "Yellow" }
+    elseif ($Gray) { "Gray" }
     elseif ($BlueOnGray) { "BlueOnGray" }
     elseif ($YellowOnRed) { "YellowOnRed" }
-    else { "Gray" }
+    else { "White" }
 
     # Generate timestamp if -NoTime is not provided
     $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { $Null }
 
-    if ($NoTime) {
-        # Format the full message
-        $FormattedMessage = "$Message"
-    }
-    elseif (-not $NoTime) {
-        # Add the timestamp to the message that is displayed
-        $DisplayTimeStamp = $(Get-TimeStamp)
-        $FormattedMessage = "$DisplayTimeStamp $Message"
-    }
+    $HeaderText = if ($Header) { "`n" } else { $Null }
+
+    # Format the full message
+    $FormattedMessage = "$HeaderText" + "$DisplayTimeStamp $Message"
 
     # Display the message with the appropriate color
     switch ($Color) {
         "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
-        "White" { Write-Host $FormattedMessage -ForegroundColor White }
+        "Gray" { Write-Host $FormattedMessage -ForegroundColor Gray }
         "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
         "Magenta" { Write-Host $FormattedMessage -ForegroundColor DarkMagenta }
         "Red" { Write-Host $FormattedMessage -ForegroundColor DarkRed }
+        "White" { Write-Host $FormattedMessage -ForegroundColor White }
         "Yellow" { Write-Host $FormattedMessage -ForegroundColor DarkYellow }
+
         "BlueOnGray" { Write-Host $FormattedMessage -ForegroundColor Blue -BackgroundColor Gray }
         "YellowOnRed" { Write-Host $FormattedMessage -ForegroundColor DarkYellow -BackgroundColor DarkRed }
-        "Gray" { Write-Host $FormattedMessage -ForegroundColor Gray }
     }
 }
 
