@@ -145,19 +145,21 @@ function Get-MappedNetworkDriveMRU {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
+
             Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object * -ExcludeProperty PS*
-
             }
             catch [PathNotFound] {
                 Show-Message("$KeyNotFoundMsg") -Yellow
                 Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -324,7 +326,7 @@ function Get-HotFixesData {
             Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
-            $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn  -Descending
+            $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
 
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
@@ -362,19 +364,21 @@ function Get-InstalledAppsFromReg {
     $FunctionName = $MyInvocation.MyCommand.Name
     $Header = "$Num Running ``$FunctionName`` function"
     try {
+
         # Run the command
         $ExecutionTime = Measure-Command {
+
             Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+
             try {
-
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object -Property * | Sort-Object InstallDate -Descending
-
             }
             catch [PathNotFound] {
                 Show-Message("$KeyNotFoundMsg") -Yellow
                 Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
             }
+
             if ($Data.Count -eq 0) {
                 Write-NoDataFound $FunctionName
             }
@@ -480,6 +484,7 @@ function Get-VolumeShadowsData {
     }
 }
 
+# TODO -- move this function to the networking section
 # 5-012
 function Get-DnsCacheDataTxt {
 
@@ -522,6 +527,7 @@ function Get-DnsCacheDataTxt {
     }
 }
 
+# TODO -- move this function to the networking section
 # 5-013
 function Get-DnsCacheDataCsv {
 

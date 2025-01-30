@@ -20,8 +20,8 @@
 $Cwd = Get-Location
 
 
-$CaseFolderName = New-Item -ItemType Directory -Path $($Cwd) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
-# $CaseFolderName = New-Item -ItemType Directory -Path "$([Environment]::GetFolderPath('Desktop'))\html-test" -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
+# $CaseFolderName = New-Item -ItemType Directory -Path $($Cwd) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
+$CaseFolderName = New-Item -ItemType Directory -Path "$([Environment]::GetFolderPath('Desktop'))\tempTest" -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
 
 
 # Error messages to use in the various functions
@@ -118,7 +118,7 @@ function Show-Message {
     $HeaderText = if ($Header) { "`n" } else { $Null }
 
     # Format the full message
-    $FormattedMessage = "$HeaderText" + "$DisplayTimeStamp $Message"
+    $FormattedMessage = "$HeaderText$DisplayTimeStamp $Message"
 
     # Display the message with the appropriate color
     switch ($Color) {

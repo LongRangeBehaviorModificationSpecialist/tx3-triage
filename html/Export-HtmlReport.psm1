@@ -2,7 +2,60 @@ $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
-Import-Module -Name .\html\HtmlReportVars.psm1 -Global -Force
+Import-Module -Name .\html\HtmlReportStaticPages.psm1 -Global -Force
+
+
+
+
+
+# $ReturnHtmlSnippet = "<a href='#top' class='top'>(Return to Top)</a>"
+
+function Save-OutputToHtmlFile {
+
+    [CmdletBinding()]
+
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name,
+        [Parameter(Mandatory, Position = 1)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 2)]
+        [ValidateNotNullOrEmpty()]
+        [string]$OutputFilePath,
+        [switch]$FromPipe,
+        [switch]$FromString
+    )
+
+    process {
+     $PreContent = "</h5>
+<button type='button' class='collapsible'>$($Name)</button>
+<div class='content'>
+<pre>
+<p>"
+
+     $PostContent = "
+</p>
+</pre>
+</div>"
+
+        # $HeaderMsg = Show-Message("Running ``$Name`` command") -Header -Gray
+        # $FooterMsg = Show-Message("``$Name`` done...") -Blue
+
+        if ($FromPipe) {
+            # $HeaderMsg
+            $Data | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $Name $PreContent $Data" -PostContent $PostContent | Out-File -Append $OutputFilePath -Encoding UTF8
+            # $FooterMsg
+        }
+
+        if ($FromString) {
+            # $HeaderMsg
+            Add-Content -Path $OutputFilePath -Value "<h5 class='info_header'> $Name $PreContent $Data $PostContent" -NoNewline
+            # $FooterMsg
+        }
+    }
+}
+
 
 
 function Export-HtmlReport {
@@ -40,7 +93,9 @@ function Export-HtmlReport {
     )
 
 
-    $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
+
+
+    # $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
 
     $Cwd = Get-Location
 
@@ -91,18 +146,8 @@ function Export-HtmlReport {
     Write-HtmlReadMePage -FilePath $ReadMeFile
 
 
-    Show-Message("Compiling the Triage Report in .html format. Please wait. . . ") -Header -Green
+    Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
 
-    # $ReturnHtmlSnippet = "<a href='#top' class='top'>(Return to Top)</a>"
-
-    $PreContentBegin = '</h5>
-    <button type="button" class="collapsible">'
-
-    $PreContentEnd = '</button>
-    <div class="content">
-    <p>'
-
-    $PostContent = "</p></div>"
 
     $DeviceHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "001_DeviceInfo.html"
     $UserHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "002_UserInfo.html"
@@ -116,568 +161,2082 @@ function Export-HtmlReport {
 
     # (1)
     function Export-DeviceHtmlPage {
-
         [CmdletBinding()]
-
         param (
             [string]$FilePath
         )
+        Add-Content -Path $FilePath -Value $HtmlHeader
 
-        Add-Content -Path $DeviceHtmlOutputFile -Value $HtmlHeader
 
         # 1-001
-        Show-Message("Running ``Get-ComputerDetails`` command") -Header -Gray
-        Get-ComputerDetails | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> Computer Information $PreContentBegin Get-ComputerDetails $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``Get-ComputerDetails`` done...") -Blue
+        function Get-VariousData {
+            param ([string]$FilePath)
+            $Name = "1-001 Get-ComputerDetails"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ComputerDetails
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-VariousData -FilePath $FilePath
 
 
         # 1-002
-        Show-Message("Running ``Get-TPMDetails`` command") -Header -Gray
-        Get-TPMDetails | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> TPM Details $PreContentBegin TPM Data $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``Get-TPMDetails`` done...") -Blue
+        function Get-TPMData {
+            param ([string]$FilePath)
+            $Name = "1-002 Get-TPMDetails"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-TPMDetails
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-TPMData -FilePath $FilePath
 
 
-        #! 1-003
-        Show-Message("Running ``PsInfo.exe`` command") -Header -Gray
-        .\bin\PsInfo.exe -accepteula -s -h -d | Out-File -FilePath "$FilesFolder\1-003_PSInfo.txt" -Encoding UTF8
-        Add-Content -Path $DeviceHtmlOutputFile -Value "<h5 class='info_header'> PSInfo.exe $PreContentBegin PSInfo.exe $PrecontentEnd <a href='../files/PsInfo.txt'>PsInfo.txt</a> $PostContent"
-        Show-Message("``PsInfo.exe`` done...") -Blue
+        #* 1-003
+        function Get-PSInfo {
+            param ([string]$FilePath)
+            $Name = "1-003 PSInfo.exe"
+            Show-Message("Running ``$1003Name`` command") -Header -Gray
+            try {
+                $Data = .\bin\PsInfo.exe -accepteula -s -h -d | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$1003Name`` done...") -Blue
+        }
+        Get-PSInfo -FilePath $FilePath
 
 
         # 1-004
-        Show-Message("Running ``Get-PSDrive`` command") -Header -Gray
-        Get-PSDrive -PSProvider FileSystem | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> PSDrive Information $PreContentBegin Get-PSDrive $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``Get-PSDrive`` done...") -Blue
+        function Get-PSDriveData {
+            param ([string]$FilePath)
+            $Name = "1-004 Get-PSDrive"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-PSDrive -PSProvider FileSystem | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-PSDriveData -FilePath $FilePath
 
 
         # 1-005
-        Show-Message("Running ``Win32_LogicalDisk`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> Win32_LogicalDisk Information $PreContentBegin Win32_LogicalDisk $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``Win32_LogicalDisk`` done...") -Blue
+        function Get-LogicalDiskData {
+            param ([string]$FilePath)
+            $Name = "1-005 Win32_LogicalDisk"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-LogicalDiskData -FilePath $FilePath
 
 
         # 1-006
-        Show-Message("Running ``Get-ComputerInfo`` command") -Header -Gray
-        Get-ComputerInfo | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> Computer Info $PreContentBegin Get-ComputerInfo $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``Get-ComputerInfo`` done...") -Blue
+        function Get-ComputerData {
+            param ([string]$FilePath)
+            $Name = "1-006 Get-ComputerInfo"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ComputerInfo
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ComputerData -FilePath $FilePath
 
 
         # 1-007
-        Show-Message("Running ``systeminfo`` command") -Header -Gray
-        systeminfo /FO CSV | ConvertFrom-Csv | Select-Object * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> System Info $PreContentBegin SystemInfo $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``systeminfo`` done...") -Blue
+        function Get-SystemDataCMD {
+            param ([string]$FilePath)
+            $Name = "1-007 systeminfo"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-SystemDataCMD -FilePath $FilePath
 
 
         # 1-008
-        $1008Name = "1-008 Win32_ComputerSystem"
-        Show-Message("Running ``$1008Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1008Name $PreContentBegin Win32_ComputerSystem $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1008Name`` done...") -Blue
+        function Get-SystemDataPS {
+            param ([string]$FilePath)
+            $Name = "1-008 Win32_ComputerSystem"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-SystemDataPS -FilePath $FilePath
 
 
         # 1-009
-        $1009Name = "1-009 Win32_OperatingSystem"
-        Show-Message("Running ``$1009Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1009Name $PreContentBegin Win32_OperatingSystem $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1009Name`` done...") -Blue
+        function Get-OperatingSystemData {
+            param ([string]$FilePath)
+            $Name = "1-009 Win32_OperatingSystem"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-OperatingSystemData -FilePath $FilePath
 
 
         # 1-010
-        $1010Name = "1-010 Win32_PhysicalMemory"
-        Show-Message("Running ``$1010Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1010Name $PreContentBegin Win32_PhysicalMemory $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1010Name`` done...") -Blue
+        function Get-PhysicalMemory {
+            param ([string]$FilePath)
+            $Name = "1-010 Win32_PhysicalMemory"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-PhysicalMemory -FilePath $FilePath
+
 
         # 1-011
-        $1011Name = "1-011 Get-EnvVars"
-        Show-Message("Running ``$1011Name`` command") -Header -Gray
-        Get-ChildItem -Path env: | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1011Name $PreContentBegin EnvVars $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1011Name`` done...") -Blue
+        function Get-EnvVars {
+            param ([string]$FilePath)
+            $Name = "1-011 Get-EnvVars"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ChildItem -Path env:
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-EnvVars -FilePath $FilePath
+
 
         # 1-012
-        $1012Name = "1-012 Get-Disk"
-        Show-Message("Running ``$1012Name`` command") -Header -Gray
-        Get-Disk | Select-Object -Property * | Sort-Object DiskNumber | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1012Name $PreContentBegin Get-Disk $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1012Name`` done...") -Blue
+        function Get-PhysicalDiskData {
+            param ([string]$FilePath)
+            $Name = "1-012 Get-Disk"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Disk | Select-Object -Property * | Sort-Object DiskNumber
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-PhysicalDiskData -FilePath $FilePath
+
 
         # 1-013
-        $1013Name = "1-013 Get-Partition"
-        Show-Message("Running ``$1013Name`` command") -Header -Gray
-        Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1013Name $PreContentBegin Get-Partition $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1013Name`` done...") -Blue
+        function Get-DiskPartitions {
+            param ([string]$FilePath)
+            $Name = "1-013 Get-Partition"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-DiskPartitions -FilePath $FilePath
+
 
         # 1-014
-        $1014Name = "1-014 Win32_DiskPartition"
-        Show-Message("Running ``$1014Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name | Format-List | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1014Name $PreContentBegin Win32_DiskPartition $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1014Name`` done...") -Blue
+        function Get-Win32DiskParts {
+            param ([string]$FilePath)
+            $Name = "1-014 Win32_DiskPartition"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-Win32DiskParts -FilePath $FilePath
+
 
         # 1-015
-        $1015Name = "1-015 Win32_StartupCommand"
-        Show-Message("Running ``$1015Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1015Name $PreContentBegin Win32_StartupCommand $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1015Name`` done...") -Blue
+        function Get-Win32StartupApps {
+            param ([string]$FilePath)
+            $Name = "1-015 Win32_StartupCommand"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-Win32StartupApps -FilePath $FilePath
+
 
         # 1-016
         # SKIPPING
 
-        # 1-017
-        $1017Name = "1-017 SoftwareLicensingService"
-        Show-Message("Running ``$1017Name`` command") -Header -Gray
-        Get-WmiObject -ClassName SoftwareLicensingService | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1017Name $PreContentBegin SoftwareLicensingService $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1017Name`` done...") -Blue
 
-        #! 1-018
-        $1018Name = "1-018 AutoRuns.exe"
-        $1018FileName = "1-018_AutoRuns.csv"
-        Show-Message("Running ``$1018Name`` command") -Header -Gray
-        .\bin\autorunsc64.exe -a * -c -nobanner  | Out-File -FilePath "$FilesFolder\$1018FileName" -Encoding UTF8
-        Add-Content -Path $DeviceHtmlOutputFile -Value "<h5 class='info_header'> $1018Name $PreContentBegin AutoRuns.exe $PrecontentEnd <a href='../files/$1018FileName'>$1018FileName</a> $PostContent"
-        Show-Message("``$1018Name`` done...") -Blue
+        # 1-017
+        function Get-SoftwareLicenseData {
+            param ([string]$FilePath)
+            $Name = "1-017 SoftwareLicensingService"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-WmiObject -ClassName SoftwareLicensingService
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-SoftwareLicenseData -FilePath $FilePath
+
+
+        #* 1-018
+        function Get-AutoRunsData {
+            param ([string]$FilePath)
+            $Name = "1-018 AutoRuns.exe"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = .\bin\autorunsc64.exe -a * -c -nobanner | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-AutoRunsData -FilePath $FilePath
 
 
         # 1-019
-        $1019Name = "1-019 Win32_Bios"
-        Show-Message("Running ``$1019Name`` command") -Header -Gray
-        Get-WmiObject -ClassName Win32_Bios | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1019Name $PreContentBegin Win32_Bios $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1019Name`` done...") -Blue
+        function Get-BiosData {
+            param ([string]$FilePath)
+            $Name = "1-019 Win32_Bios"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-BiosData -FilePath $FilePath
+
 
         # 1-020
-        $1020Name = "1-020 Get-PnpDevice"
-        Show-Message("Running ``$1020Name`` command") -Header -Gray
-        Get-PnpDevice | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1020Name $PreContentBegin Get-PnpDevice $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1020Name`` done...") -Blue
+        function Get-ConnectedDevices {
+            param ([string]$FilePath)
+            $Name = "1-020 Get-PnpDevice"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-PnpDevice
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ConnectedDevices -FilePath $FilePath
+
 
         # 1-021
-        $1021Name = "1-021 Win32_PnPEntity"
-        Show-Message("Running ``$1021Name`` command") -Header -Gray
-        $One_021Data = Get-CimInstance Win32_PnPEntity
+        function Get-HardwareInfo {
+            param ([string]$FilePath)
+            $Name = "1-021 Win32_PnPEntity"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance Win32_PnPEntity
 
-        foreach ($Item in $One_021Data) {
-            $Item | Add-Member -MemberType NoteProperty -Name "Host" -Value $Env:COMPUTERNAME
-            $Item | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
+                foreach ($Item in $Data) {
+                    $Item | Add-Member -MemberType NoteProperty -Name "Host" -Value $Env:COMPUTERNAME
+                    $Item | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
+                }
+
+                $Data | Select-Object Host, DateScanned, PnPClass, Caption, Description, DeviceID
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
         }
-        $One_021Data | Select-Object Host, DateScanned, PnPClass, Caption, Description, DeviceID | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1021Name $PreContentBegin Win32_PnPEntity $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1021Name`` done...") -Blue
+        Get-HardwareInfo -FilePath $FilePath
+
 
         # 1-022
-        $1022Name = "1-022 Win32_Product"
-        Show-Message("Running ``$1022Name`` command") -Header -Gray
-        Get-WmiObject Win32_Product | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1022Name $PreContentBegin Win32_Product $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1022Name`` done...") -Blue
+        function Get-Win32Products {
+            param ([string]$FilePath)
+            $Name = "1-022 Win32_Product"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-WmiObject Win32_Product
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-Win32Products -FilePath $FilePath
+
 
         # 1-023
-        $1023Name = "1-023 Get-OpenWindowTitles"
-        Show-Message("Running ``$1023Name`` command") -Header -Gray
-        Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $1023Name $PreContentBegin Get-OpenWindowTitles $PreContentEnd" -PostContent $PostContent | Out-File -Append $DeviceHtmlOutputFile -Encoding UTF8
-        Show-Message("``$1023Name`` done...") -Blue
+        function Get-OpenWindowTitles {
+            param ([string]$FilePath)
+            $Name = "1-023 Get-OpenWindowTitles"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-OpenWindowTitles -FilePath $FilePath
 
 
-        Add-Content -Path $DeviceHtmlOutputFile -Value $EndingHtml
-
+        Add-Content -Path $FilePath -Value $EndingHtml
     }  # End of `Export-DeviceHtmlPage` function
-
 
     # (2)
     function Export-UserHtmlPage {
-
         [CmdletBinding()]
-
         param (
             [string]$FilePath
         )
+        Add-Content -Path $FilePath -Value $HtmlHeader
 
-        Add-Content -Path $UserHtmlOutputFile -Value $HtmlHeader
 
-        #! 2-001
-        $2001Name = "2-001 WhoAmI"
-        Show-Message("Running ``$2001Name`` command") -Header -Gray
-        $2001Data = whoami /ALL /FO LIST | Out-String
-        Add-Content -Path $UserHtmlOutputFile -Value "<h5 class='info_header'> $2001Name $PreContentBegin WhoAmI $PrecontentEnd <div class='text'> $2001Data </div> $PostContent" -NoNewline
-        Show-Message("``$2001Name`` done...") -Blue
+        #* 2-001
+        function Get-WhoAmI {
+            param ([string]$FilePath)
+            $Name = "2-001 WhoAmI"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = whoami /ALL /FO LIST | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-WhoAmI -FilePath $FilePath
+
 
         # 2-002
-        $2002Name = "2-002 Win32_UserProfile"
-        Show-Message("Running ``$2002Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $2002Name $PreContentBegin Win32_UserProfile $PreContentEnd" -PostContent $PostContent | Out-File -Append $UserHtmlOutputFile -Encoding UTF8
-        Show-Message("``$2002Name`` done...") -Blue
+        function Get-UserProfile {
+            param ([string]$FilePath)
+            $Name = "2-002 Win32_UserProfile"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-UserProfile -FilePath $FilePath
+
 
         # 2-003
-        $2003Name = "2-003 Win32_UserAccount"
-        Show-Message("Running ``$2003Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $2003Name $PreContentBegin Win32_UserAccount $PreContentEnd" -PostContent $PostContent | Out-File -Append $UserHtmlOutputFile -Encoding UTF8
-        Show-Message("``$2003Name`` done...") -Blue
+        function Get-UserInfo {
+            param ([string]$FilePath)
+            $Name = "2-003 Win32_UserAccount"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-UserInfo -FilePath $FilePath
+
 
         # 2-004
-        $2004Name = "2-004 Get-LocalUser"
-        Show-Message("Running ``$2004Name`` command") -Header -Gray
-        Get-LocalUser | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $2004Name $PreContentBegin Get-LocalUser $PreContentEnd" -PostContent $PostContent | Out-File -Append $UserHtmlOutputFile -Encoding UTF8
-        Show-Message("``$2004Name`` done...") -Blue
+        function Get-LocalUserData {
+            param ([string]$FilePath)
+            $Name = "2-004 Get-LocalUser"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-LocalUser
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-LocalUserData -FilePath $FilePath
+
 
         # 2-005
-        $2005Name = "2-005 Win32_LogonSession"
-        Show-Message("Running ``$2005Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $2005Name $PreContentBegin Win32_LogonSession $PreContentEnd" -PostContent $PostContent | Out-File -Append $UserHtmlOutputFile -Encoding UTF8
-        Show-Message("``$2005Name`` done...") -Blue
+        function Get-LogonSession {
+            param ([string]$FilePath)
+            $Name = "2-005 Win32_LogonSession"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-LogonSession -FilePath $FilePath
+
 
         # 2-006
         # TODO -- SKIPPED for now.  Will come back and figure out how to code this function
 
+
         # 2-007
-        $2007Name = "2-007 WinEvent Security (4624 or 4648)"
-        Show-Message("Running ``$2007Name`` command") -Header -Gray
-        $Two_007Cmd = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
+        function Get-LastLogons {
+            param ([string]$FilePath)
+            $Name = "2-007 WinEvent Security (4624 or 4648)"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Cmd = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
 
-        $Two_007Data = @()
-        foreach ($LogonEvent in $Two_007Cmd) {
-            $Two_007Data += [PSCustomObject]@{
-                Time      = $LogonEvent.TimeCreated
-                LogonType = if ($LogonEvent.Id -eq 4648) { "Explicit" } else { "Interactive" }
-                Message   = $LogonEvent.Message
+                $Data = @()
+                foreach ($LogonEvent in $Cmd) {
+                    $Data += [PSCustomObject]@{
+                        Time      = $LogonEvent.TimeCreated
+                        LogonType = if ($LogonEvent.Id -eq 4648) { "Explicit" } else { "Interactive" }
+                        Message   = $LogonEvent.Message
+                    }
+                }
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
             }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
         }
-        $Two_007Data | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $2007Name $PreContentBegin WinEvent Security (4624 or 4648) $PreContentEnd" -PostContent $PostContent | Out-File -Append $UserHtmlOutputFile -Encoding UTF8
-        Show-Message("``$2007Name`` done...") -Blue
+        Get-LastLogons -FilePath $FilePath
 
 
-        Add-Content -Path $UserHtmlOutputFile -Value $EndingHtml
-
+        Add-Content -Path $FilePath -Value $EndingHtml
     }  # End of `Export-UserHtmlPage` function
-
 
     # (3)
     function Export-NetworkHtmlPage {
-
         [CmdletBinding()]
-
         param (
             [string]$FilePath
         )
+        Add-Content -Path $FilePath -Value $HtmlHeader
 
-        Add-Content -Path $NetworkHtmlOutputFile -Value $HtmlHeader
 
         # 3-001
-        $3001Name = "3-001 Win32_NetworkAdapterConfiguration"
-        Show-Message("Running ``$3001Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Format-List | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3001Name $PreContentBegin Win32_NetworkAdapterConfiguration $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3001Name`` done...") -Blue
+        function Get-NetworkConfig {
+            param ([string]$FilePath)
+            $Name = "3-001 Win32_NetworkAdapterConfiguration"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Format-List
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetworkConfig -FilePath $FilePath
+
 
         # 3-002
         # TODO -- Check status of the `Get-NetTCPConnection` function // Not working on forensic machine
+        function Get-OpenNetworkConnections {
+            param ([string]$FilePath)
+        }
+
 
         # 3-003
         # TODO -- SKIPPED temp
+        function Get-NetstatDetailed {
+            param ([string]$FilePath)
+        }
 
-        #! 3-004
-        $3004Name = "3-004 netstat -nao"
-        Show-Message("Running ``$3004Name`` command") -Header -Gray
-        $3004Data = netstat -nao | Out-String
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3004Name $PreContentBegin netstat -nao $PrecontentEnd <div class='text'> $3004Data </div> $PostContent" -NoNewline
-        Show-Message("``$3004Name`` done...") -Blue
+
+        #* 3-004
+        function Get-NetstatBasic {
+            param ([string]$FilePath)
+            $Name = "3-004 netstat -nao"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = netstat -nao | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetstatBasic -FilePath $FilePath
+
 
         # 3-005
-        # $3005Name = "3-005 Get-NetTCPConnection"
-        # Show-Message("Running ``$3005Name`` command") -Header -Gray
-        # Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3005Name $PreContentBegin Get-NetTCPConnection $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        # Show-Message("``$3005Name`` done...") -Blue
+        # function Get-NetTcpConnectionsAllTxt {
+        #     param ([string]$FilePath)
+        #     $Name = "3-005 Get-NetTCPConnection"
+        #     Show-Message("Running ``$Name`` command") -Header -Gray
+        #     try {
 
-        # #! 3-006
-        # $3006Name = "3-006 Get-NetTCPConnection (as CSV)"
-        # Show-Message("Running ``$3006Name`` command") -Header -Gray
-        # $3006FileName = "3-006_NetTcpConnections.csv"
-        # Get-NetTcpConnection | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$3006FileName" -Encoding UTF8
-        # Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3006Name $PreContentBegin Get-NetTCPConnection (as CSV) $PrecontentEnd <a href='../files/$3006FileName'>$3006FileName</a> $PostContent" -NoNewline
-        # Show-Message("``$3006Name`` done...") -Blue
+        #     }
+        #     catch {
+
+        #     }
+        #     Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $Name $PreContentBegin Get-NetTCPConnection $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
+        #     Show-Message("``$Name`` done...") -Blue
+        # }
+
+
+        #! 3-006
+        # function Get-NetTcpConnectionsAllCsv {
+        #     param ([string]$FilePath)
+        #     $Name = "3-006 Get-NetTCPConnection (as CSV)"
+        #     Show-Message("Running ``$Name`` command") -Header -Gray
+        #     $FileName = "3-006_NetTcpConnections.csv"
+        #     try {
+
+        #     }
+        #     catch {
+
+        #     }
+        #     Get-NetTcpConnection | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+        #     Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $Name $PreContentBegin Get-NetTCPConnection (as CSV) $PrecontentEnd <a href='../files/$FileName'>$FileName</a> $PostContent" -NoNewline
+        #     Show-Message("``$Name`` done...") -Blue
+        # }
+
 
         # 3-007
-        $3007Name = " 3-007 Get-NetAdapter"
-        Show-Message("Running ``$3007Name`` command") -Header -Gray
-        Get-NetAdapter | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3007Name $PreContentBegin Get-NetAdapter $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3007Name`` done...") -Blue
+        function Get-NetworkAdapters {
+            param ([string]$FilePath)
+            $Name = " 3-007 Get-NetAdapter"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetAdapter | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetworkAdapters -FilePath $FilePath
+
 
         # 3-008
-        $3008Name = "3-008 Get-NetIPConfiguration"
-        Show-Message("Running ``$3008Name`` command") -Header -Gray
-        Get-NetIPConfiguration | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3008Name $PreContentBegin Get-NetIPConfiguration $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3008Name`` done...") -Blue
+        function Get-NetIPConfig {
+            param ([string]$FilePath)
+            $Name = "3-008 Get-NetIPConfiguration"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetIPConfiguration | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetIPConfig -FilePath $FilePath
 
-        #! 3-009
-        $3009Name = "3-009 route PRINT"
-        Show-Message("Running ``$3009Name`` command") -Header -Gray
-        $3009Data = route PRINT | Out-String
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3009Name $PreContentBegin route PRINT $PrecontentEnd <div class='text'> $3009Data </div> $PostContent" -NoNewline
-        Show-Message("``$3009Name`` done...") -Blue
 
-        #! 3-010
-        $3010Name = "3-010 ipconfig /all"
-        Show-Message("Running ``$3010Name`` command") -Header -Gray
-        $3010Data = ipconfig /all | Out-String
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3010Name $PreContentBegin ipconfig /all $PrecontentEnd <div class='text'> $3010Data </div> $PostContent" -NoNewline
-        Show-Message("``$3010Name`` done...") -Blue
+        #* 3-009
+        function Get-RouteData {
+            param ([string]$FilePath)
+            $Name = "3-009 route PRINT"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = route PRINT | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-RouteData -FilePath $FilePath
+
+
+        #* 3-010
+        function Get-IPConfig {
+            param ([string]$FilePath)
+            $Name = "3-010 ipconfig /all"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = ipconfig /all | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-IPConfig -FilePath $FilePath
+
 
         # 3-011
-        $3011Name = "3-011 Get-NetNeighbor"
-        Show-Message("Running ``$3011Name`` command") -Header -Gray
-        Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3011Name $PreContentBegin Get-NetNeighbor $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3011Name`` done...") -Blue
+        function Get-ARPData {
+            param ([string]$FilePath)
+            $Name = "3-011 Get-NetNeighbor"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ARPData -FilePath $FilePath
+
 
         # 3-012
-        $3012Name = "3-012 Get-NetIPAddress"
-        Show-Message("Running ``$3012Name`` command") -Header -Gray
-        Get-NetIPAddress | Sort-Object -Property IPAddress | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3012Name $PreContentBegin Get-NetIPAddress $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3012Name`` done...") -Blue
+        function Get-NetIPAddrs {
+            param ([string]$FilePath)
+            $Name = "3-012 Get-NetIPAddress"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetIPAddress | Sort-Object -Property IPAddress
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetIPAddrs -FilePath $FilePath
 
-        #! 3-013
-        $3013Name = "3-013 Get-hostsFile"
-        Show-Message("Running ``$3013Name`` command") -Header -Gray
-        $3013Data = Get-Content "$Env:windir\system32\drivers\etc\hosts" -Raw
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3013Name $PreContentBegin Get-hostsFile $PrecontentEnd <div class='text'> $3013Data </div> $PostContent" -NoNewline
-        Show-Message("``$3013Name`` done...") -Blue
 
-        #! 3-014
-        $3014Name = "3-014 Get-networksFile"
-        Show-Message("Running ``$3014Name`` command") -Header -Gray
-        $3014Data = Get-Content "$Env:windir\system32\drivers\etc\networks" -Raw
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3014Name $PreContentBegin Get-networksFile $PrecontentEnd <div class='text'> $3014Data </div> $PostContent" -NoNewline
-        Show-Message("``$3014Name`` done...") -Blue
+        #* 3-013
+        function Get-HostsFile {
+            param ([string]$FilePath)
+            $Name = "3-013 Get-HostsFile"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Content "$Env:windir\system32\drivers\etc\hosts" -Raw
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-HostsFile -FilePath $FilePath
 
-        #! 3-015
-        $3015Name = "3-015 Get-protocolFile"
-        Show-Message("Running ``$3015Name`` command") -Header -Gray
-        $3015Data = Get-Content "$Env:windir\system32\drivers\etc\protocol" -Raw
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3015Name $PreContentBegin Get-protocolFile $PrecontentEnd <div class='text'> $3015Data </div> $PostContent" -NoNewline
-        Show-Message("``$3015Name`` done...") -Blue
 
-        #! 3-016
-        $3016Name = "3-016 Get-servicesFile"
-        Show-Message("Running ``$3016Name`` command") -Header -Gray
-        $3016Data = Get-Content "$Env:windir\system32\drivers\etc\services" -Raw
-        Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $3016Name $PreContentBegin Get-servicesFile $PrecontentEnd <div class='text'> $3016Data </div> $PostContent" -NoNewline
-        Show-Message("``$3016Name`` done...") -Blue
+        #* 3-014
+        function Get-NetworksFile {
+            param ([string]$FilePath)
+            $Name = "3-014 Get-NetworksFile"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Content "$Env:windir\system32\drivers\etc\networks" -Raw
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetworksFile -FilePath $FilePath
+
+
+        #* 3-015
+        function Get-ProtocolFile {
+            param ([string]$FilePath)
+            $Name = "3-015 Get-ProtocolFile"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Content "$Env:windir\system32\drivers\etc\protocol" -Raw
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Add-Content -Path $NetworkHtmlOutputFile -Value "<h5 class='info_header'> $Name $PreContentBegin Get-protocolFile $PrecontentEnd <pre> $Data $PostContent </pre>" -NoNewline
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ProtocolFile -FilePath $FilePath
+
+
+        #* 3-016
+        function Get-ServicesFile {
+            param ([string]$FilePath)
+            $Name = "3-016 Get-servicesFile"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-Content "$Env:windir\system32\drivers\etc\services" -Raw
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ServicesFile -FilePath $FilePath
+
 
         # 3-017
-        $3017Name = "3-017 Get-SmbShare"
-        Show-Message("Running ``$3017Name`` command") -Header -Gray
-        Get-SmbShare | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3017Name $PreContentBegin Get-SmbShare $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3017Name`` done...") -Blue
+        function Get-SmbShares {
+            param ([string]$FilePath)
+            $Name = "3-017 Get-SmbShare"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-SmbShare
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-SmbShares -FilePath $FilePath
+
 
         # 3-018
-        $3018Name = "3-018 Get-WifiPasswords"
-        Show-Message("Running ``$3018Name`` command") -Header -Gray
-        $Three_018Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } } | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3018Name $PreContentBegin Get-WifiPasswords $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3018Name`` done...") -Blue
+        function Get-WifiPasswords {
+            param ([string]$FilePath)
+            $Name = "3-018 Get-WifiPasswords"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } }
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-WifiPasswords -FilePath $FilePath
+
 
         # 3-019
-        $3019Name = "3-019 Get-NetIPInterface"
-        Show-Message("Running ``$3019Name`` command") -Header -Gray
-        Get-NetIPInterface | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3019Name $PreContentBegin Get-NetIPInterface $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3019Name`` done...") -Blue
+        function Get-NetInterfaces {
+            param ([string]$FilePath)
+            $Name = "3-019 Get-NetIPInterface"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetIPInterface | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetInterfaces -FilePath $FilePath
+
 
         # 3-020
-        $3020Name = "3-020 Get-NetRoute"
-        Show-Message("Running ``$3020Name`` command") -Header -Gray
-        Get-NetRoute | Select-Object -Property * | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $3020Name $PreContentBegin Get-NetRoute $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-        Show-Message("``$3020Name`` done...") -Blue
+        function Get-NetRouteData {
+            param ([string]$FilePath)
+            $Name = "3-020 Get-NetRoute"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetRoute | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-NetRouteData -FilePath $FilePath
 
-        Add-Content -Path $NetworkHtmlOutputFile -Value $EndingHtml
 
+        Add-Content -Path $FilePath -Value $EndingHtml
     }  # End of `Export-NetworkHtmlPage` function
-
 
     # (4)
     function Export-ProcessHtmlPage {
-
         [CmdletBinding()]
-
         param (
             [string]$FilePath
         )
+        Add-Content -Path $FilePath -Value $HtmlHeader
 
-        Add-Content -Path $ProcessHtmlOutputFile -Value $HtmlHeader
 
         # 4-001
-        $4001Name = "4-001 Running Processes (All)"
-        Show-Message("Running ``$4001Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $4001Name $PreContentBegin Running Processes (All) $PreContentEnd" -PostContent $PostContent | Out-File -Append $ProcessHtmlOutputFile -Encoding UTF8
-        Show-Message("``$4001Name`` done...") -Blue
+        function Get-RunningProcessesAll {
+            param ([string]$FilePath)
+            $Name = "4-001 Running Processes (All)"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-RunningProcessesAll -FilePath $FilePath
+
 
         #! 4-002
-        $4002Name = "4-002 Running Processes (as Csv)"
-        Show-Message("Running ``$4002Name`` command") -Header -Gray
-        $4002FileName = "4-002_RunningProcesses.csv"
-        Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$4002FileName" -Encoding UTF8
-        Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $4002Name $PreContentBegin Running Processes (as Csv) $PrecontentEnd <a href='../files/$4002FileName'>$4002FileName</a> $PostContent"
-        Show-Message("``$4002Name`` done...") -Blue
+        function Get-RunningProcessesAsCsv {
+            $Name = "4-002 Running Processes (as Csv)"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $FileName = "4-002_RunningProcesses.csv"
+            try {
+                Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+                Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $Name $PreContentBegin Running Processes (as Csv) $PrecontentEnd <a href='../files/$FileName'>$FileName</a> $PostContent"
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-RunningProcessesAsCsv
+
 
         #! 4-003
-        $4003Name = "4-003 Unique Process Hashes (as Csv)"
-        Show-Message("Running ``$4003Name`` command") -Header -Gray
-        $4003FileName = "4-003_UniqueProcessHash.csv"
-        $Data = @()
-        foreach ($P in (Get-WmiObject Win32_Process | Select-Object Name, ExecutablePath, CommandLine, ParentProcessId, ProcessId)) {
-            $ProcessObj = New-Object PSCustomObject
-            if ($Null -ne $P.ExecutablePath) {
-                $Hash = (Get-FileHash -Algorithm SHA256 -Path $P.ExecutablePath).Hash
-                $ProcessObj | Add-Member -NotePropertyName Proc_Hash -NotePropertyValue $Hash
-                $ProcessObj | Add-Member -NotePropertyName Proc_Name -NotePropertyValue $P.Name
-                $ProcessObj | Add-Member -NotePropertyName Proc_Path -NotePropertyValue $P.ExecutablePath
-                $ProcessObj | Add-Member -NotePropertyName Proc_CommandLine -NotePropertyValue $P.CommandLine
-                $ProcessObj | Add-Member -NotePropertyName Proc_ParentProcessId -NotePropertyValue $P.ParentProcessId
-                $ProcessObj | Add-Member -NotePropertyName Proc_ProcessId -NotePropertyValue $P.ProcessId
-                $Data += $ProcessObj
+        function Get-UniqueProcessHashAsCsv {
+            $Name = "4-003 Unique Process Hashes (as Csv)"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $FileName = "4-003_UniqueProcessHash.csv"
+            try {
+                $Data = @()
+                foreach ($P in (Get-WmiObject Win32_Process | Select-Object Name, ExecutablePath, CommandLine, ParentProcessId, ProcessId)) {
+                    $ProcessObj = New-Object PSCustomObject
+                    if ($Null -ne $P.ExecutablePath) {
+                        $Hash = (Get-FileHash -Algorithm SHA256 -Path $P.ExecutablePath).Hash
+                        $ProcessObj | Add-Member -NotePropertyName Proc_Hash -NotePropertyValue $Hash
+                        $ProcessObj | Add-Member -NotePropertyName Proc_Name -NotePropertyValue $P.Name
+                        $ProcessObj | Add-Member -NotePropertyName Proc_Path -NotePropertyValue $P.ExecutablePath
+                        $ProcessObj | Add-Member -NotePropertyName Proc_CommandLine -NotePropertyValue $P.CommandLine
+                        $ProcessObj | Add-Member -NotePropertyName Proc_ParentProcessId -NotePropertyValue $P.ParentProcessId
+                        $ProcessObj | Add-Member -NotePropertyName Proc_ProcessId -NotePropertyValue $P.ProcessId
+                        $Data += $ProcessObj
+                    }
+                }
+                ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path $FileName -Encoding UTF8
+                Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $Name $PreContentBegin Unique Process Hashes (as Csv) $PrecontentEnd <a href='../files/$FileName'>$FileName</a> $PostContent"
             }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
         }
-        ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() |
-                Export-Csv -NoTypeInformation -Path $4003FileName -Encoding UTF8
-        Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $4003Name $PreContentBegin Unique Process Hashes (as Csv) $PrecontentEnd <a href='../files/$4003FileName'>$4003FileName</a> $PostContent"
-        Show-Message("``$4003Name`` done...") -Blue
+        Get-UniqueProcessHashAsCsv
+
 
         # 4-004
-        $4004Name = "4-004 SvcHostsAndProcesses"
-        Show-Message("Running ``$4004Name`` command") -Header -Gray
-        Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq "svchost.exe" | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $4004Name $PreContentBegin SvcHosts And Processes $PreContentEnd" -PostContent $PostContent | Out-File -Append $ProcessHtmlOutputFile -Encoding UTF8
-        Show-Message("``$4004Name`` done...") -Blue
+        function Get-SvcHostsAndProcesses {
+            param ([string]$FilePath)
+            $Name = "4-004 SvcHostsAndProcesses"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq "svchost.exe" | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-SvcHostsAndProcesses -FilePath $FilePath
+
 
         #! 4-005
-        $4005Name = "4-005 Running Services (as Csv)"
-        Show-Message("Running ``$4005Name`` command") -Header -Gray
-        $4005FileName = "4-005_RunningServices.csv"
-        Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$4005FileName" -Encoding UTF8
-        Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $4005Name $PreContentBegin Running Services (as Csv) $PrecontentEnd <a href='../files/$4005FileName'>$4005FileName</a> $PostContent"
-        Show-Message("``$4005Name`` done...") -Blue
+        function Get-RunningServicesAsCsv {
+            $Name = "4-005 Running Services (as Csv)"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $FileName = "4-005_RunningServices.csv"
+            try {
+                Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+                Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $Name $PreContentBegin Running Services (as Csv) $PrecontentEnd <a href='../files/$FileName'>$FileName</a> $PostContent"
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-RunningServicesAsCsv
 
-        #! 4-006
-        $4006Name = "4-006 driverquery"
-        Show-Message("Running ``$4006Name`` command") -Header -Gray
-        $4006Data = driverquery | Out-String
-        Add-Content -Path $ProcessHtmlOutputFile -Value "<h5 class='info_header'> $4006Name $PreContentBegin driverquery $PrecontentEnd <pre> $4006Data </pre> $PostContent" -NoNewline
-        Show-Message("``$4006Name`` done...") -Blue
+
+        #* 4-006
+        function Get-InstalledDrivers {
+            param ([string]$FilePath)
+            $Name = "4-006 driverquery"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = driverquery | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-InstalledDrivers -FilePath $FilePath
 
 
-        Add-Content -Path $ProcessHtmlOutputFile -Value $EndingHtml
-
+        Add-Content -Path $FilePath -Value $EndingHtml
     }  # End of `Export-ProcessHtmlPage` function
 
-
-    # (6)
-    function Export-PrefetchHtmlPage {
-
+    # (5)
+    function Export-SystemHtmlPage {
         [CmdletBinding()]
-
         param (
             [string]$FilePath
         )
-
-        Add-Content -Path $PrefetchHtmlOutputFile -Value $HtmlHeader
-
-        #6-001
-        $6001Name = "6-001 Prefetch Files"
-        Show-Message("Running ``$6001Name`` command") -Header -Gray
-        Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $6001Name $PreContentBegin Prefetch Files $PreContentEnd" -PostContent $PostContent | Out-File -Append $PrefetchHtmlOutputFile -Encoding UTF8
-        Show-Message("``$6001Name`` done...") -Blue
-
-        Add-Content -Path $PrefetchHtmlOutputFile -Value $EndingHtml
-
-    }  # End of `Export-PrefetchHtmlPage` function
+        Add-Content -Path $FilePath -Value $HtmlHeader
 
 
-    #(8)
-    function Export-FirewallHtmlPage {
-
-        [CmdletBinding()]
-
-        param (
-            [string]$FilePath
-        )
-
-        Add-Content -Path $FirewallHtmlOutputFile -Value $HtmlHeader
-
-        # 8-001
-        $8001Name = "8-001 Firewall Rules"
-        Show-Message("Running ``$8001Name`` command") -Header -Gray
-        Get-NetFirewallRule | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $8001Name $PreContentBegin Firewall Rules $PreContentEnd" -PostContent $PostContent | Out-File -Append $FirewallHtmlOutputFile -Encoding UTF8
-        Show-Message("``$8001Name`` done...") -Blue
-
-
-        # 8-002
-        $8002Name = "8-002 Advanced Firewall Rules"
-        Show-Message("Running ``$8002Name`` command") -Header -Gray
-        $8002Data = netsh advfirewall firewall show rule name=all verbose | Out-String
-        Add-Content -Path $FirewallHtmlOutputFile -Value "<h5 class='info_header'> $8002Name $PreContentBegin Advanced Firewall Rules $PrecontentEnd <pre> $8002Data </pre> $PostContent" -NoNewline
-        Show-Message("``$8002Name`` done...") -Blue
-
-
-        # 8-003
-        $8003Name = "8-003 Defender Exclusions"
-        Show-Message("Running ``$8003Name`` command") -Header -Gray
-        Get-MpPreference | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $8003Name $PreContentBegin Defender Exclusions $PreContentEnd" -PostContent $PostContent | Out-File -Append $FirewallHtmlOutputFile -Encoding UTF8
-        Show-Message("``$8003Name`` done...") -Blue
+        # 5-001
+        function Get-ADS {
+            param ([string]$FilePath)
+            $Name = "5-001 Get-ADS"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ADSData
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+        }
+        Get-ADS -FilePath $FilePath
 
 
-        Add-Content -Path $FirewallHtmlOutputFile -Value $EndingHtml
+        #! 5-002
+        function Get-OpenFiles {
+            param ([string]$FilePath)
+            $Name = "5-002 Get-OpenFiles"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = openfiles.exe /query /FO CSV /V | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-OpenFiles -FilePath $FilePath
 
-    }  # End of `Export-FirewallHtmlPage` function
+
+        # 5-003
+        function Get-OpenShares {
+            param ([string]$FilePath)
+            $Name = "5-003 Win32_Share"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_Share | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-OpenShares -FilePath $FilePath
 
 
-    # (9)
-    function Export-BitLockerHtmlPage {
-
-        [CmdletBinding()]
-
-        param (
-            [string]$FilePath
-        )
-
-        Add-Content -Path $BitLockerHtmlOutputFile -Value $HtmlHeader
-
-        #9-001
-        $9001Name = "9-001 BitLocker Data"
-        Show-Message("Running ``$9001Name`` command") -Header -Gray
-        $9001Data1 = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
-        $9001Data1String = $9001Data1 | Out-String
-        Add-Content -Path $BitLockerHtmlOutputFile -Value "<h5 class='info_header'> $9001Name $PreContentBegin BitLocker Data $PrecontentEnd <pre> $9001Data1String </pre>" -NoNewline
-        # $PostContent
-
-        function Search-BitlockerVolumes {
-                # Get all BitLocker-protected drives on the computer
-                $BitlockerVolumes = $9001Data1
-
-                # Iterate through each drive
-                foreach ($Vol in $BitlockerVolumes) {
-                    $DriveLetter = $Vol.MountPoint
-                    $ProtectionStatus = $Vol.ProtectionStatus
-                    $LockStatus = $Vol.LockStatus
-                    $RecoveryKey = $Vol.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword" }
-
-                    # Write output based on the protection status of each drive
-                    if ($ProtectionStatus -eq "On" -and $Null -ne $RecoveryKey) {
-                        $Message = "    [*] Drive $DriveLetter Recovery Key -> $($RecoveryKey.RecoveryPassword)"
-                        Add-Content -Path $BitLockerHtmlOutputFile -Value "<pre> $Message </pre>" -NoNewline
-                        # Save-OutputAppend $Message $File
-                        # Show-Message("$Message") -NoTime -Magenta
-                    }
-                    elseif ($ProtectionStatus -eq "Unknown" -and $LockStatus -eq "Locked") {
-                        $Message = "    [*] Drive $DriveLetter This drive is mounted on the system, but IT IS NOT decrypted"
-                        Add-Content -Path $BitLockerHtmlOutputFile -Value "<pre> $Message </pre>" -NoNewline
-                        # Save-OutputAppend $Message $File
-                        # Show-Message("$Message") -NoTime -Magenta
+        # 5-004
+        function Get-MappedNetworkDriveMRU {
+            param ([string]$FilePath)
+            $Name = "5-004 Map Network Drive MRU"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU"
+            try {
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[WARNING] Registry Key [$($RegKey)] does not exist") -Yellow
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
+                    if ($Data.Count -eq 0) {
+                        Show-Message("No data found in Registry Key [$($RegKey)]")
                     }
                     else {
-                        $Message = "    [*] Drive $DriveLetter Does not have a recovery key or is not protected by BitLocker"
-                        Add-Content -Path $BitLockerHtmlOutputFile -Value "<pre> $Message </pre>" -NoNewline
-                        # Save-OutputAppend $Message $File
-                        # Show-Message("$Message") -NoTime -Magenta
+                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
                     }
                 }
             }
-            Search-BitlockerVolumes
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-MappedNetworkDriveMRU -FilePath $FilePath
 
-        Add-Content -Path $BitLockerHtmlOutputFile -Value "</p></div>"
 
-        Show-Message("``$9001Name`` done...") -Blue
+        # 5-005
+        function Get-Win32ScheduledJobs {
+            param ([string]$FilePath)
+            $Name = "5-005 Win32_ScheduledJob"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_ScheduledJob
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-Win32ScheduledJobs -FilePath $FilePath
 
-        Add-Content -Path $BitLockerHtmlOutputFile -Value $EndingHtml
 
+        # 5-006
+        function Get-ScheduledTasks {
+            param ([string]$FilePath)
+            $Name = "5-006 Get-ScheduledTask"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ScheduledTask | Select-Object -Property * | Where-Object { ($_.State -ne 'Disabled') }
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for $($Name)")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ScheduledTasks -FilePath $FilePath
+
+
+        # 5-007
+        function Get-ScheduledTasksRunInfo {
+            param ([string]$FilePath)
+            $Name = "5-007 Get-ScheduledTaskInfo"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" } | Get-ScheduledTaskInfo | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for $($Name)")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-ScheduledTasksRunInfo -FilePath $FilePath
+
+
+        # 5-008
+        function Get-HotFixesData {
+            param ([string]$FilePath)
+            $Name = "5-008 Get-HotFix"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for $($Name)")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-HotFixesData -FilePath $FilePath
+
+
+        # 5-009
+        function Get-InstalledAppsFromReg {
+            param ([string]$FilePath)
+            $Name = "5-009 Installed Apps From Registry"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
+            try {
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[WARNING] Registry Key [$($RegKey)] does not exist") -Yellow
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Sort-Object InstallDate -Descending
+                    if ($Data.Count -eq 0) {
+                        Show-Message("No data found in Registry Key [$($RegKey)]")
+                    }
+                    else {
+                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                    }
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-InstalledAppsFromReg -FilePath $FilePath
+
+
+        # 5-010
+        function Get-InstalledAppsFromAppx {
+            param ([string]$FilePath)
+            $Name = "5-010 Installed Apps From Appx"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-AppxPackage
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-InstalledAppsFromAppx -FilePath $FilePath
+
+
+        # 5-011
+        function Get-VolumeShadowsData {
+            param ([string]$FilePath)
+            $Name = "5-011 Volume Shadow Copies"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-VolumeShadowsData -FilePath $FilePath
+
+
+        # TODO -- move this function to the networking section
+        #! 5-012
+        function Get-DnsCacheDataTxt {
+            param ([string]$FilePath)
+            $Name = "5-012 DNS Cache"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = ipconfig /displaydns | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-DnsCacheDataTxt -FilePath $FilePath
+
+
+        # # TODO -- move this function to the networking section
+        #! 5-013
+        #! SKIPPED MAKING THE .CSV FILE
+
+
+        # 5-014
+        function Get-TempInternetFiles {
+            param ([string]$FilePath)
+            $Name = "5-014 Temporary Internet Files"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-TempInternetFiles -FilePath $FilePath
+
+
+        # 5-015
+        function Get-StoredCookiesData {
+            param ([string]$FilePath)
+            $Name = "5-015 Stored Cookies Data"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ChildItem -Recurse -Force "$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies" | Select-Object Name | ForEach-Object { $N = $_.Name; Get-Content "$($AppData)\Microsoft\Windows\cookies\$N" | Select-String "/" }
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-StoredCookiesData -FilePath $FilePath
+
+
+        # 5-016
+        function Get-TypedUrls {
+            param ([string]$FilePath)
+            $Name = "5-016 Typed URLs"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $RegKey = "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs"
+            try {
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[WARNING] Registry Key [$($RegKey)] does not exist") -Yellow
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
+                    if ($Data.Count -eq 0) {
+                        Show-Message("No data found for ``$Name``")
+                    }
+                    else {
+                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                    }
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-TypedUrls -FilePath $FilePath
+
+
+        # 5-017
+        function Get-InternetSettings {
+            param ([string]$FilePath)
+            $Name = "5-017 Internet Settings"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings"
+            try {
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[WARNING] Registry Key [$($RegKey)] does not exist") -Yellow
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
+                    if ($Data.Count -eq 0) {
+                        Show-Message("No data found in Registry Key [$($RegKey)]")
+                    }
+                    else {
+                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                    }
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-InternetSettings -FilePath $FilePath
+
+
+        # 5-018
+        function Get-TrustedInternetDomains {
+            param ([string]$FilePath)
+            $Name = "5-018 Trusted Internet Domains"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains"
+            try {
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[WARNING] Registry Key [$($RegKey)] does not exist") -Yellow
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    $Data = Get-ChildItem $RegKey | Select-Object PSChildName
+                    if ($Data.Count -eq 0) {
+                        Show-Message("No data found in Registry Key [$($RegKey)]")
+                    }
+                    else {
+                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                    }
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-TrustedInternetDomains -FilePath $FilePath
+
+
+        # 5-019
+        function Get-AppInitDllKeys {
+            param ([string]$FilePath)
+            $Name = "5-019 App Init Dll Keys"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows"
+            try {
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[WARNING] Registry Key [$($RegKey)] does not exist") -Yellow
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    $Data = Get-ItemProperty $RegKey | Select-Object -Property *
+                    if ($Data.Count -eq 0) {
+                        Show-Message("No data found in Registry Key [$($RegKey)]")
+                    }
+                    else {
+                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                    }
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-AppInitDllKeys -FilePath $FilePath
+
+        # # 5-020
+        # Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" | Select-Object * -ExcludeProperty PS*
+
+        # #! 5-021
+        # gpresult.exe /z
+
+
+
+
+
+
+        Add-Content -Path $FilePath -Value $EndingHtml
+    }  # End of `Export-SystemHtmlPage` function
+
+    # (6)
+    function Export-PrefetchHtmlPage {
+        [CmdletBinding()]
+        param (
+            [string]$FilePath
+        )
+        Add-Content -Path $FilePath -Value $HtmlHeader
+
+
+        #6-001
+        function Get-DetailedPrefetchData {
+            param ([string]$FilePath)
+            $Name = "6-001 Prefetch Files"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-DetailedPrefetchData -FilePath $FilePath
+
+
+        Add-Content -Path $FilePath -Value $EndingHtml
+    }  # End of `Export-PrefetchHtmlPage` function
+
+    #(8)
+    function Export-FirewallHtmlPage {
+        [CmdletBinding()]
+        param (
+            [string]$FilePath
+        )
+        Add-Content -Path $FilePath -Value $HtmlHeader
+
+
+        # 8-001
+        function Get-FirewallRules {
+            param ([string]$FilePath)
+            $Name = "8-001 Firewall Rules"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-NetFirewallRule
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-FirewallRules -FilePath $FilePath
+
+
+        #* 8-002
+        function Get-AdvFirewallRules {
+            param ([string]$FilePath)
+            $Name = "8-002 Advanced Firewall Rules"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = netsh advfirewall firewall show rule name=all verbose | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-AdvFirewallRules -FilePath $FilePath
+
+
+        # 8-003
+        function Get-DefenderExclusions {
+            param ([string]$FilePath)
+            $Name = "8-003 Defender Exclusions"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-MpPreference
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-DefenderExclusions -FilePath $FilePath
+
+
+        Add-Content -Path $FilePath -Value $EndingHtml
+    }  # End of `Export-FirewallHtmlPage` function
+
+    # (9)
+    function Export-BitLockerHtmlPage {
+        [CmdletBinding()]
+        param (
+            [string]$FilePath
+        )
+        Add-Content -Path $FilePath -Value $HtmlHeader
+
+
+        #* 9-001
+        function Get-BitlockerRecoveryKeys {
+            param ([string]$FilePath)
+            $Name = "9-001 BitLocker Data"
+            Show-Message("Running ``$Name`` command") -Header -Gray
+            try {
+                $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint | Out-String
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``")
+                }
+                else {
+                    Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                }
+                function Search-BitlockerVolumes {
+                    # Get all BitLocker-protected drives on the computer
+                    $BitlockerVolumes = $Data1
+
+                    # Iterate through each drive
+                    foreach ($Vol in $BitlockerVolumes) {
+                        $DriveLetter = $Vol.MountPoint
+                        $ProtectionStatus = $Vol.ProtectionStatus
+                        $LockStatus = $Vol.LockStatus
+                        $RecoveryKey = $Vol.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword" }
+
+                        # Write output based on the protection status of each drive
+                        if ($ProtectionStatus -eq "On" -and $Null -ne $RecoveryKey) {
+                            $Message = "    [*] Drive $DriveLetter Recovery Key -> $($RecoveryKey.RecoveryPassword)"
+                            Add-Content -Path $BitLockerHtmlOutputFile -Value "<pre> $Message </pre>" -NoNewline
+                        }
+                        elseif ($ProtectionStatus -eq "Unknown" -and $LockStatus -eq "Locked") {
+                            $Message = "    [*] Drive $DriveLetter This drive is mounted on the system, but IT IS NOT decrypted"
+                            Add-Content -Path $BitLockerHtmlOutputFile -Value "<pre> $Message </pre>" -NoNewline
+                        }
+                        else {
+                            $Message = "    [*] Drive $DriveLetter Does not have a recovery key or is not protected by BitLocker"
+                            Add-Content -Path $BitLockerHtmlOutputFile -Value "<pre> $Message </pre>" -NoNewline
+                        }
+                    }
+                }
+                Search-BitlockerVolumes
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Add-Content -Path $BitLockerHtmlOutputFile -Value "</p></div>"
+
+            Show-Message("``$Name`` done...") -Blue
+        }
+        Get-BitlockerRecoveryKeys -FilePath $FilePath
+
+
+        Add-Content -Path $FilePath -Value $EndingHtml
     }  # End of `Export-BitLockerHtmlPage` function
 
 
@@ -688,15 +2247,15 @@ function Export-HtmlReport {
 
 
 
-    # Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile      #1
-    # Export-UserHtmlPage -FilePath $UserHtmlOutputFile          #2
-    # Export-NetworkHtmlPage -FilePath $NetworkHtmlOutputFile    #3
-    # Export-ProcessHtmlPage -FilePath $ProcessHtmlOutputFile    #4
+    # Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile        #1
+    # Export-UserHtmlPage -FilePath $UserHtmlOutputFile            #2
+    # Export-NetworkHtmlPage -FilePath $NetworkHtmlOutputFile      #3
+    # Export-ProcessHtmlPage -FilePath $ProcessHtmlOutputFile      #4
+    Export-SystemHtmlPage -FilePath $SystemHtmlOutputFile        #5
+    # Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile    #6
 
-    Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile    #6
-
-    Export-FirewallHtmlPage -FilePath $FirewallHtmlOutputFile    #8
-    Export-BitLockerHtmlPage -FilePath $BitLockerHtmlOutputFile  #9
+    # Export-FirewallHtmlPage -FilePath $FirewallHtmlOutputFile    #8
+    # Export-BitLockerHtmlPage -FilePath $BitLockerHtmlOutputFile  #9
 
 
     Show-Message("tx3-triage script has completed successfully. . .") -Header -Green

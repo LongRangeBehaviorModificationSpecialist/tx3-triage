@@ -32,21 +32,33 @@ param (
     [switch]$Process,
     # Capture computer RAM
     [switch]$Ram,
+    # Copy the user's NTUSER.DAT file
     [switch]$NTUser,
+    # Export main registry keys
     [switch]$Registry,
+    # Copy prefetch files from target machine
     [switch]$Prefetch,
+    # Number of prefetch records to copy
     [int]$NumOfPFRecords,
+    # Copy event logs from the target machine
     [switch]$EventLogs,
+    # Number of event logs to copy
     [int]$NumOfEventLogs,
+    # Obtain list of files from all mounted drives
     [switch]$AllDrives,
     # If set, only include specific drives
     [switch]$ListDrives,
     # If set, exclude specific drives
     [switch]$NoListDrives,
+    # List of drives to include/exclude
     [string[]]$DriveList,
+    # Copy the SRUMDB.dat file
     [switch]$Srum,
+    # Hash all the copied/saved files
     [switch]$HashResults,
+    # Make a .zip archive of the results
     [switch]$Archive,
+    # Run all of the options
     [switch]$Yolo
 )
 
@@ -64,7 +76,7 @@ $ScriptName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 # Import the functions.psm1 module so the functions are available for use
 Import-Module .\functions\functions.psm1 -Force -Global
-Show-Message("Module file: ``.\functions\functions.psm1`` was imported successfully") -NoTime -Blue
+Show-Message("`nModule file: ``.\functions\functions.psm1`` was imported successfully") -NoTime -Blue
 
 
 # Name of the folder containing the .psm1 files that are to be imported
@@ -87,7 +99,7 @@ foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
 if ($Html) {
     $HtmlModule = ".\html\Export-HtmlReport.psm1"
     Import-Module -Name $HtmlModule -Force
-    Show-Message("Module file: ``$($HtmlModule)`` was imported successfully") -NoTime -Blue
+    Show-Message("`nModule file: ``$($HtmlModule)`` was imported successfully") -NoTime -Blue
 
     Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
 }
