@@ -1,45 +1,18 @@
 # Assigning variables to use in the script
 $HtmlHeader = "<!DOCTYPE html>
-<html lang='en'>
+
+<html lang='en' dir='ltr'>
+
     <head>
-        <meta charset='utf-8' />
-        <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
+
         <title>$ComputerName.$User Triage Data</title>
-        <style>
-            * { font-family:Arial, Helvetica, sans-serif; }
-            body { margin-left:15%; margin-right:15%; }
-            h1 { color:#e68a00; font-size:28px; }
-            h2 { color:#000099; font-size:1.35em; }
-            .data { font-family:'Helvetica'; font-weight:bold; color:#f00; font-size:1.15em; }
-            .header { margin-top:1.5em; margin-bottom:0.5em; }
-            table { font-size:0.85em; border:0px; }
-            td { padding:4px; margin:0px; border:0; }
-            th { background:#395870; background:linear-gradient(#49708f, #293f50); color:#fff; font-size:1.05em; text-transform:uppercase; padding:10px 15px; vertical-align:middle; }
-            tbody tr:nth-child(even) { background:#f0f0f2; }
-            .text { white-space: pre-line; }
-            .RunningStatus { color:#008000; font-weight:bold; }
-            .StopStatus { color:#ff0000; font-weight:bold; }
-            #CreationDate { color:#ff3300; font-size:12px; }
-            .dropbtn { color:#fff; background-color:#007bff; border-color:#007bff; padding:16px; font-size:16px; border:none; width:auto; }
-            .dropdown { position:relative; display:inline-block; width:auto; }
-            .dropdown-content { display:none; width:auto; height:30rem; overflow-y:scroll; position:absolute; background-color:#f1f1f1; box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2); z-index:1; white-space:nowrap; }
-            .dropdown-content a { color:#212529; padding:12px 16px; text-decoration:none; display:block; }
-            .dropdown-content a:hover { color:#fff; background-color:#3492d1; }
-            .dropdown-content a:active { color:#fff; background-color:#007bff; }
-            .dropdown:hover .dropdown-content { display:block; width:auto; }
-            .dropdown:hover .dropbtn { background-color:#03366d }
-            .dropdown-item { color:#212529; white-space:nowrap; background-color:transparent; border:0px; }
-            .top { display:inline; font-size:12px; color:dodgerblue }
-            /* Style the button that is used to open and close the collapsible content */
-            .collapsible {background-color:#eee; color:#444; cursor:pointer; padding:18px; width:100%; border:none; text-align:left; outline:none; font-size:0.95em; font-weight:bold; }
 
-            /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-            .active, .collapsible:hover { background-color:#ccc; color:dodgerblue; }
+        <meta charset='utf-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1' />
 
-            /* Style the collapsible content. Note: hidden by default */
-            .content { padding:0 18px; display:none; overflow:hidden; background-color:#f1f1f1; }
-        </style>
+        <link rel='stylesheet' type='text/css' href='../css/style.css' />
+
         <script>
             window.console = window.console || function (t) { };
         </script>
@@ -49,154 +22,41 @@ $HtmlHeader = "<!DOCTYPE html>
                 window.parent.postMessage('resize', '*');
             }
         </script>
+
     </head>
-    <body translate='no'>"
 
-
-$QuickLinks = "
-<div class='dropdown'>
-    <button class='dropbtn'>Jump to Section</button>
-    <div class='dropdown-content'>
-        <a href='#ComputerInfo'>Computer Information</a>
-        <a href='#TPMDetails'>TPM Details</a>
-        <a href='#PSDrive'>PS Drive Information</a>
-        <a href='#Win32_LogicalDisk'>Win32_LogicalDisk</a>
-        <a href='#ComputerInfo'>Computer Info</a>
-        <a href='#SystemInfo'>System Info</a>
-        <a href='#Win32_ComputerSystem'>Win32_ComputerSystem</a>
-        <a href='#Win32_OperatingSystem'>Win32_OperatingSystem</a>
-        <a href='#Win32_PhysicalMemory'>Win32_PhysicalMemory</a>
-
-
-
-
-
-
-        <a href='#'></a>
-
-
-
-        <a href='#RegActiveSetupInstalls'>Active Setup Installs</a>
-        <a href='#RegAppPathKeys'>APP Paths Keys</a>
-        <a href='#RegAppCertDLLs'>AppCert DLLs</a>
-        <a href='#RegAppInit'>AppInit_DLLs</a>
-        <a href='#AppInventoryEvents'>Application Inventory Events</a>
-        <a href='#RegApprovedShellExts'>Approved Shell Extentions</a>
-        <a href='#AuditPolicy'>Audit Policy</a>
-        <a href='#RegBCDRelated'>BCD Related</a>
-        <a href='#RegBrowserHelperObjects'>Browser Helper Objects</a>
-        <a href='#RegBrowserHelperObjectsx64'>Browser Helper Objects 64 Bit</a>
-        <a href='#CompressedFiles'>Compressed Files</a>
-        <a href='#CompInfo'>Computer Information</a>
-        <a href='#RegAddressBarHistory'>Desktop Address Bar History</a>
-        <a href='#DiskPart'>Disk Partition Information</a>
-        <a href='#Last50dlls'>.dll files (last 50 created)</a>
-        <a href='#RegLoadedDLLs'>DLLs Loaded by Explorer.exe Shell</a>
-        <a href='#DNSCache'>DNS Cache</a>
-        <a href='#DownloadedExeFiles'>Downloaded Executable Files</a>
-        <a href='#EncryptedFiles'>Encrypted Files</a>
-        <a href='#EnvVars'>Environment Variables</a>
-        <a href='#EventLog4625'>Event Log - Account Failed To Log On (ID: 4625)</a>
-        <a href='#EventLog4624'>Event Log - Account Logon (ID: 4624)</a>
-        <a href='#EventLog1002'>Event Log - Application Crashes (ID: 1002)</a>
-        <a href='#EventLog1102'>Event Log - Audit Log was Cleared (ID: 1102)</a>
-        <a href='#EventLog1014'>Event Log - DNS Failed Resolution Events (ID: 1014)</a>
-        <a href='#EventLog4648'>Event Log - Logon Was Attempted Using Explicit Credentials (ID: 4648)</a>
-        <a href='#EventLog4673'>Event Log - Privilege Use (ID: 4673)</a>
-        <a href='#EventLog4674'>Event Log - Privilege Use (ID: 4674)</a>
-        <a href='#EventLog4688'>Event Log - Process Execution (ID: 4688)</a>
-        <a href='#EventLog7036'>Event Log - Service Control Manager Events (ID: 7036)</a>
-        <a href='#EventLog7045'>Event Log - Service Creation (ID: 7045)</a>
-        <a href='#EventLog4672'>Event Log - Special Logon (ID: 4672)</a>
-        <a href='#EventLog4616'>Event Log - System Time Was Changed (ID: 4616)</a>
-        <a href='#EventLog4720'>Event Log - User Account Was Created (ID: 4720)</a>
-        <a href='#EventLog64001'>Event Log - WFP Events (ID: 64001)</a>
-        <a href='#RegEXEFileShell'>EXE File Shell Command</a>
-        <a href='#FileTimelineExeFiles'>File Timeline Executable Files (Past 30 Days)</a>
-        <a href='#HotFixes'>Hot Fixes</a>
-        <a href='#RegIEExtensionsFromHKCU'>IE Extensions from HKCU</a>
-        <a href='#RegIEExtensionsFromHKLM'>IE Extensions from HKLM</a>
-        <a href='#RegIEExtensionsFromWow'>IE Extensions from Wow6432Node</a>
-        <a href='#InstalledApps'>Installed Applications</a>
-        <a href='#Cookies'>Internet Cookies</a>
-        <a href='#RegInternetSettings'>Internet Settings</a>
-        <a href='#RegTrustedDomains'>Internet Trusted Domains</a>
-        <a href='#LinkFiles'>Link File Analysis - Last 5 days</a>
-        <a href='#RegLSAPackages'>LSA Packages Loaded</a>
-        <a href='#Logs'>Log Files</a>
-        <a href='#LogonSessions'>Logon Sessions</a>
-        <a href='#MappedDrives'>Mapped Drives</a>
-        <a href='#Netstat'>Netstat Innformation</a>
-        <a href='#NetTCP'>NetTCP Connections</a>
-        <a href='#NetworkConfig'>Network Configuration Info</a>
-        <a href='#OpenShares'>Open Shares</a>
-        <a href='#PhyMem'>Physical Memory Information</a>
-        <a href='#Prefetch'>Prefetch List</a>
-        <a href='#RegProgramExecuted'>Programs Executed By Session Manager</a>
-        <a href='#RegRunMRUKeys'>RunMRU Keys</a>
-        <a href='#Drivers'>Running Drivers</a>
-        <a href='#RunningProcesses'>Running Processes</a>
-        <a href='#RunningServices'>Running Services</a>
-        <a href='#RunningSVCHOSTs'>Running SVCHOSTs</a>
-        <a href='#ScheduledJobs'>Scheduled Jobs</a>
-        <a href='#ScheduledTaskEvents'>Scheduled Task Events</a>
-        <a href='#RegSVCValues'>Security Center SVC Values</a>
-        <a href='#ShadowCopy'>Shadow Copy List</a>
-        <a href='#RegShellUserInit'>Shell and UserInit Values</a>
-        <a href='#RegShellCommands'>Shell Commands</a>
-        <a href='#RegShellFolders'>Shell Folders</a>
-        <a href='#RegStartMenu'>Start Menu</a>
-        <a href='#StartupApps'>Startup Applications</a>
-        <a href='#SystemInfo-1'>System Information</a>
-        <a href='#SystemInfo-2'>System Information (Additional)</a>
-        <a href='#TempInternetFiles'>Temporary Internet Files</a>
-        <a href='#TerminalServiceEvents'>Terminal Services Events</a>
-        <a href='#TypedURLs'>Typed URLs</a>
-        <a href='#RegUAC'>UAC Group Policy Settings</a>
-        <a href='#USBDevices'>USB Devices</a>
-        <a href='#UserAccount'>User Account</a>
-        <a href='#AllUsers'>User Accounts (All)</a>
-        <a href='#RegUserShellFolders'>User Shell Folders (Startup)</a>
-    </div>
-</div>"
+    <body class='data_body' translate='no'>"
 
 
 # Variable to ass the "Return to Top" link next to each header
 $ReturnHtmlSnippet = "<a href='#top' class='top'>(Return to Top)</a>"
 
 
-# Information for the .html report header
-$TopSection = "
-<h1 id='top'> Live Forensic Triage Script </h1>
-<p>Script Began Date and Time: <span class='data'>$Date at $Time</span></p>
-<p>Computer Name: <span class='data'>$ComputerName</span></p>
-<p>Computer IPv4 Address: <span class='data'>$Ipv4</span></p>
-<p>Computer IPv6 Address: <span class='data'>$Ipv6</span></p>
-<p>Script Run By: <span class='data'>$User</span>&nbsp;&nbsp;|&nbsp;&nbsp;Agency: <span class='data'>$Agency</span>&nbsp;&nbsp;|&nbsp;&nbsp;Case Number: <span class='data'>$CaseNumber</span></p>"
-
-
-$EndingHtml = '<script>
-    var coll = document.getElementsByClassName("collapsible");
+$EndingHtml = "<script>
+    var coll = document.getElementsByClassName('collapsible');
 var i;
 
 for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
+  coll[i].addEventListener('click', function() {
+    this.classList.toggle('active');
     var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
+    if (content.style.display === 'block') {
+      content.style.display = 'none';
     } else {
-      content.style.display = "block";
+      content.style.display = 'block';
     }
   });
 }
         </script>
     </body>
-</html>'
+</html>"
+
+
+$CssEncodedFileText = "
+KiwgKjo6YmVmb3JlLCAqOjphZnRlciB7DQogICAgYm94LXNpemluZzogYm9yZGVyLWJveDsNCiAgICBtYXJnaW46IDA7DQogICAgcGFkZGluZzogMDsNCiAgICAtd2Via2l0LWZvbnQtc21vb3RoaW5nOiBhbnRpYWxpYXNlZDsNCiAgICB0ZXh0LXJlbmRlcmluZzogb3B0aW1pemVMZWdpYmlsaXR5Ow0KfQ0KDQouYmx1ZUJHIHsNCiAgICBiYWNrZ3JvdW5kOiAjMjIzMTNmOw0KICAgIGNvbG9yOiAjREREOw0KfQ0KDQoubnVtTGlzdHsNCiAgICBmb250LWZhbWlseTogUm9ib3RvOw0KICAgIGZvbnQtc2l6ZTogMS4xNWVtOw0KICAgIGxpbmUtaGVpZ2h0OiAxLjM1Ow0KICAgIG1hcmdpbi1sZWZ0OiAxMCU7DQogICAgbWFyZ2luLXJpZ2h0OiAxMCU7DQp9DQoNCmh0bWwgew0KICAgIGZvbnQtZmFtaWx5OiAiU2Vnb2UgVUkiLCBGcnV0aWdlciwgIkZydXRpZ2VyIExpbm90eXBlIiwgIkRlamF2dSBTYW5zIiwgIkhlbHZldGljYSBOZXVlIiwgQXJpYWwsIHNhbnMtc2VyaWY7DQogICAgZm9udC13ZWlnaHQ6IDMwMDsNCn0NCg0KZGl2PmNlbnRlciB7DQogICAgYmFja2dyb3VuZC1jb2xvcjogcmdiKDIzMCwgMjMwLCAyMzApOw0KICAgIHBhZGRpbmc6IDhweCAwcHggOHB4Ow0KfQ0KDQpib2R5IHsNCiAgICBtYXJnaW46IDA7DQogICAgcGFkZGluZzogMDsNCiAgICBiYWNrZ3JvdW5kOiAjZmZmOw0KICAgIGZvbnQtc2l6ZTogMTZweDsNCiAgICBjb2xvcjogIzE4MUIyMDsNCiAgICAtLWRyb3BCdG5Db2xvcjogIzFFODQ0OTsNCiAgICAtLW5hdkJ0blBhZGRpbmc6IDFweCAwcHggMXB4IDEwcHg7DQogICAgLS1uYXZCdG5Db2xvckhvdmVyOiAjMjg3NEE2Ow0KICAgIC0tbmF2QnRuSG92ZXJUZXh0Q29sb3I6ICNGRkZGRkY7DQogICAgLyogLS1uYXZCdG5Ib3ZlckJvcmRlcjogMXB4IGRhc2hlZCAjRkZGRkZGOyAqLw0KICAgIC0tbmF2QnRuSG92ZXJSYWRpdXM6IDVweDsNCiAgICAtLW5hdkJ0bkhlaWdodDogMi41ZW07DQogICAgLS1uYXZCdG5XaWR0aDogOTAlOw0KICAgIC0tbmF2QnRuRm9udEZhbWlseTogJ1JvYm90byBMaWdodCc7DQogICAgLS1uYXZCdG5Gb250U2l6ZTogMS4xNWVtOw0KfQ0KDQouZGF0YV9ib2R5IHsNCiAgICBtYXJnaW4tbGVmdDogMTUlOw0KICAgIG1hcmdpbi1yaWdodDogMTUlOw0KfQ0KDQouZGF0YSB7DQogICAgZm9udC1mYW1pbHk6ICdIZWx2ZXRpY2EnOw0KICAgIGZvbnQtd2VpZ2h0OiBib2xkOw0KICAgIGNvbG9yOiAjZjAwOw0KICAgIGZvbnQtc2l6ZTogMS4xNWVtOw0KfQ0KDQouaW5mb19oZWFkZXIgew0KICAgIG1hcmdpbi10b3A6IDEuNWVtOw0KICAgIG1hcmdpbi1ib3R0b206IDAuNWVtOw0KfQ0KDQoubmF2X19iYWNrZ3JvdW5kIHsNCiAgICBiYWNrZ3JvdW5kOiAjQkZDOUNBOw0KfQ0KDQoubWFnbmV0LWxvZ28gew0KICAgIGhlaWdodDogMTUwcHg7DQogICAgd2lkdGg6IDE1MHB4Ow0KICAgIG1hcmdpbjogMzJweCAwcHggMzJweCAwcHg7DQp9DQoNCi8qIE5FRUQgVE8gRklYIFRIQVQgVFdPIEZJTEVTIFVTRSBUSEUgYGhlYWRpbmdgIGNsYXNzICovDQoNCi5oZWFkaW5nIHsNCiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOw0KICAgIGZvbnQtc2l6ZTogMS4yZW07DQogICAgZm9udC13ZWlnaHQ6IDUwMDsNCn0NCg0KLmhlYWRpbmcgbGkgew0KICAgIGxpc3Qtc3R5bGU6IG5vbmU7DQp9DQoNCi5oZWFkaW5nPnVsIHsNCiAgICBtYXJnaW46IDhweCAwcHggOHB4Ow0KfQ0KDQouaGVhZGluZyBhIHsNCiAgICBjb2xvcjogIzIyMjsNCiAgICBjdXJzb3I6IHBvaW50ZXI7DQogICAgZGlzcGxheTogYmxvY2s7DQogICAgaGVpZ2h0OiAyNXB4Ow0KICAgIGxpbmUtaGVpZ2h0OiAyNXB4Ow0KICAgIHRleHQtZGVjb3JhdGlvbjogbm9uZTsNCiAgICB3aWR0aDogMTAwJTsNCn0NCg0KDQoucmVhZF9tZV9oZWFkaW5nIHsNCiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOw0KICAgIGZvbnQtc2l6ZTogMS4yZW07DQogICAgZm9udC13ZWlnaHQ6IDUwMDsNCn0NCg0KLnJlYWRfbWVfaGVhZGluZyBsaSB7DQogICAgbGlzdC1zdHlsZTogbm9uZTsNCn0NCg0KLnJlYWRfbWVfaGVhZGluZz51bCB7DQogICAgbWFyZ2luOiA4cHggMHB4IDhweDsNCn0NCg0KLnJlYWRfbWVfaGVhZGluZyBhIHsNCiAgICBjb2xvcjogIzIyMjsNCiAgICBjdXJzb3I6IHBvaW50ZXI7DQogICAgZGlzcGxheTogYmxvY2s7DQogICAgaGVpZ2h0OiAyNXB4Ow0KICAgIGxpbmUtaGVpZ2h0OiAyNXB4Ow0KICAgIHRleHQtZGVjb3JhdGlvbjogbm9uZTsNCiAgICB3aWR0aDogMTAwJTsNCn0NCg0KDQoNCi8qIE15IEFkZGVkIFN0eWxlICovDQouYnRuX18xX190b3AsDQouYnRuX18xLA0KLmJ0bl9fMV9fYm90dG9tIHsNCiAgICBwYWRkaW5nOiB2YXIoLS1uYXZCdG5QYWRkaW5nKTsNCiAgICB3aWR0aDogdmFyKC0tbmF2QnRuV2lkdGgpOw0KICAgIGhlaWdodDogdmFyKC0tbmF2QnRuSGVpZ2h0KTsNCiAgICB0ZXh0LWFsaWduOiBsZWZ0Ow0KICAgIHRleHQtZGVjb3JhdGlvbjogbm9uZTsNCiAgICBjb2xvcjogYmxhY2s7DQogICAgZm9udC1zaXplOiB2YXIoLS1uYXZCdG5Gb250U2l6ZSk7DQogICAgZm9udC1mYW1pbHk6IHZhcigtLW5hdkJ0bkZvbnRGYW1pbHkpOw0KICAgIC8qIGJvcmRlcjogMXB4IHNvbGlkIGJsYWNrOyAqLw0KICAgIGJvcmRlcjogMHB4IHNvbGlkIHRyYW5zcGFyZW50Ow0KICAgIGJhY2tncm91bmQtY29sb3I6IHRyYW5zcGFyZW50Ow0KfQ0KDQouYnRuX18xX190b3Agew0KICAgIG1hcmdpbjogMC41ZW0gMGVtIDBlbSAxZW07DQp9DQoNCi8qIE15IEFkZGVkIFN0eWxlICovDQouYnRuX18xX190b3A6aG92ZXIsDQouYnRuX18xOmhvdmVyLA0KLmJ0bl9fMV9fYm90dG9tOmhvdmVyLA0KLmJ0bl9fMjpob3ZlciB7DQogICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbmF2QnRuQ29sb3JIb3Zlcik7DQogICAgLyogYmFja2dyb3VuZC1jb2xvcjogIzIyMzEzZjsgKi8NCiAgICBjb2xvcjogdmFyKC0tbmF2QnRuSG92ZXJUZXh0Q29sb3IpOw0KICAgIGJvcmRlcjogdmFyKC0tbmF2QnRuSG92ZXJCb3JkZXIpOw0KICAgIGJvcmRlci1yYWRpdXM6IHZhcigtLW5hdkJ0bkhvdmVyUmFkaXVzKTsNCiAgICBmb250LXdlaWdodDogNzAwOw0KICAgIHRyYW5zaXRpb246IGFsbCAwLjJzIGVhc2U7DQogICAgY3Vyc29yOiBwb2ludGVyOw0KICAgIHRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lOw0KICAgIGhlaWdodDogM2VtOw0KICAgIGJveC1zaGFkb3c6IDVweCA1cHggNXB4ICM3RjhDOEQ7DQp9DQoNCi5idG5fXzFfX3RvcCBhLA0KLmJ0bl9fMSBhLA0KLmJ0bl9fMV9fYm90dG9tIGEsDQouYnRuX18yIGEgew0KICAgIHRleHQtZGVjb3JhdGlvbjogbm9uZQ0KfQ0KDQouYnRuX18xX190b3AgYTphY3RpdmUsDQouYnRuX18xIGE6YWN0aXZlLA0KLmJ0bl9fMV9fYm90dG9tIGE6YWN0aXZlLA0KLmJ0bl9fMiBhOmFjdGl2ZSB7DQogICAgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7DQogICAgY29sb3I6ICNDQjQzMzU7DQp9DQoNCi5idG5fXzFfX3RvcCBhOnZpc2l0ZWQsDQouYnRuX18xIGE6dmlzaXRlZCwNCi5idG5fXzFfX2JvdHRvbSBhOnZpc2l0ZWQsDQouYnRuX18yIGE6dmlzaXRlZCB7DQogICAgdGV4dC1kZWNvcmF0aW9uOiBub25lOw0KICAgIGNvbG9yOiAjMDAwMDAwOw0KfQ0KDQouYnRuX18xIHsNCiAgICBtYXJnaW46IDBlbSAwZW0gMGVtIDFlbTsNCn0NCg0KLyogTXkgQWRkZWQgU3R5bGUgKi8NCi5mcm9udF9fYmFja2dyb3VuZCwNCi5jYXNlX19iYWNrZ3JvdW5kLA0KLmV2aWRlbmNlX19iYWNrZ3JvdW5kIHsNCiAgICBiYWNrZ3JvdW5kOiAjMjIzMTNmOw0KfQ0KDQouY2FzZWluZm8gew0KICAgIGRpc3BsYXk6IGZsZXg7DQogICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsNCiAgICBtYXJnaW46IDJlbSAyZW0gMWVtIDJlbTsNCiAgICBhbGlnbi1pdGVtczogY2VudGVyOw0KICAgIGp1c3RpZnktY29udGVudDogY2VudGVyOw0KICAgIGNvbG9yOiAjRkZGRkZGOw0KICAgIGJvcmRlcjogMXB4IGRhc2hlZCAjRkZGRkZGOw0KfQ0KDQoudG9wSGVhZGluZywNCi5zZWNvbmRIZWFkaW5nIHsNCiAgICBjb2xvcjogI0NCNDMzNTsNCiAgICBtYXJnaW46IDAuNWVtIDBlbSAwZW0gMGVtOw0KICAgIHBhZGRpbmc6IDA7DQogICAgZm9udC13ZWlnaHQ6IDQwMDsNCiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOw0KICAgIHRleHQtYWxpZ246IGNlbnRlcjsNCn0NCg0KLnRvcEhlYWRpbmcgew0KICAgIGZvbnQtc2l6ZTogMi40ZW07DQp9DQoNCi5mcm9udHBhZ2VfX3RhYmxlIHsNCiAgICBjb2xvcjogI0ZGRkZGRjsNCiAgICBib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlOw0KfQ0KDQouZnJvbnRwYWdlX190YWJsZSB0ZCB7DQogICAgY29sb3I6ICNGRkZGRkY7DQogICAgYm9yZGVyLWNvbGxhcHNlOiBjb2xsYXBzZTsNCiAgICBmb250LXNpemU6IDEuMmVtOw0KfQ0KDQouY2FzZWluZm9fX2RldGFpbHMgew0KICAgIGZvbnQtd2VpZ2h0OiA0MDA7DQogICAgdmVydGljYWwtYWxpZ246IGNlbnRlcjsNCiAgICBwYWRkaW5nOiAwLjNlbSAwLjVlbSAwLjNlbSAwZW07DQogICAgdGV4dC1hbGlnbjogcmlnaHQ7DQp9DQoNCi5jYXNlaW5mb19fdGV4dCB7DQogICAgZm9udC13ZWlnaHQ6IDQwMDsNCiAgICB2ZXJ0aWNhbC1hbGlnbjogY2VudGVyOw0KICAgIHBhZGRpbmc6IDAuM2VtIDBlbSAwLjNlbSAwLjVlbTsNCiAgICB0ZXh0LWFsaWduOiBsZWZ0Ow0KfQ0KDQouY29udGFpbmVyIHsNCiAgICB3aWR0aDogMTAwJTsNCiAgICBoZWlnaHQ6IGF1dG87DQogICAgLyogbWFyZ2luLWxlZnQ6IDJyZW07ICovDQogICAgLyogcGFkZGluZzogMHJlbSAxcmVtOyAqLw0KICAgIC8qIGJhY2tncm91bmQtY29sb3I6ICM5RDlEOUQ7ICovDQp9DQoNCi5idXR0b24tY29udGFpbmVyIHsNCiAgICBkaXNwbGF5OiBmbGV4Ow0KICAgIGZsZXgtZGlyZWN0aW9uOiByb3c7DQogICAgZmxleC13cmFwOiBub3dyYXA7DQogICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7DQogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsNCiAgICBwb3NpdGlvbjogZml4ZWQ7DQogICAgdG9wOiAwOw0KICAgIGxlZnQ6IDA7DQogICAgd2lkdGg6IDEwMCU7DQogICAgcGFkZGluZzogMWVtIDBlbTsNCiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjMjIzMTNmOw0KICAgIGJvcmRlci1ib3R0b206IDFweCBzb2xpZCAjMDAwMDAwDQogICAgICAgIC8qIG1hcmdpbi10b3A6IDAuNXJlbTsgKi8NCiAgICAgICAgLyogYm94LXNoYWRvdzogMCA3cHggOHB4IHJnYmEoMCwgMCwgMCwgMC4xMik7ICovDQp9DQoNCi5idXR0b25Ub3A6aG92ZXIgLmJ0bi10eHQ6OmFmdGVyIHsNCiAgICB0cmFuc2Zvcm06IHNjYWxlWCgxKTsNCiAgICB0cmFuc2Zvcm0tb3JpZ2luOiBsZWZ0Ow0KfQ0KDQoucHJpbnQtYnV0dG9uLA0KLmNsb3NlLWJ1dHRvbiB7DQogICAgYmFja2dyb3VuZC1jb2xvcjogI0RERDsNCiAgICB3aWR0aDogMTNyZW07DQogICAgaGVpZ2h0OiAzcmVtOw0KICAgIGNvbG9yOiBibGFjazsNCiAgICBmb250LXNpemU6IDFyZW07DQogICAgZm9udC13ZWlnaHQ6IDYwMDsNCiAgICBmb250LWZhbWlseTogVmVyZGFuYTsNCiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOw0KICAgIHBhZGRpbmc6IDAuNXJlbTsNCn0NCg0KLnByaW50LWJ1dHRvbjpob3ZlciwNCi5jbG9zZS1idXR0b246aG92ZXIgew0KICAgIGJhY2tncm91bmQtY29sb3I6ICM4ODg4ODhGRjsNCiAgICBib3JkZXI6IDJweCBkb3R0ZWQgI0ZGRkZGRjsNCiAgICBjb2xvcjogd2hpdGU7DQogICAgY3Vyc29yOiBwb2ludGVyOw0KICAgIGJveC1zaGFkb3c6IDBweCAxcHggMXB4IHJnYmEoMCwgMCwgMCwgMC43NSk7DQogICAgLyogYm9yZGVyLXJhZGl1czogMTBweDsgKi8NCn0NCg0KLmNsb3NlLWJ1dHRvbiB7DQogICAgbWFyZ2luLWxlZnQ6IDNlbTsNCn0NCg0KLmJ0bi10eHQgew0KICAgIGRpc3BsYXk6IGlubGluZTsNCiAgICBwb3NpdGlvbjogcmVsYXRpdmU7DQogICAgZm9udC1mYW1pbHk6ICdSb2JvdG8gTGlnaHQnOw0KfQ0KDQouYnRuLXR4dDo6YWZ0ZXIgew0KICAgIGNvbnRlbnQ6ICcnOw0KICAgIHBvc2l0aW9uOiBhYnNvbHV0ZTsNCiAgICBsZWZ0OiAwOw0KICAgIGJvdHRvbTogLTJweDsNCiAgICB3aWR0aDogMTAwJTsNCiAgICBoZWlnaHQ6IDJweDsNCiAgICBiYWNrZ3JvdW5kOiAjRkZGRkZGOw0KICAgIHRyYW5zZm9ybTogc2NhbGVYKDApOw0KICAgIHRyYW5zZm9ybS1vcmlnaW46IHJpZ2h0Ow0KICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzIGVhc2UtaW47DQp9DQoNCi5idXR0b25Ub3A6aG92ZXIgLmJ0bi10eHQ6OmFmdGVyIHsNCiAgICB0cmFuc2Zvcm06IHNjYWxlWCgxKTsNCiAgICB0cmFuc2Zvcm0tb3JpZ2luOiBsZWZ0Ow0KfQ0KDQoubGluZUZpcnN0IHsNCiAgICBmb250LXNpemU6IDEuNWVtOw0KICAgIGZvbnQtd2VpZ2h0OiA1MDA7DQogICAgbWFyZ2luOiAxcmVtIDAgMC41cmVtIDA7DQogICAgdGV4dC1hbGlnbjogY2VudGVyOw0KfQ0KDQoubGluZVNlY29uZCB7DQogICAgZm9udC1zaXplOiAxLjM1ZW07DQogICAgZm9udC13ZWlnaHQ6IDUwMDsNCiAgICBtYXJnaW46IC0wLjI1cmVtIDAgMnJlbSAwOw0KICAgIHRleHQtYWxpZ246IGNlbnRlcjsNCn0NCg0KdGFibGUgew0KICAgIGZvbnQtc2l6ZTogMC44NWVtOw0KICAgIGJvcmRlcjogMHB4Ow0KfQ0KDQp0ZCB7DQogICAgcGFkZGluZzogNHB4Ow0KICAgIG1hcmdpbjogMHB4Ow0KICAgIGJvcmRlcjogMDsNCn0NCg0KdGggew0KICAgIGJhY2tncm91bmQ6ICMzOTU4NzA7DQogICAgYmFja2dyb3VuZDogbGluZWFyLWdyYWRpZW50KCM0OTcwOGYsICMyOTNmNTApOw0KICAgIGNvbG9yOiAjZmZmOw0KICAgIGZvbnQtc2l6ZTogMS4wNWVtOw0KICAgIHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7DQogICAgcGFkZGluZzogMTBweCAxNXB4Ow0KICAgIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7DQp9DQoNCi8qIHRib2R5IHRyOm50aC1jaGlsZChldmVuKSB7DQogICAgYmFja2dyb3VuZDogI2YwZjBmMjsNCn0gKi8NCg0KLnRvcCB7DQogICAgZGlzcGxheTogaW5saW5lOw0KICAgIGZvbnQtc2l6ZTogMTJweDsNCiAgICBjb2xvcjogZG9kZ2VyYmx1ZQ0KfQ0KDQovKiBTdHlsZSB0aGUgYnV0dG9uIHRoYXQgaXMgdXNlZCB0byBvcGVuIGFuZCBjbG9zZSB0aGUgY29sbGFwc2libGUgY29udGVudCAqLw0KLmNvbGxhcHNpYmxlIHsNCiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjZWVlOw0KICAgIGNvbG9yOiAjNDQ0Ow0KICAgIGN1cnNvcjogcG9pbnRlcjsNCiAgICBwYWRkaW5nOiAxOHB4Ow0KICAgIHdpZHRoOiAxMDAlOw0KICAgIGJvcmRlcjogbm9uZTsNCiAgICB0ZXh0LWFsaWduOiBsZWZ0Ow0KICAgIG91dGxpbmU6IG5vbmU7DQogICAgZm9udC1zaXplOiAwLjk1ZW07DQogICAgZm9udC13ZWlnaHQ6IGJvbGQ7DQp9DQoNCi8qIEFkZCBhIGJhY2tncm91bmQgY29sb3IgdG8gdGhlIGJ1dHRvbiBpZiBpdCBpcyBjbGlja2VkIG9uIChhZGQgdGhlIC5hY3RpdmUgY2xhc3Mgd2l0aCBKUyksIGFuZCB3aGVuIHlvdSBtb3ZlIHRoZSBtb3VzZSBvdmVyIGl0IChob3ZlcikgKi8NCi5hY3RpdmUsIC5jb2xsYXBzaWJsZTpob3ZlciB7DQogICAgYmFja2dyb3VuZC1jb2xvcjogI2NjYzsNCiAgICBjb2xvcjogZG9kZ2VyYmx1ZTsNCn0NCg0KLyogU3R5bGUgdGhlIGNvbGxhcHNpYmxlIGNvbnRlbnQuIE5vdGU6IGhpZGRlbiBieSBkZWZhdWx0ICovDQouY29udGVudCB7DQogICAgcGFkZGluZzogMCAxOHB4Ow0KICAgIGRpc3BsYXk6IG5vbmU7DQogICAgb3ZlcmZsb3c6IGhpZGRlbjsNCiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjZjFmMWYxOw0KfQ0KDQoNCkBwYWdlIHsNCiAgICBzaXplOiBBNDsNCg0KICAgIEBib3R0b20tY2VudGVyIHsNCiAgICAgICAgY29udGVudDogIlBhZ2UgImNvdW50ZXIocGFnZSk7DQogICAgfQ0KfQ0KDQpAbWVkaWEgcHJpbnQgew0KICAgIC5uby1wcmludCwgLm5vLXByaW50ICogew0KICAgICAgICBkaXNwbGF5OiBub25lOw0KICAgIH0NCg0KICAgIGh0bWwsIGJvZHkgew0KICAgICAgICBtYXJnaW46IDByZW07DQogICAgICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50Ow0KICAgIH0NCg0KICAgIC5jb250YWluZXIgew0KICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiB0cmFuc3BhcmVudDsNCiAgICB9DQoNCiAgICAuaGVhZGluZyB7DQogICAgICAgIG1hcmdpbi10b3A6IDFlbTsNCiAgICB9DQoNCiAgICAuaGVhZGluZyBwIHsNCiAgICAgICAgbWFyZ2luLXRvcDogMGVtOw0KICAgIH0NCg0KICAgIGgzLCBvbCB7DQogICAgICAgIGNvbG9yOiAjMDAwOw0KICAgIH0NCn0=
+"
 
 
 
 
-
-
-Export-ModuleMember -Variable HtmlHeader, EndingHtml, QuickLinks, ReturnHtmlSnippet, TopSection
+Export-ModuleMember -Variable HtmlHeader, EndingHtml, ReturnHtmlSnippet, CssEncodedFileText

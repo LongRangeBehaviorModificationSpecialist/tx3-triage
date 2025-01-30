@@ -24,6 +24,7 @@ param (
     # Investigating agency's case number
     [Parameter(Mandatory = $True)]
     [string]$CaseNumber,
+    # Make an .html output report
     [switch]$Html,
     # Run Encrypted Disk Detector
     [switch]$Edd,
@@ -72,8 +73,9 @@ $ModulesFolder = "modules"
 # Get the directory of the current script
 $ScriptDirectory = $(Get-Location)
 
-# Construct the path to the 'modules' directory
+# Construct the path to the `modules` directory
 $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
+
 
 foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
     Import-Module -Name $file.FullName -Force -Global
@@ -83,18 +85,14 @@ foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
 
 
 if ($Html) {
-
     $HtmlModule = ".\html\Export-HtmlReport.psm1"
     Import-Module -Name $HtmlModule -Force
     Show-Message("Module file: ``$($HtmlModule)`` was imported successfully") -NoTime -Blue
 
     Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
-
 }
 else {
-
     Get-TriageData
-
 }
 
 
@@ -179,13 +177,13 @@ function Get-TriageData {
 
 
     [string]$Banner = "
-    +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-    |                                     |
-    |   tx3-triage POWERSHELL SCRIPT      |
-    |   Compiled by: Michael Sponheimer   |
-    |   Last Updated: $Dlu          |
-    |                                     |
-    +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
++=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+|                                     |
+|   tx3-triage POWERSHELL SCRIPT      |
+|   Compiled by: Michael Sponheimer   |
+|   Last Updated: $Dlu          |
+|                                     |
++=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
     "
 
 
@@ -206,24 +204,24 @@ function Get-TriageData {
 
 
     Show-Message("
-    =============
-    INSTRUCTIONS
-    =============
+=============
+INSTRUCTIONS
+=============
 
-    [A]  You are about to run the tx3-triage DFIR Powershell Script.
-    [B]  PURPOSE: TO gather information from the target machine and
-        save the data to outside storage device.
-    [C]  The results will automatically be stored in a directory that
-        is automatically created in the same directory from where this
-        script is run.
-    [D]  **IMPORTANT** DO NOT VIEW THE RESULTS OF THE SCAN ON THE TARGET
-        MACHINE. MOVE THE COLLECTION DEVICE TO A FORENSIC MACHINE BEFORE
-        OPENING ANY FILES!
-    [E]  DO NOT close any pop-up windows that may appear.
-    [F]  To get help for this script, run ``Get-Help .\tx3-triage.ps1``
-        command from a PowerShell CLI prompt.
-    [G]  To exit this script at anytime, press ``Ctrl + C``.`n"
-    ) -NoTime -Yellow
+[A]  You are about to run the tx3-triage DFIR Powershell Script.
+[B]  PURPOSE: TO gather information from the target machine and
+    save the data to outside storage device.
+[C]  The results will automatically be stored in a directory that
+    is automatically created in the same directory from where this
+    script is run.
+[D]  **IMPORTANT** DO NOT VIEW THE RESULTS OF THE SCAN ON THE TARGET
+    MACHINE. MOVE THE COLLECTION DEVICE TO A FORENSIC MACHINE BEFORE
+    OPENING ANY FILES!
+[E]  DO NOT close any pop-up windows that may appear.
+[F]  To get help for this script, run ``Get-Help .\tx3-triage.ps1``
+    command from a PowerShell CLI prompt.
+[G]  To exit this script at anytime, press ``Ctrl + C``.`n"
+) -NoTime -Yellow
 
 
     Write-Host ""
@@ -509,9 +507,9 @@ function Get-TriageData {
     # Get-PhysicalDiskData
     # Get-DiskPartitions
     # Get-Win32DiskParts
-    Get-Win32StartupApps
-    Get-DataFromReg
-    Get-SoftwareLicenseData
+    # Get-Win32StartupApps
+    # Get-DataFromReg
+    # Get-SoftwareLicenseData
     # Get-AutoRunsData
     # Get-BiosData
     # Get-ConnectedDevices
@@ -706,9 +704,9 @@ function Get-TriageData {
 
 
     Write-LogEntry("
-    ===========================
-    Hashing result files...
-    ===========================`n") -NoTime -NoLevel
+===========================
+Hashing result files...
+===========================`n") -NoTime -NoLevel
 
 
     # If the `-HashResults` switch was passed when the script was run
