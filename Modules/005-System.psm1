@@ -1971,7 +1971,6 @@ function Get-ExecutableFiles {
         $ExecutionTime = Measure-Command {
             Show-Message("$Header")
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
-            $Path = "C:\"
             # Validate the input path
             if (-not (Test-Path $Path)) {
                 throw "The specified path ``$Path`` does not exist"

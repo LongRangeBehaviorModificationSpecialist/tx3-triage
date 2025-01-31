@@ -10,7 +10,7 @@ function Get-FileHashes {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         [string[]]$ExcludedFiles = @('*PowerShell_transcript*'),
         # Name of the directory to store the hash results .CSV file

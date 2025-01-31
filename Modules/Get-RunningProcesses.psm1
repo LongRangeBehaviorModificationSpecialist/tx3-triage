@@ -10,7 +10,7 @@ function Get-RunningProcesses {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # Name of the directory to store the extracted process files
         [string]$ProcessesFolderName = "00B_Processes",

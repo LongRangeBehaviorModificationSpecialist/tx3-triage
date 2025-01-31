@@ -10,7 +10,7 @@ function Get-AllFilesList {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # List of drives to be included or excluded depending on the switch value that is entered
         [string[]]$DriveList,

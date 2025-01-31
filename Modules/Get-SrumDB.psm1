@@ -10,7 +10,7 @@ function Get-SrumDB {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # Name of the directory to store the copied SRUM file
         [string]$SrumFolderName = "00H_SRUM",

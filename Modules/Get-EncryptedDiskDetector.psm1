@@ -10,7 +10,6 @@ function Get-EncryptedDiskDetector {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
         [string]$ComputerName,
         # Name of the directory to store the results of the scan
         [string]$EddFolderName = "00A_EncryptedDiskDetector",

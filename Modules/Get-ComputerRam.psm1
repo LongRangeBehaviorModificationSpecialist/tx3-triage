@@ -10,7 +10,7 @@ function Get-ComputerRam {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # Name of the directory to store the extracted RAM image
         [string]$RamFolderName = "00C_RAM",

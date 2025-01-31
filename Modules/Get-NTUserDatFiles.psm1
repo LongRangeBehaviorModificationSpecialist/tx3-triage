@@ -10,7 +10,7 @@ function Get-NTUserDatFiles {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # Name of the directory to store the copied NTUSER.DAT files
         [string]$NTUserFolderName = "00F_NTUserDATFiles",

@@ -10,7 +10,7 @@ function Get-RegistryHives {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # Name of the directory to store the copied registry hives
         [string]$RegHiveFolderName = "00D_Registry"

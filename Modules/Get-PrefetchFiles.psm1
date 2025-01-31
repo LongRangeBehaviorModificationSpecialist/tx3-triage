@@ -10,7 +10,7 @@ function Get-PrefetchFiles {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty()]
+
         [string]$ComputerName,
         # Name of the directory to store the copied prefetch files
         [string]$PFFolderName = "00G_PrefetchFiles",

@@ -76,7 +76,7 @@ $ScriptName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 # Import the functions.psm1 module so the functions are available for use
 Import-Module .\functions\functions.psm1 -Force -Global
-Show-Message("`nModule file: ``.\functions\functions.psm1`` was imported successfully") -NoTime -Blue
+Show-Message("`nModule file: '.\functions\functions.psm1' was imported successfully") -NoTime -Blue
 
 
 # Name of the folder containing the .psm1 files that are to be imported
@@ -91,15 +91,15 @@ $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
     Import-Module -Name $file.FullName -Force -Global
-    # Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
-    # Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
+    # Show-Message("Module file: '$($file.Name)' was imported successfully") -NoTime -Blue
+    # Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: '$($file.Name)' was imported successfully")
 }
 
 
 if ($Html) {
     $HtmlModule = ".\html\Export-HtmlReport.psm1"
     Import-Module -Name $HtmlModule -Force
-    Show-Message("`nModule file: ``$($HtmlModule)`` was imported successfully") -NoTime -Blue
+    Show-Message("`nModule file: '$($HtmlModule)' was imported successfully") -NoTime -Blue
 
     Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
 }
