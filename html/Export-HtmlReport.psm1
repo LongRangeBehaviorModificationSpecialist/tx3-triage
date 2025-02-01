@@ -55,7 +55,7 @@ function Show-FinishedHtmlMessage {
         [string]$Name
     )
 
-    Show-Message("'$Name' done...") -Blue
+    Show-Message("'$Name' done...") -Green
 }
 
 
@@ -98,6 +98,7 @@ function Export-HtmlReport {
 
     foreach ($file in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
+        write-host "Module: '$($file.Name)' was imported successfully"
     }
 
 
@@ -155,27 +156,62 @@ function Export-HtmlReport {
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
 
 
-    $DeviceHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "001_DeviceInfo.html"
-    $UserHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "002_UserInfo.html"
-    $NetworkHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "003_NetworkInfo.html"
-    $ProcessHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "004_ProcessInfo.html"
-    $SystemHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "005_SystemInfo.html"
-    $PrefetchHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "006_PrefetchInfo.html"
-    $EventLogHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "007_EventLogInfo.html"
-    $FirewallHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "008_FirewallInfo.html"
-    $BitLockerHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "009_BitLockerInfo.html"
+    function Invoke-DeviceOutput {
+        $DeviceHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "001_DeviceInfo.html"
+        Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile
+    }
+
+    function Invoke-UserOutput {
+        $UserHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "002_UserInfo.html"
+        Export-UserHtmlPage -FilePath $UserHtmlOutputFile
+    }
+
+    function Invoke-NetworkOutput {
+        $NetworkHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "003_NetworkInfo.html"
+        Export-NetworkHtmlPage -FilePath $NetworkHtmlOutputFile
+    }
+
+    function Invoke-ProcessOutput {
+        $ProcessHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "004_ProcessInfo.html"
+        Export-ProcessHtmlPage -FilePath $ProcessHtmlOutputFile
+    }
+
+    function Invoke-SystemOutput {
+        $SystemHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "005_SystemInfo.html"
+        Export-SystemHtmlPage -FilePath $SystemHtmlOutputFile
+    }
+
+    function Invoke-PrefetchOutput {
+        $PrefetchHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "006_PrefetchInfo.html"
+        Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile
+    }
+
+    function Invoke-EventLogOutput {
+        $EventLogHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "007_EventLogInfo.html"
+        Export-EventLogHtmlPage -FilePath $EventLogHtmlOutputFile
+    }
+
+    function Invoke-FirewallOutput {
+        $FirewallHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "008_FirewallInfo.html"
+        Export-FirewallHtmlPage -FilePath $FirewallHtmlOutputFile
+    }
+
+    function Invoke-BitLockerOutput {
+        $BitLockerHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "009_BitLockerInfo.html"
+        Export-BitLockerHtmlPage -FilePath $BitLockerHtmlOutputFile
+    }
 
 
     # Run the functions
-    # Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile          #1
-    # Export-UserHtmlPage -FilePath $UserHtmlOutputFile              #2
-    # Export-NetworkHtmlPage -FilePath $NetworkHtmlOutputFile        #3
-    Export-ProcessHtmlPage -FilePath $ProcessHtmlOutputFile        #4
-    # Export-SystemHtmlPage -FilePath $SystemHtmlOutputFile          #5
-    # Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile      #6
-    # Export-EventLogHtmlPage -FilePath $EventLogHtmlOutputFile      #7
-    # Export-FirewallHtmlPage -FilePath $FirewallHtmlOutputFile      #8
-    # Export-BitLockerHtmlPage -FilePath $BitLockerHtmlOutputFile    #9
+    Invoke-DeviceOutput
+    Invoke-UserOutput
+    Invoke-NetworkOutput
+    Invoke-ProcessOutput
+    Invoke-SystemOutput
+    Invoke-PrefetchOutput
+    Invoke-EventLogOutput
+    Invoke-FirewallOutput
+    Invoke-BitLockerOutput
 
 
     Show-Message("tx3-triage script has completed successfully. . .") -Header -Green

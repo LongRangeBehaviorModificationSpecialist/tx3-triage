@@ -381,14 +381,14 @@ function Export-DeviceHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
-    #* 1-018
+    # 1-018
     function Get-AutoRunsData {
         param ([string]$FilePath)
         $Name = "1-018 AutoRuns.exe"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $TempCsvFile = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files\AutoRuns.csv"
-            $Command = .\bin\autorunsc64.exe -a * -c -o $TempFile -nobanner
+            Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
 
             $Data = Import-Csv -Path $TempCsvFile
             Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
@@ -527,28 +527,28 @@ function Export-DeviceHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    # Get-VariousData $FilePath
-    # Get-TPMData $FilePath
-    # Get-PSInfo $FilePath
-    # Get-PSDriveData $FilePath
+    Get-VariousData $FilePath
+    Get-TPMData $FilePath
+    Get-PSInfo $FilePath
+    Get-PSDriveData $FilePath
     Get-LogicalDiskData $FilePath
     Get-ComputerData $FilePath
     Get-SystemDataCMD $FilePath
     Get-SystemDataPS $FilePath
     Get-OperatingSystemData $FilePath
-    # Get-PhysicalMemory $FilePath
-    # Get-EnvVars $FilePath
-    # Get-PhysicalDiskData $FilePath
-    # Get-DiskPartitions $FilePath
-    # Get-Win32DiskParts $FilePath
-    # Get-Win32StartupApps $FilePath
-    # Get-SoftwareLicenseData $FilePath
-    # Get-AutoRunsData -FilePath $FilePath
-    # Get-BiosData $FilePath
-    # Get-ConnectedDevices $FilePath
-    # Get-HardwareInfo $FilePath
-    # Get-Win32Products $FilePath
-    # Get-OpenWindowTitles $FilePath
+    Get-PhysicalMemory $FilePath
+    Get-EnvVars $FilePath
+    Get-PhysicalDiskData $FilePath
+    Get-DiskPartitions $FilePath
+    Get-Win32DiskParts $FilePath
+    Get-Win32StartupApps $FilePath
+    Get-SoftwareLicenseData $FilePath
+    Get-AutoRunsData -FilePath $FilePath
+    Get-BiosData $FilePath
+    Get-ConnectedDevices $FilePath
+    Get-HardwareInfo $FilePath
+    Get-Win32Products $FilePath
+    Get-OpenWindowTitles $FilePath
 
 
     # Add the closing text to the .html file

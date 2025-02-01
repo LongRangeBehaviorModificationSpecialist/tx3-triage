@@ -1,3 +1,65 @@
+$PropertiesArray = [ordered]@{
+
+    "5-017-A Map Network Drive MRU"                = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-B Installed Apps From Registry"         = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*", "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*' | Select-Object DisplayName, Publisher, InstallDate, PSChildName, Comments | Sort-Object InstallDate -Descending | Format-List")
+
+    "5-017-C Typed URLs"                           = ("HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-D Internet Settings"                    = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-E Trusted Internet Domains"             = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains", "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains' | Select-Object -Property * | Format-List")
+
+    "5-017-F App Init Dll Keys"                    = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows' | Select-Object -Property * | Format-List")
+
+    "5-017-G Trusted Internet Domains"             = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-H Active Setup Installs"                = ("HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*' | Select-Object -Property * | Format-List")
+
+    "5-017-I App Path Reg Keys"                    = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*' | Select-Object -Property * | Sort-Object '(default)' | Format-List")
+
+    "5-017-J Dlls Loaded by Explorer"              = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*' | Select-Object -Property * | Format-List")
+
+    "5-017-K Shell User Init Values"               = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-L Security Center Svc Values"           = ("HKLM:\SOFTWARE\Microsoft\Security Center\Svc", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Security Center\Svc' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-M Desktop Address Bar History"          = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-N Run MRU Key Data"                     = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-O Start Menu Data"                      = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-P Programs Executed by Session Manager" = ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-Q Shell Folder Data"                    = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-R User Startup Shell Folder"            = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' | Select-Object 'Startup' | Format-List")
+
+    "5-017-S Approved Shell Extensions"            = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-T App Cert Dlls"                        = ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-U Exe File Shell Commands"              = ("HKLM:\SOFTWARE\Classes\exefile\shell\open\command", "Get-ItemProperty 'HKLM:\SOFTWARE\Classes\exefile\shell\open\command' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-V Shell Open Commands"                  = ("HKLM:\SOFTWARE\Classes\http\shell\open\command", "Get-ItemProperty 'HKLM:\SOFTWARE\Classes\http\shell\open\command' | Select-Object '(Default)' | Format-List")
+
+    "5-017-W BCD Data"                             = ("HKLM:\BCD00000000\*\*\*\*", "Get-ItemProperty 'HKLM:\BCD00000000\*\*\*\*' | Select-Object Element | Select-String 'exe'| Select-Object Line | Format-List")
+
+    "5-017-X LSA Data"                             = ("HKLM:\SYSTEM\CurrentControlSet\Control\Lsa", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+
+    "5-017-Y Browser Helper File"                  = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*' | Select-Object '(Default)' | Format-List")
+
+    "5-017-Z Browser Helper x64 File"              = ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*", "Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*' | Select-Object '(Default)' | Format-List")
+
+    "5-017-AA IE Extensions"                       = ("HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon | Format-List")
+
+    "5-017-AB IE Extensions"                       = ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*", "Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon | Format-List")
+
+    "5-017-AC USB Devices"                          = ("HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*", "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*' | Select-Object FriendlyName, PSChildName, ContainerID | Format-List")
+}
+
+
 function Export-SystemHtmlPage {
 
     [CmdletBinding()]
@@ -29,7 +91,7 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -52,7 +114,7 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -75,45 +137,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
     # 5-004
-    function Get-MappedNetworkDriveMRU {
-        param ([string]$FilePath)
-        $Name = "5-004 Map Network Drive MRU"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-005
     function Get-Win32ScheduledJobs {
         param ([string]$FilePath)
-        $Name = "5-005 Win32_ScheduledJob"
+        $Name = "5-004 Win32_ScheduledJob"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-CimInstance -ClassName Win32_ScheduledJob
@@ -128,15 +160,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-006
+    # 5-005
     function Get-ScheduledTasks {
         param ([string]$FilePath)
-        $Name = "5-006 Get-ScheduledTask"
+        $Name = "5-005 Get-ScheduledTask"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-ScheduledTask | Select-Object -Property * | Where-Object { ($_.State -ne 'Disabled') }
@@ -151,15 +183,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-007
+    # 5-006
     function Get-ScheduledTasksRunInfo {
         param ([string]$FilePath)
-        $Name = "5-007 Get-ScheduledTaskInfo"
+        $Name = "5-006 Get-ScheduledTaskInfo"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" } | Get-ScheduledTaskInfo | Select-Object -Property *
@@ -174,15 +206,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-008
+    # 5-007
     function Get-HotFixesData {
         param ([string]$FilePath)
-        $Name = "5-008 Get-HotFix"
+        $Name = "5-007 Get-HotFix"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
@@ -197,45 +229,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-009
-    function Get-InstalledAppsFromReg {
-        param ([string]$FilePath)
-        $Name = "5-009 Installed Apps From Registry"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Sort-Object InstallDate -Descending
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]")
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-010
+    # 5-008
     function Get-InstalledAppsFromAppx {
         param ([string]$FilePath)
-        $Name = "5-010 Installed Apps From Appx"
+        $Name = "5-008 Installed Apps From Appx"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-AppxPackage
@@ -250,15 +252,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-011
+    # 5-009
     function Get-VolumeShadowsData {
         param ([string]$FilePath)
-        $Name = "5-011 Volume Shadow Copies"
+        $Name = "5-009 Volume Shadow Copies"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *
@@ -273,15 +275,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-012
+    # 5-010
     function Get-TempInternetFiles {
         param ([string]$FilePath)
-        $Name = "5-012 Temporary Internet Files"
+        $Name = "5-010 Temporary Internet Files"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
@@ -296,15 +298,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-013
+    # 5-011
     function Get-StoredCookiesData {
         param ([string]$FilePath)
-        $Name = "5-013 Stored Cookies Data"
+        $Name = "5-011 Stored Cookies Data"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-ChildItem -Recurse -Force "$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies" | Select-Object Name | ForEach-Object { $N = $_.Name; Get-Content "$($AppData)\Microsoft\Windows\cookies\$N" | Select-String "/" }
@@ -319,165 +321,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-014
-    function Get-TypedUrls {
-        param ([string]$FilePath)
-        $Name = "5-014 Typed URLs"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found for '$Name'") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-015
-    function Get-InternetSettings {
-        param ([string]$FilePath)
-        $Name = "5-015 Internet Settings"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-016
-    function Get-TrustedInternetDomains {
-        param ([string]$FilePath)
-        $Name = "5-016 Trusted Internet Domains"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ChildItem $RegKey | Select-Object PSChildName
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-017
-    function Get-AppInitDllKeys {
-        param ([string]$FilePath)
-        $Name = "5-017 App Init Dll Keys"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object -Property *
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-018
-    function Get-UacGroupPolicy {
-        param ([string]$FilePath)
-        $Name = "5-018 Trusted Internet Domains"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    #! 5-019
+    #! 5-012
     function Get-GroupPolicy {
         param ([string]$FilePath)
-        $Name = "5-019 Group Policies"
+        $Name = "5-012 Group Policies"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = gpresult.exe /z | Out-String
@@ -492,651 +344,15 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-020
-    function Get-ActiveSetupInstalls {
-        param ([string]$FilePath)
-        $Name = "5-020 Active Setup Installs"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object -Property *
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-021
-    function Get-AppPathRegKeys {
-        param ([string]$FilePath)
-        $Name = "5-021 App Path Reg Keys"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Sort-Object '(default)'
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-
-    }
-
-    # 5-022
-    function Get-DllsLoadedByExplorer {
-        param ([string]$FilePath)
-        $Name = "5-022 Dlls Loaded by Explorer"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object -Property *
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-023
-    function Get-ShellUserInitValues {
-        param ([string]$FilePath)
-        $Name = "5-023 Shell User Init Values"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-024
-    function Get-SecurityCenterSvcValuesData {
-        param ([string]$FilePath)
-        $Name = "5-024 Security Center Svc Values"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Security Center\Svc"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-025
-    function Get-DesktopAddressBarHst {
-        param ([string]$FilePath)
-        $Name = "5-025 Desktop Address Bar History"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-026
-    function Get-RunMruKeyData {
-        param ([string]$FilePath)
-        $Name = "5-026 Run MRU Key Data"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-027
-    function Get-StartMenuData {
-        param ([string]$FilePath)
-        $Name = "5-027 Start Menu Data"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-028
-    function Get-ProgramsExeBySessionManager {
-        param ([string]$FilePath)
-        $Name = "5-028 Programs Executed by Session Manager"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-029
-    function Get-ShellFoldersData {
-        param ([string]$FilePath)
-        $Name = "5-029 Shell Folder Data"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-030
-    function Get-UserStartupShellFolders {
-        param ([string]$FilePath)
-        $Name = "5-030 User Startup Shell Folder"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object startup
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-031
-    function Get-ApprovedShellExts {
-        param ([string]$FilePath)
-        $Name = "5-031 Approved Shell Extensions"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-032
-    function Get-AppCertDlls {
-        param ([string]$FilePath)
-        $Name = "5-032 App Cert Dlls"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-033
-    function Get-ExeFileShellCommands {
-        param ([string]$FilePath)
-        $Name = "5-033 Exe File Shell Commands"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Classes\exefile\shell\open\command"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-034
-    function Get-ShellOpenCommands {
-        param ([string]$FilePath)
-        $Name = "5-034 Shell Open Commands"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Classes\http\shell\open\command"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object "(Default)"
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-035
-    function Get-BcdRelatedData {
-        param ([string]$FilePath)
-        $Name = "5-035 BCD Data"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\BCD00000000\*\*\*\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object Element | Select-String "exe" | Select-Object Line
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-036
-    function Get-LsaData {
-        param ([string]$FilePath)
-        $Name = "5-036 LSA Data"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object * -ExcludeProperty PS*
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-037
-    function Get-BrowserHelperFile {
-        param ([string]$FilePath)
-        $Name = "5-037 Browser Helper File"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object "(Default)"
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-038
-    function Get-BrowserHelperx64File {
-        param ([string]$FilePath)
-        $Name = "5-038 Browser Helper x64 File"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty $RegKey | Select-Object "(Default)"
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    #* 5-039
-    function Get-IeExtensions {
-        param ([string]$FilePath)
-        $Name = "5-039 IE Extensions"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKeys = @(
-            "HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*",
-            "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*"
-        )
-        foreach ($RegKey in $RegKeys) {
-            try {
-                if (-not (Test-Path -Path $RegKey)) {
-                    Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                    Show-Message("[INFO] No data found for '$Name'") -Yellow
-                }
-                else {
-                    $Data = Get-ItemProperty $RegKey | Select-Object ButtonText, Icon
-                    if ($Data.Count -eq 0) {
-                        Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                    }
-                    else {
-                        Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                    }
-                }
-            }
-            catch {
-                # Error handling
-                $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-                Show-Message("$ErrorMessage") -Red
-                Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-            }
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-040
-    function Get-UsbDevices {
-        param ([string]$FilePath)
-        $Name = "5-040 USB Devices"
-        Show-Message("Running '$Name' command") -Header -Gray
-        $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*"
-        try {
-            if (-not (Test-Path -Path $RegKey)) {
-                Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                $Data = Get-ItemProperty -Path $RegKey | Select-Object FriendlyName, PSChildName, ContainerID
-                if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found in Registry Key [$RegKey]") -Yellow
-                }
-                else {
-                    Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-                }
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-041
+    # 5-013
     function Get-AuditPolicy {
         param ([string]$FilePath)
-        $Name = "5-041 Audit Policy"
+        $Name = "5-013 Audit Policy"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = auditpol /get /category:* | Out-String
@@ -1151,18 +367,18 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-042
+    # 5-014
     function Get-RecentAddedExeFiles {
         param (
             [string]$FilePath,
             [int]$NumberOfRecords = 5
         )
-        $Name = "5-042 Recently Added EXE files"
+        $Name = "5-014 Recently Added EXE files"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object { $_.Name -like "*.exe" } | Sort-Object -Property LastWriteTime -Descending | Select-Object -First $NumberOfRecords | Format-Table PSPath, LastWriteTime
@@ -1180,18 +396,18 @@ function Export-SystemHtmlPage {
             # Error handling for other errors that may occur
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-043
+    # 5-015
     function Get-HiddenFiles {
         param (
             [string]$FilePath,
             [string]$Path = "C:\"
         )
-        $Name = "5-043 Hidden Files"
+        $Name = "5-015 Hidden Files"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             if (-not (Test-Path $Path)) {
@@ -1211,18 +427,18 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-044
+    # 5-016
     function Get-ExecutableFiles {
         param (
             [string]$FilePath,
             [string]$Path = "C:\"
         )
-        $Name = "5-044 Executable File List"
+        $Name = "5-016 Executable File List"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             if (-not (Test-Path $Path)) {
@@ -1242,64 +458,86 @@ function Export-SystemHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
+    }
+
+
+    # -------------------------------------
+    # TEST FUNCTION FOR GETTING REG VALUES
+    # -------------------------------------
+
+    # 5-017
+    function Get-RegistryValues {
+
+        param (
+            [string]$FilePath
+        )
+
+        foreach ($item in $PropertiesArray.GetEnumerator()) {
+
+            $Name = $item.Key
+            $RegKey = $item.value[0]
+            $Command = $item.value[1]
+
+            Show-Message("Running '$Name'") -Header -Gray
+
+            try {
+
+                Show-Message("Searching for key [$RegKey]") -Gray
+
+                if (-not (Test-Path -Path $RegKey)) {
+                    Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
+                    Show-Message("[INFO] No data found for '$Name'") -Yellow
+                }
+                else {
+                    $Data = Invoke-Expression $Command | Out-String
+                    if (-not $Data) {
+                        Show-Message("[INFO] The registry key [$RegKey] exists, but contains no data") -Yellow
+                    }
+                    else {
+                        Show-Message("[INFO] Saving output from '$Name'") -Green
+                        Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+                    }
+                }
+            }
+            catch {
+                # Error handling
+                $ErrorMessage = "[ERROR] Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+                Show-Message("$ErrorMessage") -Red
+                # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            }
+            Show-FinishedHtmlMessage $Name
+        }
     }
 
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    # Get-ADS -FilePath $FilePath
-    # Get-OpenFiles -FilePath $FilePath
-    # Get-OpenShares -FilePath $FilePath
-    # Get-MappedNetworkDriveMRU -FilePath $FilePath
-    # Get-Win32ScheduledJobs -FilePath $FilePath
-    # Get-ScheduledTasks -FilePath $FilePath
-    # Get-ScheduledTasksRunInfo -FilePath $FilePath
-    # Get-HotFixesData -FilePath $FilePath
-    # Get-InstalledAppsFromReg -FilePath $FilePath
-    # Get-InstalledAppsFromAppx -FilePath $FilePath
-    # Get-VolumeShadowsData -FilePath $FilePath
-    # Get-TempInternetFiles -FilePath $FilePath
-    # Get-StoredCookiesData -FilePath $FilePath
-    # Get-TypedUrls -FilePath $FilePath
-    # Get-InternetSettings -FilePath $FilePath
-    # Get-TrustedInternetDomains -FilePath $FilePath
-    # Get-AppInitDllKeys -FilePath $FilePath
-    # Get-UacGroupPolicy -FilePath $FilePath
-    # Get-GroupPolicy -FilePath $FilePath
-    # Get-ActiveSetupInstalls -FilePath $FilePath
-    # Get-AppPathRegKeys -FilePath $FilePath
-    # Get-DllsLoadedByExplorer -FilePath $FilePath
-    # Get-ShellUserInitValues -FilePath $FilePath
-    # Get-SecurityCenterSvcValuesData -FilePath $FilePath
-    # Get-DesktopAddressBarHst -FilePath $FilePath
-    # Get-RunMruKeyData -FilePath $FilePath
-    # Get-StartMenuData -FilePath $FilePath
-    # Get-ProgramsExeBySessionManager -FilePath $FilePath
-    # Get-ShellFoldersData -FilePath $FilePath
-    # Get-UserStartupShellFolders -FilePath $FilePath
-    # Get-ApprovedShellExts -FilePath $FilePath
-    # Get-AppCertDlls -FilePath $FilePath
-    # Get-ExeFileShellCommands -FilePath $FilePath
-    # Get-ShellOpenCommands -FilePath $FilePath
-    # Get-BcdRelatedData -FilePatha $FilePath
-    # Get-LsaData -FilePath $FilePath
-    # Get-BrowserHelperFile -FilePath $FilePath
-    # Get-BrowserHelperx64File -FilePath $FilePath
-    # Get-IeExtensions -FilePath $FilePath
-    # Get-UsbDevices -FilePath $FilePath
-    # Get-AuditPolicy -FilePath $FilePath
-    # Get-HiddenFiles -FilePath $FilePath
+    # Get-ADS $FilePath  #5-001
+    # Get-OpenFiles $FilePath  #5-002
+    # Get-OpenShares $FilePath  #5-003
+    # Get-Win32ScheduledJobs $FilePath  #5-004
+    # Get-ScheduledTasks $FilePath  #5-005
+    # Get-ScheduledTasksRunInfo $FilePath  #5-006
+    # Get-HotFixesData $FilePath  #5-007
+    # Get-InstalledAppsFromAppx $FilePath  #5-008
+    # Get-VolumeShadowsData $FilePath  #5-009
+    # Get-TempInternetFiles $FilePath  #5-010
+    # Get-StoredCookiesData $FilePath  #5-011
+    # Get-GroupPolicy $FilePath  #5-012
+    # Get-AuditPolicy $FilePath  #5-013
+    # Get-HiddenFiles $FilePath  #5-015
+    Get-RegistryValues $FilePath  #5-017
 
 
     # ----------------------------------
     # Function that need work
     # ----------------------------------
-    # Get-RecentAddedExeFiles -FilePath $FilePath
-    # Get-ExecutableFiles -FilePath $FilePath
+    # Get-RecentAddedExeFiles $FilePath  #5-014
+    # Get-ExecutableFiles $FilePath  #5-016
 
 
     # Add the closing text to the .html file

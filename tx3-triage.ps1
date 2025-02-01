@@ -490,44 +490,44 @@ INSTRUCTIONS
     #! (0) Run the TESTING commands
     #! -------------------------------
 
-    # Get-ForensicData
-    # Get-SuspiciousFiles
-    # Get-BrowserHistory
-    # Compare-FileHashes
-    # Get-USBSTOR
-    # Get-RecentlyAccessedFiles
-    # Get-SuspiciousFilePermissions
-    # Get-PrefetchAnalysis
-    # Get-ThumbnailCache
+    Get-ForensicData
+    Get-SuspiciousFiles
+    Get-BrowserHistory
+    Compare-FileHashes
+    Get-USBSTOR
+    Get-RecentlyAccessedFiles
+    Get-SuspiciousFilePermissions
+    Get-PrefetchAnalysis
+    Get-ThumbnailCache
 
 
     #! -------------------------------
     #! (1) Run the DEVICE commands
     #! -------------------------------
 
-    # Get-VariousData
-    # Get-TPMData
-    # Get-PSInfo
-    # Get-PSDriveData
-    # Get-LogicalDiskData
-    # Get-ComputerData
-    # Get-SystemDataCMD
-    # Get-SystemDataPS
-    # Get-OperatingSystemData
-    # Get-PhysicalMemory
-    # Get-EnvVars
-    # Get-PhysicalDiskData
-    # Get-DiskPartitions
-    # Get-Win32DiskParts
-    # Get-Win32StartupApps
-    # Get-DataFromReg
-    # Get-SoftwareLicenseData
-    # Get-AutoRunsData
-    # Get-BiosData
-    # Get-ConnectedDevices
-    # Get-HardwareInfo
-    # Get-Win32Products
-    # Get-OpenWindowTitles
+    Get-VariousData
+    Get-TPMData
+    Get-PSInfo
+    Get-PSDriveData
+    Get-LogicalDiskData
+    Get-ComputerData
+    Get-SystemDataCMD
+    Get-SystemDataPS
+    Get-OperatingSystemData
+    Get-PhysicalMemory
+    Get-EnvVars
+    Get-PhysicalDiskData
+    Get-DiskPartitions
+    Get-Win32DiskParts
+    Get-Win32StartupApps
+    Get-DataFromReg
+    Get-SoftwareLicenseData
+    Get-AutoRunsData
+    Get-BiosData
+    Get-ConnectedDevices
+    Get-HardwareInfo
+    Get-Win32Products
+    Get-OpenWindowTitles
     # ----------------------------
     # Get-HKLMSoftwareCVRunStartupApps
     # Get-HKLMSoftwareCVPoliciesExpRunStartupApps
@@ -541,165 +541,165 @@ INSTRUCTIONS
     #! (2) Run the USER commands
     #! -------------------------------
 
-    # Get-WhoAmI
-    # Get-UserProfile
-    # Get-UserInfo
-    # Get-LocalUserData
-    # Get-LogonSession
-    # Get-PowershellConsoleHistoryAllUsers
-    # Get-LastLogons
+    Get-WhoAmI
+    Get-UserProfile
+    Get-UserInfo
+    Get-LocalUserData
+    Get-LogonSession
+    Get-PowershellConsoleHistoryAllUsers
+    Get-LastLogons
 
 
     #! -------------------------------
     #! (3) Run the NETWORK commands
     #! -------------------------------
 
-    # Get-NetworkConfig
-    # Get-OpenNetworkConnections
-    # Get-NetstatDetailed
-    # Get-NetstatBasic
-    # Get-NetTcpConnectionsAllTxt
-    # Get-NetTcpConnectionsAllCsv
-    # Get-NetworkAdapters
-    # Get-NetIPConfig
-    # Get-RouteData
-    # Get-IPConfig
-    # Get-ARPData
-    # Get-NetIPAddrs
-    # Get-HostsFile
-    # Get-NetworksFile
-    # Get-ProtocolFile
-    # Get-ServicesFile
-    # Get-SmbShares
-    # Get-WifiPasswords
-    # Get-NetInterfaces
-    # Get-NetRouteData
+    Get-NetworkConfig
+    Get-OpenNetworkConnections
+    Get-NetstatDetailed
+    Get-NetstatBasic
+    Get-NetTcpConnectionsAllTxt
+    Get-NetTcpConnectionsAllCsv
+    Get-NetworkAdapters
+    Get-NetIPConfig
+    Get-RouteData
+    Get-IPConfig
+    Get-ARPData
+    Get-NetIPAddrs
+    Get-HostsFile
+    Get-NetworksFile
+    Get-ProtocolFile
+    Get-ServicesFile
+    Get-SmbShares
+    Get-WifiPasswords
+    Get-NetInterfaces
+    Get-NetRouteData
 
 
     #! -------------------------------
     #! (4) Run the PROCESS commands
     #! -------------------------------
 
-    # Get-RunningProcessesAll
-    # Get-RunningProcessesCsv
-    # Get-UniqueProcessHash
-    # Get-SvcHostsAndProcesses
-    # Get-RunningServices
-    # Get-InstalledDrivers
+    Get-RunningProcessesAll
+    Get-RunningProcessesCsv
+    Get-UniqueProcessHash
+    Get-SvcHostsAndProcesses
+    Get-RunningServices
+    Get-InstalledDrivers
 
 
     #! -------------------------------
     #! (5) Run the SYSTEM commands
     #! -------------------------------
 
-    # Get-ADS
-    # Get-OpenFiles
-    # Get-OpenShares
-    # Get-MappedNetworkDriveMRU
-    # Get-ScheduledJobs
-    # Get-ScheduledTasks
-    # Get-ScheduledTasksRunInfo
-    # Get-HotFixesData
-    # Get-InstalledAppsFromReg
-    # Get-InstalledAppsFromAppx
-    # Get-VolumeShadowsData
-    # Get-DnsCacheDataTxt
-    # Get-DnsCacheDataCsv
-    # Get-TempInternetFiles
-    # Get-StoredCookiesData
-    # Get-TypedUrls
-    # Get-InternetSettings
-    # Get-TrustedInternetDomains
-    # Get-AppInitDllKeys
-    # Get-UacGroupPolicy
-    # Get-GroupPolicy
-    # Get-ActiveSetupInstalls
-    # Get-AppPathRegKeys
-    # Get-DllsLoadedByExplorer
-    # Get-ShellUserInitValues
-    # Get-SecurityCenterSvcValuesData
-    # Get-DesktopAddressBarHst
-    # Get-RunMruKeyData
-    # Get-StartMenuData
-    # Get-ProgramsExeBySessionManager
-    # Get-ShellFoldersData
-    # Get-UserStartupShellFolders
-    # Get-ApprovedShellExts
-    # Get-AppCertDlls
-    # Get-ExeFileShellCommands
-    # Get-ShellOpenCommands
-    # Get-BcdRelatedData
-    # Get-LsaData
-    # Get-BrowserHelperFile
-    # Get-BrowserHelperx64File
-    # Get-IeExtensions
-    # Get-UsbDevices
-    # Get-AuditPolicy
-    # Get-RecentAddedExeFiles
-    # Get-HiddenFiles
-    # Get-ExecutableFiles
+    Get-ADS
+    Get-OpenFiles
+    Get-OpenShares
+    Get-MappedNetworkDriveMRU
+    Get-ScheduledJobs
+    Get-ScheduledTasks
+    Get-ScheduledTasksRunInfo
+    Get-HotFixesData
+    Get-InstalledAppsFromReg
+    Get-InstalledAppsFromAppx
+    Get-VolumeShadowsData
+    Get-DnsCacheDataTxt
+    Get-DnsCacheDataCsv
+    Get-TempInternetFiles
+    Get-StoredCookiesData
+    Get-TypedUrls
+    Get-InternetSettings
+    Get-TrustedInternetDomains
+    Get-AppInitDllKeys
+    Get-UacGroupPolicy
+    Get-GroupPolicy
+    Get-ActiveSetupInstalls
+    Get-AppPathRegKeys
+    Get-DllsLoadedByExplorer
+    Get-ShellUserInitValues
+    Get-SecurityCenterSvcValuesData
+    Get-DesktopAddressBarHst
+    Get-RunMruKeyData
+    Get-StartMenuData
+    Get-ProgramsExeBySessionManager
+    Get-ShellFoldersData
+    Get-UserStartupShellFolders
+    Get-ApprovedShellExts
+    Get-AppCertDlls
+    Get-ExeFileShellCommands
+    Get-ShellOpenCommands
+    Get-BcdRelatedData
+    Get-LsaData
+    Get-BrowserHelperFile
+    Get-BrowserHelperx64File
+    Get-IeExtensions
+    Get-UsbDevices
+    Get-AuditPolicy
+    Get-RecentAddedExeFiles
+    Get-HiddenFiles
+    Get-ExecutableFiles
 
     # -------------------------------
 
-    # Get-RecentDllFiles
-    # Get-RecentLinkFiles
-    # Get-CompressedFiles
-    # Get-EncryptedFiles
-    # Get-ExeTimeline
-    # Get-DownloadedExecutables
+    Get-RecentDllFiles
+    Get-RecentLinkFiles
+    Get-CompressedFiles
+    Get-EncryptedFiles
+    Get-ExeTimeline
+    Get-DownloadedExecutables
 
 
     #! -------------------------------
     #! (6) Running PREFETCH command
     #! -------------------------------
 
-    # Get-PrefetchFilesList
-    # Get-DetailedPrefetchData
+    Get-PrefetchFilesList
+    Get-DetailedPrefetchData
 
 
     #! -------------------------------
     #! # (7) Running EVENT LOG commands
     #! -------------------------------
 
-    # Get-EventLogListBasic
-    # Get-EventLogListDetailed
-    # Get-SecurityEventCount
-    # Get-SecurityEventsLast30DaysTxt
-    # Get-SecurityEventsLast30DaysCsv
-    # Get-Application1002Events
-    # Get-System1014Events
-    # Get-Application1102Events
-    # Get-Security4616Events
-    # Get-Security4624Events
-    # Get-Security4625Events
-    # Get-Security4648Events
-    # Get-Security4672Events
-    # Get-Security4673Events
-    # Get-Security4674Events
-    # Get-Security4688Events
-    # Get-Security4720Events
-    # Get-System7036Events
-    # Get-System7045Events
-    # Get-System64001Events
-    # Get-AppInvEvts
-    # Get-TerminalServiceEvents
-    # Get-PSOperational4104Events
+    Get-EventLogListBasic
+    Get-EventLogListDetailed
+    Get-SecurityEventCount
+    Get-SecurityEventsLast30DaysTxt
+    Get-SecurityEventsLast30DaysCsv
+    Get-Application1002Events
+    Get-System1014Events
+    Get-Application1102Events
+    Get-Security4616Events
+    Get-Security4624Events
+    Get-Security4625Events
+    Get-Security4648Events
+    Get-Security4672Events
+    Get-Security4673Events
+    Get-Security4674Events
+    Get-Security4688Events
+    Get-Security4720Events
+    Get-System7036Events
+    Get-System7045Events
+    Get-System64001Events
+    Get-AppInvEvts
+    Get-TerminalServiceEvents
+    Get-PSOperational4104Events
 
 
     #! -------------------------------
     #! (8) Running FIREWALL command
     #! -------------------------------
 
-    # Get-FirewallRules
-    # Get-AdvFirewallRules
-    # Get-DefenderExclusions
+    Get-FirewallRules
+    Get-AdvFirewallRules
+    Get-DefenderExclusions
 
 
     #! -------------------------------
     #! (9) Running BITLOCKER command
     #! -------------------------------
 
-    # Get-BitlockerRecoveryKeys
+    Get-BitlockerRecoveryKeys
 
 
     # Get the time the script was completed
