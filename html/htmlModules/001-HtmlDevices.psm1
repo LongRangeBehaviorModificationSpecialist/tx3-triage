@@ -76,7 +76,7 @@ function Export-DeviceHtmlPage {
             Show-Message("$ErrorMessage") -Red
             Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
-        Show-Message("``$Name`` done...") -Blue
+        Show-FinishedHtmlMessage $Name
     }
 
     # 1-004

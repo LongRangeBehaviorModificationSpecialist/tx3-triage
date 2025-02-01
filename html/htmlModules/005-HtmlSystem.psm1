@@ -1,62 +1,62 @@
 $PropertiesArray = [ordered]@{
 
-    "5-017-A Map Network Drive MRU"                = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-A Map Network Drive MRU"                = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-B Installed Apps From Registry"         = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*", "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*' | Select-Object DisplayName, Publisher, InstallDate, PSChildName, Comments | Sort-Object InstallDate -Descending | Format-List")
+    "5-014-B Installed Apps From Registry"         = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*", "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*' | Select-Object DisplayName, Publisher, InstallDate, PSChildName, Comments | Sort-Object InstallDate -Descending | Format-List")
 
-    "5-017-C Typed URLs"                           = ("HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-C Typed URLs"                           = ("HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-D Internet Settings"                    = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-D Internet Settings"                    = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-E Trusted Internet Domains"             = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains", "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains' | Select-Object -Property * | Format-List")
+    "5-014-E Trusted Internet Domains"             = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains", "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains' | Select-Object -Property * | Format-List")
 
-    "5-017-F App Init Dll Keys"                    = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows' | Select-Object -Property * | Format-List")
+    "5-014-F App Init Dll Keys"                    = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows' | Select-Object -Property * | Format-List")
 
-    "5-017-G Trusted Internet Domains"             = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-G Trusted Internet Domains"             = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-H Active Setup Installs"                = ("HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*' | Select-Object -Property * | Format-List")
+    "5-014-H Active Setup Installs"                = ("HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*' | Select-Object -Property * | Format-List")
 
-    "5-017-I App Path Reg Keys"                    = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*' | Select-Object -Property * | Sort-Object '(default)' | Format-List")
+    "5-014-I App Path Reg Keys"                    = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*' | Select-Object -Property * | Sort-Object '(default)' | Format-List")
 
-    "5-017-J Dlls Loaded by Explorer"              = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*' | Select-Object -Property * | Format-List")
+    "5-014-J Dlls Loaded by Explorer"              = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*' | Select-Object -Property * | Format-List")
 
-    "5-017-K Shell User Init Values"               = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-K Shell User Init Values"               = ("HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-L Security Center Svc Values"           = ("HKLM:\SOFTWARE\Microsoft\Security Center\Svc", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Security Center\Svc' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-L Security Center Svc Values"           = ("HKLM:\SOFTWARE\Microsoft\Security Center\Svc", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Security Center\Svc' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-M Desktop Address Bar History"          = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-M Desktop Address Bar History"          = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-N Run MRU Key Data"                     = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-N Run MRU Key Data"                     = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-O Start Menu Data"                      = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-O Start Menu Data"                      = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-P Programs Executed by Session Manager" = ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-P Programs Executed by Session Manager" = ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-Q Shell Folder Data"                    = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-Q Shell Folder Data"                    = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-R User Startup Shell Folder"            = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' | Select-Object 'Startup' | Format-List")
+    "5-014-R User Startup Shell Folder"            = ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' | Select-Object 'Startup' | Format-List")
 
-    "5-017-S Approved Shell Extensions"            = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-S Approved Shell Extensions"            = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-T App Cert Dlls"                        = ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-T App Cert Dlls"                        = ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-U Exe File Shell Commands"              = ("HKLM:\SOFTWARE\Classes\exefile\shell\open\command", "Get-ItemProperty 'HKLM:\SOFTWARE\Classes\exefile\shell\open\command' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-U Exe File Shell Commands"              = ("HKLM:\SOFTWARE\Classes\exefile\shell\open\command", "Get-ItemProperty 'HKLM:\SOFTWARE\Classes\exefile\shell\open\command' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-V Shell Open Commands"                  = ("HKLM:\SOFTWARE\Classes\http\shell\open\command", "Get-ItemProperty 'HKLM:\SOFTWARE\Classes\http\shell\open\command' | Select-Object '(Default)' | Format-List")
+    "5-014-V Shell Open Commands"                  = ("HKLM:\SOFTWARE\Classes\http\shell\open\command", "Get-ItemProperty 'HKLM:\SOFTWARE\Classes\http\shell\open\command' | Select-Object '(Default)' | Format-List")
 
-    "5-017-W BCD Data"                             = ("HKLM:\BCD00000000\*\*\*\*", "Get-ItemProperty 'HKLM:\BCD00000000\*\*\*\*' | Select-Object Element | Select-String 'exe'| Select-Object Line | Format-List")
+    "5-014-W BCD Data"                             = ("HKLM:\BCD00000000\*\*\*\*", "Get-ItemProperty 'HKLM:\BCD00000000\*\*\*\*' | Select-Object Element | Select-String 'exe'| Select-Object Line | Format-List")
 
-    "5-017-X LSA Data"                             = ("HKLM:\SYSTEM\CurrentControlSet\Control\Lsa", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
+    "5-014-X LSA Data"                             = ("HKLM:\SYSTEM\CurrentControlSet\Control\Lsa", "Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' | Select-Object -Property * -ExcludeProperty PS* | Format-List")
 
-    "5-017-Y Browser Helper File"                  = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*' | Select-Object '(Default)' | Format-List")
+    "5-014-Y Browser Helper File"                  = ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*", "Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*' | Select-Object '(Default)' | Format-List")
 
-    "5-017-Z Browser Helper x64 File"              = ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*", "Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*' | Select-Object '(Default)' | Format-List")
+    "5-014-Z Browser Helper x64 File"              = ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*", "Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*' | Select-Object '(Default)' | Format-List")
 
-    "5-017-AA IE Extensions"                       = ("HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon | Format-List")
+    "5-014-AA IE Extensions"                       = ("HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*", "Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon | Format-List")
 
-    "5-017-AB IE Extensions"                       = ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*", "Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon | Format-List")
+    "5-014-AB IE Extensions"                       = ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*", "Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon | Format-List")
 
-    "5-017-AC USB Devices"                          = ("HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*", "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*' | Select-Object FriendlyName, PSChildName, ContainerID | Format-List")
+    "5-014-AC USB Devices"                          = ("HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*", "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*' | Select-Object FriendlyName, PSChildName, ContainerID | Format-List")
 }
 
 
@@ -372,103 +372,11 @@ function Export-SystemHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
-    # 5-014
-    function Get-RecentAddedExeFiles {
-        param (
-            [string]$FilePath,
-            [int]$NumberOfRecords = 5
-        )
-        $Name = "5-014 Recently Added EXE files"
-        Show-Message("Running '$Name' command") -Header -Gray
-        try {
-            $Data = Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object { $_.Name -like "*.exe" } | Sort-Object -Property LastWriteTime -Descending | Select-Object -First $NumberOfRecords | Format-Table PSPath, LastWriteTime
-            if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch [System.Security.SecurityException] {
-            Show-Message("[WARNING] Requested registry access is not allowed") -Yellow
-        }
-        catch {
-            # Error handling for other errors that may occur
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-015
-    function Get-HiddenFiles {
-        param (
-            [string]$FilePath,
-            [string]$Path = "C:\"
-        )
-        $Name = "5-015 Hidden Files"
-        Show-Message("Running '$Name' command") -Header -Gray
-        try {
-            if (-not (Test-Path $Path)) {
-                Show-Message("[INFO] The specified path '$Path' does not exist") -Yellow
-            }
-            $Data = Get-ChildItem -Path $Path -Attributes Hidden -Recurse -Force
-            $Count = $Data.Count
-            if ($Data.Count -eq 0) {
-                    Show-Message("[INFO] No data found for '$Name'") -Yellow
-                }
-            else {
-                Show-Message("Found $Count hidden files within $Path") -Green
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 5-016
-    function Get-ExecutableFiles {
-        param (
-            [string]$FilePath,
-            [string]$Path = "C:\"
-        )
-        $Name = "5-016 Executable File List"
-        Show-Message("Running '$Name' command") -Header -Gray
-        try {
-            if (-not (Test-Path $Path)) {
-                Show-Message("[INFO] The specified path '$Path' does not exist") -Yellow
-            }
-            $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object { $_.Extension -eq ".exe" }
-            $Count = $Data.Count
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-            }
-            else {
-                Show-Message("Found $Count executable files within $Path") -Green
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-
     # -------------------------------------
     # TEST FUNCTION FOR GETTING REG VALUES
     # -------------------------------------
 
-    # 5-017
+    # 5-014
     function Get-RegistryValues {
 
         param (
@@ -512,32 +420,124 @@ function Export-SystemHtmlPage {
         }
     }
 
+    # 5-015
+    function Get-HiddenFiles {
+        param (
+            [string]$FilePath,
+            [string]$Path = "C:\"
+        )
+        $Name = "5-015 Hidden Files"
+        Show-Message("Running '$Name' command") -Header -Gray
+        try {
+            if (-not (Test-Path $Path)) {
+                Show-Message("[INFO] The specified path '$Path' does not exist") -Yellow
+            }
+            $Data = Get-ChildItem -Path $Path -Attributes Hidden -Recurse -Force
+            $Count = $Data.Count
+            if ($Data.Count -eq 0) {
+                Show-Message("[INFO] No data found for '$Name'") -Yellow
+            }
+            else {
+                Show-Message("Found $Count hidden files within $Path") -Green
+                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            }
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
+
+
+    # 5-016
+    function Get-RecentAddedExeFiles {
+        param (
+            [string]$FilePath,
+            [int]$NumberOfRecords = 5
+        )
+        $Name = "5-014 Recently Added EXE files"
+        Show-Message("Running '$Name' command") -Header -Gray
+        try {
+            $Data = Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object { $_.Name -like "*.exe" } | Sort-Object -Property LastWriteTime -Descending | Select-Object -First $NumberOfRecords | Format-Table PSPath, LastWriteTime
+            if ($Data.Count -eq 0) {
+                    Show-Message("[INFO] No data found for '$Name'") -Yellow
+            }
+            else {
+                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            }
+        }
+        catch [System.Security.SecurityException] {
+            Show-Message("[WARNING] Requested registry access is not allowed") -Yellow
+        }
+        catch {
+            # Error handling for other errors that may occur
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
+
+    # 5-017
+    function Get-ExecutableFiles {
+        param (
+            [string]$FilePath,
+            [string]$Path = "C:\"
+        )
+        $Name = "5-016 Executable File List"
+        Show-Message("Running '$Name' command") -Header -Gray
+        try {
+            if (-not (Test-Path $Path)) {
+                Show-Message("[INFO] The specified path '$Path' does not exist") -Yellow
+            }
+            $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object { $_.Extension -eq ".exe" }
+            $Count = $Data.Count
+            if ($Data.Count -eq 0) {
+                Show-Message("[INFO] No data found for '$Name'") -Yellow
+            }
+            else {
+                Show-Message("Found $Count executable files within $Path") -Green
+                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            }
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$FunctionName, Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    # Get-ADS $FilePath  #5-001
-    # Get-OpenFiles $FilePath  #5-002
-    # Get-OpenShares $FilePath  #5-003
-    # Get-Win32ScheduledJobs $FilePath  #5-004
-    # Get-ScheduledTasks $FilePath  #5-005
-    # Get-ScheduledTasksRunInfo $FilePath  #5-006
-    # Get-HotFixesData $FilePath  #5-007
-    # Get-InstalledAppsFromAppx $FilePath  #5-008
-    # Get-VolumeShadowsData $FilePath  #5-009
-    # Get-TempInternetFiles $FilePath  #5-010
-    # Get-StoredCookiesData $FilePath  #5-011
-    # Get-GroupPolicy $FilePath  #5-012
-    # Get-AuditPolicy $FilePath  #5-013
-    # Get-HiddenFiles $FilePath  #5-015
-    Get-RegistryValues $FilePath  #5-017
+    Get-ADS $FilePath  #5-001
+    Get-OpenFiles $FilePath  #5-002
+    Get-OpenShares $FilePath  #5-003
+    Get-Win32ScheduledJobs $FilePath  #5-004
+    Get-ScheduledTasks $FilePath  #5-005
+    Get-ScheduledTasksRunInfo $FilePath  #5-006
+    Get-HotFixesData $FilePath  #5-007
+    Get-InstalledAppsFromAppx $FilePath  #5-008
+    Get-VolumeShadowsData $FilePath  #5-009
+    Get-TempInternetFiles $FilePath  #5-010
+    Get-StoredCookiesData $FilePath  #5-011
+    Get-GroupPolicy $FilePath  #5-012
+    Get-AuditPolicy $FilePath  #5-013
+    Get-RegistryValues $FilePath  #5-014
+    Get-HiddenFiles $FilePath  #5-015
 
 
     # ----------------------------------
     # Function that need work
     # ----------------------------------
-    # Get-RecentAddedExeFiles $FilePath  #5-014
-    # Get-ExecutableFiles $FilePath  #5-016
+    # Get-RecentAddedExeFiles $FilePath  #5-016
+    # Get-ExecutableFiles $FilePath  #5-017
 
 
     # Add the closing text to the .html file

@@ -36,9 +36,10 @@ function Write-HtmlHomePage {
 
 </html>"
 
-    Add-Content -Path $FilePath -Value $ReportHomePage
 
+    Add-Content -Path $FilePath -Value $ReportHomePage
 }
+
 
 function Write-HtmlNavPage {
 
@@ -63,7 +64,7 @@ function Write-HtmlNavPage {
         <link href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Cinzel&display=swap' rel='stylesheet' type='text/css'>
 
-        <link rel='stylesheet' type='text/css' href='../css/style.css' />
+        <link rel='stylesheet' type='text/css' href='../css/nav.css' />
 
         <link rel='shortcut icon' type='img/png' href='../images/binary.png'>
 
@@ -144,8 +145,8 @@ function Write-HtmlNavPage {
 
 
     Add-Content -Path $FilePath -Value $NavReportPage
-
 }
+
 
 function Write-HtmlFrontPage {
 
@@ -177,7 +178,7 @@ function Write-HtmlFrontPage {
         <link href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Cinzel&display=swap' rel='stylesheet' type='text/css'>
 
-        <link rel='stylesheet' type='text/css' href='../css/style.css' />
+        <link rel='stylesheet' type='text/css' href='../css/front.css' />
 
         <link rel='shortcut icon' type='img/png' href='../images/binary.png'>
 
@@ -239,12 +240,11 @@ function Write-HtmlFrontPage {
     </body>
 
 </html>"
-# -f $User, $ReportGenTime, $ComputerName, $Ipv4, $Ipv6
 
 
     Add-Content -Path $FilePath -Value $FrontReportPage
-
 }
+
 
 function Write-HtmlReadMePage {
 
@@ -269,7 +269,7 @@ function Write-HtmlReadMePage {
         <link href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Cinzel&display=swap' rel='stylesheet' type='text/css'>
 
-        <link rel='stylesheet' type='text/css' href='../css/style.css' />
+        <link rel='stylesheet' type='text/css' href='../css/readme.css' />
 
         <link rel='shortcut icon' type='img/png' href='../images/binary.png'>
 
@@ -328,8 +328,8 @@ function Write-HtmlReadMePage {
 
 </html>"
 
-    Add-Content -Path $FilePath -Value $ReadMeReportPage
 
+    Add-Content -Path $FilePath -Value $ReadMeReportPage
 }
 
 

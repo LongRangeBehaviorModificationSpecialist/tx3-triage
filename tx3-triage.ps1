@@ -222,16 +222,16 @@ INSTRUCTIONS
 
 [A]  You are about to run the tx3-triage DFIR Powershell Script.
 [B]  PURPOSE: TO gather information from the target machine and
-    save the data to outside storage device.
+     save the data to outside storage device.
 [C]  The results will automatically be stored in a directory that
-    is automatically created in the same directory from where this
-    script is run.
+     is automatically created in the same directory from where this
+     script is run.
 [D]  **IMPORTANT** DO NOT VIEW THE RESULTS OF THE SCAN ON THE TARGET
-    MACHINE. MOVE THE COLLECTION DEVICE TO A FORENSIC MACHINE BEFORE
-    OPENING ANY FILES!
+     MACHINE. MOVE THE COLLECTION DEVICE TO A FORENSIC MACHINE BEFORE
+     OPENING ANY FILES!
 [E]  DO NOT close any pop-up windows that may appear.
 [F]  To get help for this script, run ``Get-Help .\tx3-triage.ps1``
-    command from a PowerShell CLI prompt.
+     command from a PowerShell CLI prompt.
 [G]  To exit this script at anytime, press ``Ctrl + C``.`n"
 ) -NoTime -Yellow
 
@@ -293,7 +293,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Encrypted Disk Detector option was not enabled") -WarningMessage
         }
     }
-    Invoke-Edd
 
     function Invoke-Processes {
 
@@ -309,7 +308,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Process Capture option was not enabled") -WarningMessage
         }
     }
-    Invoke-Processes
 
     function Invoke-Ram {
         if ($Ram) {
@@ -322,7 +320,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The RAM Capture option was not enabled") -WarningMessage
         }
     }
-    Invoke-Ram
 
     function Invoke-Registry {
         if ($Registry) {
@@ -335,7 +332,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Registry Hive file collection option was not enabled") -WarningMessage
         }
     }
-    Invoke-Registry
 
     function Invoke-EventLogs {
         if ($EventLogs) {
@@ -348,7 +344,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Event Log collection option was not enabled") -WarningMessage
         }
     }
-    Invoke-EventLogs
 
     function Invoke-NTUser {
         if ($NTUser) {
@@ -361,7 +356,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The NTUSER.DAT file collection option was not enabled") -WarningMessage
         }
     }
-    Invoke-NTUser
 
     function Invoke-Prefetch {
         if ($Prefetch) {
@@ -374,7 +368,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The Windows Prefetch file collection option was not enabled") -WarningMessage
         }
     }
-    Invoke-Prefetch
 
     function Invoke-SrumDB {
         if ($Srum) {
@@ -387,7 +380,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The SRUM database collection option was not enabled") -WarningMessage
         }
     }
-    Invoke-SrumDB
 
     function Invoke-ListAllFiles {
         # If -AllDrives is used, invoke Get-AllFilesList with additional parameters
@@ -441,7 +433,6 @@ INSTRUCTIONS
             Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] The All File Listings collection option was not enabled") -WarningMessage
         }
     }
-    Invoke-ListAllFiles
 
 
     if (-not $HashResults) {
@@ -476,6 +467,17 @@ INSTRUCTIONS
             Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
         }
     }
+
+
+    Invoke-Edd
+    Invoke-Processes
+    Invoke-Ram
+    Invoke-Registry
+    Invoke-EventLogs
+    Invoke-NTUser
+    Invoke-Prefetch
+    Invoke-SrumDB
+    Invoke-ListAllFiles
     Invoke-Yolo
 
 

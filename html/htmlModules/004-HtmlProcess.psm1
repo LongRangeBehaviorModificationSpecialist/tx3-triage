@@ -42,6 +42,7 @@ function Export-ProcessHtmlPage {
         $FileName = "4-002_RunningProcesses.csv"
         try {
             Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
         catch {
@@ -154,10 +155,10 @@ function Export-ProcessHtmlPage {
     # Run the functions from the module
     # ----------------------------------
     Get-RunningProcessesAll $FilePath
-    Get-RunningProcessesAsCsv
-    Get-UniqueProcessHashAsCsv
+    Get-RunningProcessesAsCsv  # Do not pass $FilePath variable to function
+    Get-UniqueProcessHashAsCsv  # Do not pass $FilePath variable to function
     Get-SvcHostsAndProcesses $FilePath
-    Get-RunningServicesAsCsv
+    Get-RunningServicesAsCsv  # Do not pass $FilePath variable to function
     Get-InstalledDrivers $FilePath
 
 

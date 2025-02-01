@@ -22,16 +22,22 @@ function Save-OutputToHtmlFile {
         [string]$OutputFilePath,
         [switch]$FromPipe,
         [switch]$FromString
+        # [switch]$BitLocker
     )
 
     process {
 
-        $PreContent = "`n</h5>
+#         $PreContent = "`n</h5>
+# <button type='button' class='collapsible'>$($Name)</button>
+# <div class='content'>
+# <pre>
+# <p>"
+
+        $PreContentEdit = "
 <button type='button' class='collapsible'>$($Name)</button>
 <div class='content'>
 <pre>
 <p>"
-
 
         $PostContent = "
 </p>
@@ -39,17 +45,22 @@ function Save-OutputToHtmlFile {
 </div>"
 
         if ($FromPipe) {
-            $Data | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $Name $PreContent" -PostContent $PostContent | Out-File -Append $OutputFilePath -Encoding UTF8
+            # $Data | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $Name $PreContentEdit" -PostContent $PostContent | Out-File -Append $OutputFilePath -Encoding UTF8
+            $Data | ConvertTo-Html -As List -Fragment -Precontent $PreContentEdit -PostContent $PostContent | Out-File -Append $OutputFilePath -Encoding UTF8
         }
 
         if ($FromString) {
-            Add-Content -Path $OutputFilePath -Value "<h5 class='info_header'> $Name $PreContent $Data $PostContent" -NoNewline
+            # Add-Content -Path $OutputFilePath -Value "<h5 class='info_header'> $Name $PreContent $Data $PostContent" -NoNewline
+            Add-Content -Path $OutputFilePath -Value "$PreContentEdit $Data $PostContent" -NoNewline
         }
+
+        # if ($BitLocker)
     }
 }
 
 
 function Show-FinishedHtmlMessage {
+
     param (
         [Parameter(Mandatory, Position = 0)]
         [string]$Name
@@ -68,38 +79,37 @@ function Export-HtmlReport {
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
         [Parameter(Position = 1)]
-
         [string]$ComputerName,
         [Parameter(Position = 2)]
-
         [string]$Date,
         [Parameter(Position = 3)]
-
         [string]$Time,
         [Parameter(Position = 4)]
-
         [string]$Ipv4,
         [Parameter(Position = 5)]
-
         [string]$Ipv6,
         [Parameter(Position = 6)]
-
         [string]$User,
         [Parameter(Position = 7)]
-
         [string]$Agency,
         [Parameter(Position = 8)]
-
         [string]$CaseNumber
     )
 
 
+    [datetime]$HtmlStartTime = (Get-Date).ToUniversalTime()
+    [datetime]$StartTimeString = Get-Date -UFormat "%A %B %d, %Y %H:%M:%S %Z"
+
+
     $HtmlModulesDirectory = "html\htmlModules"
+
 
     foreach ($file in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
         write-host "Module: '$($file.Name)' was imported successfully"
     }
+
+    Show-Message("Triage Exam Began at $StartTimeString") -NoTime -Header -Yellow
 
 
     # $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
@@ -128,6 +138,18 @@ function Export-HtmlReport {
     $CssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($CssEncodedFileText))
     Add-Content -Path $CssStyleFileName -Value $CssDecodedText
 
+
+    # Create the `readme.css` file
+    $ReadMeCssFile = New-Item -Path "$CssFolder\readme.css" -ItemType File
+    Add-Content -Path $ReadmeCssFile -Value $ReadMeHtmlFileCss
+
+    # Create the `nav.css` file
+    $NavCssFile = New-Item -Path "$CssFolder\nav.css" -ItemType File
+    Add-Content -Path $NavCssFile -Value $NavHtmlFileCss
+
+    # Create the `front.css` file
+    $FrontCssFile = New-Item -Path "$CssFolder\front.css" -ItemType File
+    Add-Content -Path $FrontCssFile -Value $FrontHtmlFileCss
 
     # Copy the necessary folders to the new case directory
     Copy-Item  $MasterImgFolder -Destination $ImgFolder -Force -Recurse
@@ -203,18 +225,31 @@ function Export-HtmlReport {
 
 
     # Run the functions
-    Invoke-DeviceOutput
-    Invoke-UserOutput
-    Invoke-NetworkOutput
-    Invoke-ProcessOutput
-    Invoke-SystemOutput
-    Invoke-PrefetchOutput
-    Invoke-EventLogOutput
-    Invoke-FirewallOutput
-    Invoke-BitLockerOutput
+    try {
+        Invoke-DeviceOutput
+        Invoke-UserOutput
+        Invoke-NetworkOutput
+        Invoke-ProcessOutput
+        Invoke-SystemOutput
+        Invoke-PrefetchOutput
+        # Invoke-EventLogOutput
+        Invoke-FirewallOutput
+        Invoke-BitLockerOutput
+    }
+    catch {
+        # Error handling
+        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+        Show-Message("$ErrorMessage") -Red
+    }
 
 
     Show-Message("tx3-triage script has completed successfully. . .") -Header -Green
+
+    $HtmlEndTime = (Get-Date).ToUniversalTime()
+    $HtmlDuration = New-TimeSpan -Start $HtmlStartTime -End $HtmlEndTime
+    $HtmlExeTime = "$($HtmlDuration.Days) days $($HtmlDuration.Hours) hours $($HtmlDuration.Minutes) minutes $($HtmlDuration.Seconds) seconds"
+
+    Show-Message("Script execution completed in: $HtmlExeTime`n") -Header -Green
 }
 
 

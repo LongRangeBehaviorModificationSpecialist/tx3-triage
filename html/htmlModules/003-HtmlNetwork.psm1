@@ -9,6 +9,8 @@ function Export-NetworkHtmlPage {
 
     Add-Content -Path $FilePath -Value $HtmlHeader
 
+    $FilesFolder = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files"
+
 
     # 3-001
     function Get-NetworkConfig {
@@ -28,26 +30,38 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
     # 3-002
-    # TODO -- Check status of the `Get-NetTCPConnection` function // Not working on forensic machine
     function Get-OpenNetworkConnections {
         param ([string]$FilePath)
-    }
-    # 3-003
-    # TODO -- SKIPPED temp
-    function Get-NetstatDetailed {
-        param ([string]$FilePath)
+        $Name = "3-002 Established Network Connections"
+        Show-Message("Running '$Name' command") -Header -Gray
+        try {
+            $Data = Get-NetTCPConnection -State Established
+            if ($Data.Count -eq 0) {
+                Show-Message("No data found for '$Name'") -Yellow
+            }
+            else {
+                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            }
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
     }
 
-    #* 3-004
+    #* 3-003
     function Get-NetstatBasic {
         param ([string]$FilePath)
-        $Name = "3-004 netstat -nao"
+        $Name = "3-003 Netstat Connections (Basic)"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = netstat -nao | Out-String
@@ -62,42 +76,157 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
+
+    # 3-004
+    function Get-NetstatDetailed {
+        param ([string]$FilePath)
+        $Name = "3-004 Netstat Connections (Detailed)"
+        Show-Message("Running '$Name' command") -Header -Gray
+        $TempFile = "$FilesFolder\3-004 DetailedNetworkConnections_TEMP.html"
+        $FileName = "3-004 DetailedNetworkConnections.html"
+        try {
+            [datetime]$DateTime = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+            $Head = "
+<style>
+    body {
+        font-family: caibri;
+        background-color: Aliceblue;
+        margin-left: 10pt;
+        margin-right: 10pt;
+    }
+    table {
+        border-width: 1px;
+        border-style: solid;
+        border-color: black;
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+    }
+    th {
+        font-size: 0.9em;
+        border-width: 1px;
+        border: 1px solid black;
+        background-color: dodgerblue;
+        padding: 10px;
+        word-wrap: break-word;
+    }
+    td {
+        border-width: 1px;
+        border-style: solid;
+        border-color: black;
+        padding: 10px;
+        word-wrap: break-word;
+    }
+</style>
+<title>Detailed Network Connections</title>"
+
+            ConvertTo-Html -Head $Head -Body "<h3>
+Active Connections, Associated Processes and DLLs
+<p>Computer Name : $ComputerName</p>
+<p>User ID : $((Get-Item env:\USERNAME).value)</p>
+</h3>
+
+<h4> Current Date and Time : $DateTime</h4>" | Out-File -FilePath $TempFile -Encoding UTF8
+
+            $NetstatOutput = netstat -nao | Select-String "ESTA"
+            foreach ($Element in $NetstatOutput) {
+                $Results = $Element -Split "\s+" | Where-Object { $_ -ne "" }
+
+                # Extract the associated DLLs and file paths
+                $AssociatedDLLs = ((Get-Process | Where-Object { $_.ID -eq $Results[4] })).Modules |
+                Select-Object -ExpandProperty FileName
+
+                # Add <p> and </p> to each line of associated DLLs
+                $FormattedDLLs = $AssociatedDLLs | ForEach-Object { "<p>$($_)</p>" }
+
+                # Join the formatted DLLs into a single string, with each wrapped in <p> tags
+                $FormattedDLLsString = $FormattedDLLs -join "`n"
+
+                $NetList = @{
+                    "Local IP : Port#"              = $Results[1];
+                    "Remote IP : Port#"             = $Results[2];
+                    "Process ID"                    = $Results[4];
+                    "Process Name"                  = ((Get-Process | Where-Object { $_.ID -eq $Results[4] })).Name
+                    "Process File Path"             = ((Get-Process | Where-Object { $_.ID -eq $Results[4] })).Path
+                    "Process Start Time"            = ((Get-Process | Where-Object { $_.ID -eq $Results[4] })).StartTime
+                    "Associated DLLs and File Path" = $FormattedDLLsString
+                }
+                New-Object -TypeName PSObject -Property $NetList | ConvertTo-html -As Table -Fragment -Property 'Local IP : Port#', 'Remote IP : Port#', 'Process ID', 'Process Name', 'Process Start Time', 'Process File Path', 'Associated DLLs and File Path' | ForEach-Object {
+                    $_ -replace '<colgroup><col/><col/><col/><col/><col/><col/><col/></colgroup>', `
+                        "<colgroup>
+<col style='width:10%;' />
+<col style='width:10%;' />
+<col style='width:5%;' />
+<col style='width:5%;' />
+<col style='width:20%;' />
+<col style='width:20%;' />
+<col style='width:30%;' />
+</colgroup>"
+                } | Out-File -Append -FilePath $TempFile -Encoding UTF8
+            }
+            (Get-Content $TempFile) | ForEach-Object {
+                $_ -replace "&lt;p&gt;", "" `
+                    -replace "&lt;/p&gt;", "<br />"
+            } | Set-Content -Path "$FilesFolder\$FileName" -Force
+            # Delete the temp .html file
+            Remove-Item -Path $TempFile -Force
+
+            Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
     # 3-005
-    # function Get-NetTcpConnectionsAllTxt {
-    #     param ([string]$FilePath)
-    #     $Name = "3-005 Get-NetTCPConnection"
-    #     Show-Message("Running '$Name' command") -Header -Gray
-    #     try {
-
-    #     }
-    #     catch {
-
-    #     }
-    #     Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | ConvertTo-Html -As List -Fragment -Precontent "<h5 class='info_header'> $Name $PreContentBegin Get-NetTCPConnection $PreContentEnd" -PostContent $PostContent | Out-File -Append $NetworkHtmlOutputFile -Encoding UTF8
-    #     Show-FinishedHtmlMessage $Name
-    # }
+    function Get-NetTcpConnectionsAsTxt {
+        param ([string]$FilePath)
+        $Name = "3-005 Net TCP Connections (as Txt)"
+        Show-Message("Running '$Name' command") -Header -Gray
+        try {
+            $Data = Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | Format-List
+            if ($Data.Count -eq 0) {
+                Show-Message("No data found for '$Name'") -Yellow
+            }
+            else {
+                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            }
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
 
     #! 3-006
-    # function Get-NetTcpConnectionsAllCsv {
-    #     param ([string]$FilePath)
-    #     $Name = "3-006 Get-NetTCPConnection (as CSV)"
-    #     Show-Message("Running '$Name' command") -Header -Gray
-    #     $FileName = "3-006_NetTcpConnections.csv"
-    #     try {
+    function Get-NetTcpConnectionsAsCsv {
+        $Name = "3-006 Net TCP Connection (as Csv)"
+        Show-Message("Running '$Name' command") -Header -Gray
+        $FileName = "3-006_NetTcpConnections.csv"
+        try {
+            Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-    #     }
-    #     catch {
-
-    #     }
-    #     Get-NetTcpConnection | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-    #     Add-Content -Path $FilePath -Value "<h5 class='info_header'> $Name $PreContentBegin Get-NetTCPConnection (as CSV) $PrecontentEnd <a href='../files/$FileName'>$FileName</a> $PostContent" -NoNewline
-    #     Show-FinishedHtmlMessage $Name
-    # }
+            Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
 
     # 3-007
     function Get-NetworkAdapters {
@@ -117,7 +246,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -140,7 +269,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -163,7 +292,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -186,7 +315,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -209,7 +338,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -232,7 +361,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -255,7 +384,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -278,7 +407,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -301,9 +430,8 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
-        Add-Content -Path $FilePath -Value "<h5 class='info_header'> $Name $PreContentBegin Get-protocolFile $PrecontentEnd <pre> $Data $PostContent </pre>" -NoNewline
         Show-FinishedHtmlMessage $Name
     }
 
@@ -325,7 +453,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -348,7 +476,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -371,7 +499,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -394,7 +522,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -417,15 +545,15 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-21
-    function Get-DnsCacheDataTxt {
+    # 3-021
+    function Get-DnsCacheDataAsTxt {
         param ([string]$FilePath)
-        $Name = "5-012 DNS Cache"
+        $Name = "3-021 DNS Cache (as Txt)"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
             $Data = ipconfig /displaydns | Out-String
@@ -440,24 +568,40 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
-        Show-Message("``$Name`` done...") -Blue
+        Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-22
-    #! SKIPPED MAKING THE .CSV FILE
+    #! 3-022
+    function Get-DnsCacheDataAsCsv {
+        $Name = "3-022 Dns Cache (as Csv)"
+        Show-Message("Running '$Name' command") -Header -Gray
+        $FileName = "3-022_DnsClientCache.csv"
+        try {
+            Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+
+            Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
+        }
+        catch {
+            # Error handling
+            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
+            Show-Message("$ErrorMessage") -Red
+            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        }
+        Show-FinishedHtmlMessage $Name
+    }
 
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
     Get-NetworkConfig $FilePath
-
-
+    Get-OpenNetworkConnections $FilePath
     Get-NetstatBasic $FilePath
-
-
+    Get-NetstatDetailed $FilePath
+    Get-NetTcpConnectionsAsTxt $FilePath
+    Get-NetTcpConnectionsAsCsv  # Do not pass $FilePath variable to function
     Get-NetworkAdapters $FilePath
     Get-NetIPConfig $FilePath
     Get-RouteData $FilePath
@@ -472,7 +616,8 @@ function Export-NetworkHtmlPage {
     Get-WifiPasswords $FilePath
     Get-NetInterfaces $FilePath
     Get-NetRouteData $FilePath
-    Get-DnsCacheDataTxt $FilePath
+    Get-DnsCacheDataAsTxt $FilePath
+    Get-DnsCacheDataAsCsv  # Do not pass $FilePath variable to function
 
 
     # Add the closing text to the .html file
