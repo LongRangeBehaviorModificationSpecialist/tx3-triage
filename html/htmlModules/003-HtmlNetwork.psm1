@@ -18,11 +18,12 @@ function Export-NetworkHtmlPage {
         $Name = "3-001 Win32_NetworkAdapterConfiguration"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
-            $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Format-List
+            $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass
             if ($Data.Count -eq 0) {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -46,6 +47,7 @@ function Export-NetworkHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -69,6 +71,7 @@ function Export-NetworkHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -175,6 +178,8 @@ Active Connections, Associated Processes and DLLs
             # Delete the temp .html file
             Remove-Item -Path $TempFile -Force
 
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
+
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
         catch {
@@ -192,11 +197,12 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-005 Net TCP Connections (as Txt)"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
-            $Data = Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | Format-List
+            $Data = Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending
             if ($Data.Count -eq 0) {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -216,6 +222,8 @@ Active Connections, Associated Processes and DLLs
         $FileName = "3-006_NetTcpConnections.csv"
         try {
             Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
 
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
@@ -239,6 +247,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -262,6 +271,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -285,6 +295,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -308,6 +319,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -331,6 +343,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -354,6 +367,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -377,6 +391,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -400,6 +415,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -423,6 +439,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -446,6 +463,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -469,6 +487,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -492,6 +511,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -515,6 +535,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -538,6 +559,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -561,6 +583,7 @@ Active Connections, Associated Processes and DLLs
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -580,6 +603,8 @@ Active Connections, Associated Processes and DLLs
         $FileName = "3-022_DnsClientCache.csv"
         try {
             Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
 
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }

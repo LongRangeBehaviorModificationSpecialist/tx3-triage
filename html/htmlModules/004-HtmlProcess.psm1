@@ -23,6 +23,7 @@ function Export-ProcessHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -42,6 +43,8 @@ function Export-ProcessHtmlPage {
         $FileName = "4-002_RunningProcesses.csv"
         try {
             Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
 
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
@@ -75,6 +78,9 @@ function Export-ProcessHtmlPage {
                 }
             }
             ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$FilesFolder\$FileName" -Encoding UTF8
+
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
+
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
         catch {
@@ -97,6 +103,7 @@ function Export-ProcessHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -116,6 +123,9 @@ function Export-ProcessHtmlPage {
         $FileName = "4-005_RunningServices.csv"
         try {
             Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
+
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
+
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
         catch {
@@ -138,6 +148,7 @@ function Export-ProcessHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }

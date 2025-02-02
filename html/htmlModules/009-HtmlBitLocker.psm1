@@ -21,6 +21,7 @@ function Export-BitLockerHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -70,6 +71,7 @@ function Export-BitLockerHtmlPage {
                     }
                 }
             }
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
             Save-OutputToHtmlFile -FromString $Name $Data $FilePath
         }
         catch {

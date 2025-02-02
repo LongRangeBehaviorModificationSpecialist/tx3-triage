@@ -104,7 +104,7 @@ KiwgKjo6YmVmb3JlLCAqOjphZnRlciB7DQogICAgYm94LXNpemluZzogYm9yZGVyLWJveDsNCiAgICBt
 $NavHtmlFileCss = "
 *, *::before, *::after {
     box-sizing: border-box;
-    margin: 0;
+    margin: 2px;
     padding: 0;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -132,15 +132,15 @@ body {
     font-size: 16px;
     color: #181B20;
     --dropBtnColor: #1E8449;
-    --navBtnPadding: 1px 0px 1px 10px;
+    /* --navBtnPadding: 8px 0px 8px 0px; */
     --navBtnColorHover: #2874A6;
     --navBtnHoverTextColor: #FFFFFF;
     --navBtnHoverBorder: 1px dashed #FFFFFF;
     --navBtnHoverRadius: 5px;
-    --navBtnHeight: 1.25em;
-    --navBtnWidth: 90%;
+    --navBtnHeight: 1.45em;
+    --navBtnWidth: 98%;
     --navBtnFontFamily: 'Roboto Light';
-    --navBtnFontSize: 0.95em;
+    --navBtnFontSize: 1.05em;
     margin: 0;
     padding: 0;
 }
@@ -149,15 +149,15 @@ body {
     background: #bbb
 }
 
-.magnet-logo {
-    height: 150px;
-    margin: 32px 0px 32px 0px;
-    width: 150px;
+.nav-image {
+    height: 100px;
+    margin: 24px 0px;
+    width: 100px;
 }
 
 .heading {
     background-color: rgb(230, 230, 230);
-    margin: 0.2em 0em;
+    /* margin: 0.5em 0em; */
     padding: 5px 0px 5px 0px;
     font-size: 1.2em;
     font-weight: 500;
@@ -166,10 +166,19 @@ body {
 
 }
 
-/* My Added Style */
-.btn__1 {
-    border: 1px;
-    padding: var(--navBtnPadding);
+.report-section {
+    color: #000000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    /* margin: 1em 0em; */
+    width: 100%;
+}
+
+button.nav-list-item {
+    border: 0px solid transparent;
+    background-color: transparent;
+    /* padding: var(--navBtnPadding); */
     width: var(--navBtnWidth);
     height: var(--navBtnHeight);
     text-align: left;
@@ -177,38 +186,40 @@ body {
     color: black;
     font-size: var(--navBtnFontSize);
     font-family: var(--navBtnFontFamily);
-    /* border: 1px solid black; */
-    border: 0px solid transparent;
+    margin: 0.35em 1em;
+}
+
+button.nav-list-item a:link {
+    color: blue;
     background-color: transparent;
-    margin: 0.15em 0em 0em 1em;
+    text-decoration: none;
 }
 
-/* My Added Style */
-.btn__1:hover {
-    background-color: var(--navBtnColorHover);
-    color: var(--navBtnHoverTextColor);
-    border: var(--navBtnHoverBorder);
-    border-radius: var(--navBtnHoverRadius);
+button.nav-list-item a:hover {
+    /* background-color: var(--navBtnColorHover); */
+    /* color: var(--navBtnHoverTextColor); */
+    /* border: var(--navBtnHoverBorder); */
+    /* border-radius: var(--navBtnHoverRadius); */
     font-weight: 700;
-    transition: all 0.2s ease;
+    /* transition: all 0.2s ease; */
+    color: blue;
+    text-decoration: underline;
     cursor: pointer;
-    height: 2.25em;
-    box-shadow: 5px 5px 5px #7F8C8D;
+    /* margin: 0.15em 1em 0em 1em; */
+    /* height: 2.25em; */
+    /* box-shadow: 5px 5px 5px #7F8C8D; */
 }
 
-.btn__1 a {
-    text-decoration: none
-}
-
-.btn__1 a:active {
+button .nav-list-item a:active {
     text-decoration: underline;
     color: #CB4335;
 }
 
-.btn__1 a:visited {
+button .nav-list-item a:visited {
     text-decoration: none;
-    color: #000000;
-}"
+    color: yellow;
+}
+"
 
 
 $FrontHtmlFileCss = "

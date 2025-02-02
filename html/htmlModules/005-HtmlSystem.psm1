@@ -84,6 +84,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -107,6 +108,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -130,6 +132,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -153,6 +156,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -176,6 +180,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -199,6 +204,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -222,6 +228,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -245,6 +252,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -268,6 +276,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -291,6 +300,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -314,6 +324,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -337,6 +348,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -360,6 +372,7 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -400,12 +413,12 @@ function Export-SystemHtmlPage {
                     Show-Message("[INFO] No data found for '$Name'") -Yellow
                 }
                 else {
-                    $Data = Invoke-Expression $Command | Out-String
+                    $Data = Invoke-Expression -Command $Command | Out-String
                     if (-not $Data) {
                         Show-Message("[INFO] The registry key [$RegKey] exists, but contains no data") -Yellow
                     }
                     else {
-                        Show-Message("[INFO] Saving output from '$Name'") -Green
+                        Show-Message("[INFO] Saving output from '$Name'") -Blue
                         Save-OutputToHtmlFile -FromString $Name $Data $FilePath
                     }
                 }
@@ -438,7 +451,8 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
-                Show-Message("Found $Count hidden files within $Path") -Green
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("Found $Count hidden files within $Path") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -466,6 +480,7 @@ function Export-SystemHtmlPage {
                     Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -499,7 +514,8 @@ function Export-SystemHtmlPage {
                 Show-Message("[INFO] No data found for '$Name'") -Yellow
             }
             else {
-                Show-Message("Found $Count executable files within $Path") -Green
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("Found $Count executable files within $Path") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }

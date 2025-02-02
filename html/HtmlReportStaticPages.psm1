@@ -83,59 +83,66 @@ function Write-HtmlNavPage {
     <body class='nav__background'>
 
         <div class='center'>
-            <img src='../images/icon-cyber-forensics.png' class='magnet-logo' />
+            <img src='../images/icon-cyber-forensics.png' class='nav-image' />
         </div>
 
         <div>
 
             <div class='heading'>Triage Report</div>
 
-                <a href='front.html' target='content'>
-                    <button class='btn__1'>Cover Page</button>
-                </a>
+            <div class='report-section'>
 
-                <a href='readme.html' target='content'>
-                    <button class='btn__1'>Read Me First</button>
-                </a>
+                <button class='nav-list-item'>
+                    <a href='./front.html' target='content'>Cover Page</a>
+                </button>
+
+                <button class='nav-list-item'>
+                    <a href='./readme.html' target='content'>Read Me First</a>
+                </button>
+
+            </div>
 
             <div class='heading'>Category Report</div>
 
+            <div class='report-section'>
 
-            <a href='../pages/001_DeviceInfo.html' target='content'>
-                <button class='btn__1'>Device Information</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/001_DeviceInfo.html' target='content'>Device Information</a>
+                </button>
 
-            <a href='../pages/002_UserInfo.html' target='content'>
-                <button class='btn__1'>User Data</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/002_UserInfo.html' target='content'>User Data</a>
+                </button>
 
-            <a href='../pages/003_NetworkInfo.html' target='content'>
-                <button class='btn__1'>Network Information</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/003_NetworkInfo.html' target='content'>Network Information</a>
+                </button>
 
-            <a href='../pages/004_ProcessInfo.html' target='content'>
-                <button class='btn__1'>Processes Information</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/004_ProcessInfo.html' target='content'>Processes Information</a>
+                </button>
 
-            <a href='../pages/005_SystemInfo.html' target='content'>
-                <button class='btn__1'>System Information</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/005_SystemInfo.html' target='content'>System Information</a>
+                </button>
 
-            <a href='../pages/006_PrefetchInfo.html' target='content'>
-                <button class='btn__1'>Prefetch File Data</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/006_PrefetchInfo.html' target='content'>Prefetch File Data</a>
+                </button>
 
-            <a href='../pages/007_EventLogInfo.html' target='content'>
-                <button class='btn__1'>Event Log Data</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/007_EventLogInfo.html' target='content'>Event Log Data</a>
+                </button>
 
-            <a href='../pages/008_FirewallInfo.html' target='content'>
-                <button class='btn__1'>Firewall Data/Settings</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/008_FirewallInfo.html' target='content'>Firewall Data/Settings</a>
+                </button>
 
-            <a href='../pages/009_BitLockerInfo.html' target='content'>
-                <button class='btn__1'>BitLocker Data</button>
-            </a>
+                <button class='nav-list-item'>
+                    <a href='../pages/009_BitLockerInfo.html' target='content'>BitLocker Data</a>
+                </button>
+
+            </div>
 
         </div>
 

@@ -21,6 +21,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -44,6 +45,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -67,6 +69,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -90,6 +93,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -113,6 +117,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -136,6 +141,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -159,6 +165,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -182,6 +189,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -205,6 +213,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -228,6 +237,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -251,6 +261,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -274,6 +285,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -297,6 +309,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -320,6 +333,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -343,6 +357,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -369,6 +384,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -391,6 +407,8 @@ function Export-DeviceHtmlPage {
             Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
 
             $Data = Import-Csv -Path $TempCsvFile
+
+            Show-Message("[INFO] Saving output from '$Name'") -Blue
             Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
         }
         catch {
@@ -413,6 +431,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -436,6 +455,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -454,7 +474,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-021 Win32_PnPEntity"
         Show-Message("Running '$Name' command") -Header -Gray
         try {
-            $Data = Get-CimInstance Win32_PnPEntity | Select-Object -Property * | Format-List
+            $Data = Get-CimInstance Win32_PnPEntity | Select-Object -Property *
             if ($Data.Count -eq 0) {
                 Show-Message("No data found for '$Name'") -Yellow
             }
@@ -465,6 +485,7 @@ function Export-DeviceHtmlPage {
                 # }
 
                 # $Data | Select-Object Host, DateScanned, PnPClass, Caption, Description, DeviceID
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -488,6 +509,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -511,6 +533,7 @@ function Export-DeviceHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }

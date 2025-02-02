@@ -21,6 +21,7 @@ function Export-PrefetchHtmlPage {
                 Show-Message("No data found for '$Name'") -Yellow
             }
             else {
+                Show-Message("[INFO] Saving output from '$Name'") -Blue
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }

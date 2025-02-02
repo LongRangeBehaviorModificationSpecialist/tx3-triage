@@ -2,7 +2,8 @@
 [string]$Dlu = "2025-01-31"
 
 
-[datetime]$StartTime = (Get-Date).ToUniversalTime()
+# [datetime]$StartTime = (Get-Date).ToUniversalTime()
+[datetime]$StartTime = Get-Date
 [string]$Date = ($StartTime).ToString("MM-dd-yyyy")
 [string]$Time = ($StartTime).ToString("HH:mm:ss")
 [string]$RunDate = ($StartTime).ToString("yyyyMMdd_HHmmss")
@@ -39,7 +40,9 @@ $ExecutableFileTypes = @(
 
 
 function Get-TimeStamp {
-    return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date).ToUniversalTime()
+    # return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date).ToUniversalTime()
+    # return "[{0:yyyy-MM-dd} {0:HH.mm.ss.ffff}]" -f (Get-Date)
+    return Get-Date -Format "[yyyy-MM-dd HH:mm:ss.ffff K]"
 }
 
 

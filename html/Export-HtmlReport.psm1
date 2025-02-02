@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
@@ -98,8 +98,8 @@ function Export-HtmlReport {
 
 
     [datetime]$HtmlStartTime = (Get-Date).ToUniversalTime()
-    [datetime]$StartTimeString = Get-Date -UFormat "%A %B %d, %Y %H:%M:%S %Z"
-
+    # [datetime]$StartTimeString = Get-Date -UFormat "%A %B %d, %Y %H:%M:%S %Z"
+    [string]$StartTimeString = Get-Date -Format "yyyy-MM-dd HH:mm:ss.ffff K"
 
     $HtmlModulesDirectory = "html\htmlModules"
 
@@ -232,7 +232,7 @@ function Export-HtmlReport {
         Invoke-ProcessOutput
         Invoke-SystemOutput
         Invoke-PrefetchOutput
-        # Invoke-EventLogOutput
+        Invoke-EventLogOutput
         Invoke-FirewallOutput
         Invoke-BitLockerOutput
     }
