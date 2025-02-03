@@ -37,7 +37,7 @@ function Write-HtmlHomePage {
 </html>"
 
 
-    Add-Content -Path $FilePath -Value $ReportHomePage
+    Add-Content -Path $FilePath -Value $ReportHomePage -Encoding UTF8
 }
 
 
@@ -83,7 +83,7 @@ function Write-HtmlNavPage {
     <body class='nav__background'>
 
         <div class='center'>
-            <img src='../images/icon-cyber-forensics.png' class='nav-image' />
+            <img src='../images/customLogo.png' class='nav-image' />
         </div>
 
         <div>
@@ -151,7 +151,7 @@ function Write-HtmlNavPage {
 </html>"
 
 
-    Add-Content -Path $FilePath -Value $NavReportPage
+    Add-Content -Path $FilePath -Value $NavReportPage -Encoding UTF8
 }
 
 
@@ -220,7 +220,7 @@ function Write-HtmlFrontPage {
 
                 <tr>
                     <td class='caseinfo__details'>Report Generated <strong>:</strong></td>
-                    <td class='caseinfo__text'>$($ReportGenTime)</td>
+                    <td class='caseinfo__text'>$($ReportGenTime) ET</td>
                 </tr>
 
                 <tr>
@@ -249,7 +249,7 @@ function Write-HtmlFrontPage {
 </html>"
 
 
-    Add-Content -Path $FilePath -Value $FrontReportPage
+    Add-Content -Path $FilePath -Value $FrontReportPage -Encoding UTF8
 }
 
 
@@ -336,7 +336,7 @@ function Write-HtmlReadMePage {
 </html>"
 
 
-    Add-Content -Path $FilePath -Value $ReadMeReportPage
+    Add-Content -Path $FilePath -Value $ReadMeReportPage -Encoding UTF8
 }
 
 

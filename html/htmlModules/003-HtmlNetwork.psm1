@@ -9,6 +9,8 @@ function Export-NetworkHtmlPage {
 
     Add-Content -Path $FilePath -Value $HtmlHeader
 
+    $FunctionName = $MyInvocation.MyCommand.Name
+
     $FilesFolder = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files"
 
 
@@ -16,7 +18,7 @@ function Export-NetworkHtmlPage {
     function Get-NetworkConfig {
         param ([string]$FilePath)
         $Name = "3-001 Win32_NetworkAdapterConfiguration"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = "IpAddress"; E = { $_.IpAddress -join "; " } }, @{ N = "DefaultIPgateway"; E = { $_.DefaultIPgateway -join "; " } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass
             if ($Data.Count -eq 0) {
@@ -24,6 +26,7 @@ function Export-NetworkHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -31,7 +34,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -40,7 +43,7 @@ function Export-NetworkHtmlPage {
     function Get-OpenNetworkConnections {
         param ([string]$FilePath)
         $Name = "3-002 Established Network Connections"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetTCPConnection -State Established
             if ($Data.Count -eq 0) {
@@ -48,6 +51,7 @@ function Export-NetworkHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -55,7 +59,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -64,7 +68,7 @@ function Export-NetworkHtmlPage {
     function Get-NetstatBasic {
         param ([string]$FilePath)
         $Name = "3-003 Netstat Connections (Basic)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = netstat -nao | Out-String
             if ($Data.Count -eq 0) {
@@ -72,6 +76,7 @@ function Export-NetworkHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -79,7 +84,7 @@ function Export-NetworkHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -88,7 +93,7 @@ function Export-NetworkHtmlPage {
     function Get-NetstatDetailed {
         param ([string]$FilePath)
         $Name = "3-004 Netstat Connections (Detailed)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         $TempFile = "$FilesFolder\3-004 DetailedNetworkConnections_TEMP.html"
         $FileName = "3-004 DetailedNetworkConnections.html"
         try {
@@ -180,13 +185,15 @@ Active Connections, Associated Processes and DLLs
 
             Show-Message("[INFO] Saving output from '$Name'") -Blue
 
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
+
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
         catch {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -195,7 +202,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetTcpConnectionsAsTxt {
         param ([string]$FilePath)
         $Name = "3-005 Net TCP Connections (as Txt)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending
             if ($Data.Count -eq 0) {
@@ -203,6 +210,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -210,7 +218,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -218,12 +226,14 @@ Active Connections, Associated Processes and DLLs
     #! 3-006
     function Get-NetTcpConnectionsAsCsv {
         $Name = "3-006 Net TCP Connection (as Csv)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         $FileName = "3-006_NetTcpConnections.csv"
         try {
             Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
             Show-Message("[INFO] Saving output from '$Name'") -Blue
+
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
 
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
@@ -231,7 +241,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -240,7 +250,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetworkAdapters {
         param ([string]$FilePath)
         $Name = " 3-007 Get-NetAdapter"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetAdapter | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -248,6 +258,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -255,7 +266,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -264,7 +275,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetIPConfig {
         param ([string]$FilePath)
         $Name = "3-008 Get-NetIPConfiguration"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetIPConfiguration | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -272,6 +283,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -279,7 +291,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -288,7 +300,7 @@ Active Connections, Associated Processes and DLLs
     function Get-RouteData {
         param ([string]$FilePath)
         $Name = "3-009 route PRINT"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = route PRINT | Out-String
             if ($Data.Count -eq 0) {
@@ -296,6 +308,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -303,7 +316,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -312,7 +325,7 @@ Active Connections, Associated Processes and DLLs
     function Get-IPConfig {
         param ([string]$FilePath)
         $Name = "3-010 ipconfig /all"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = ipconfig /all | Out-String
             if ($Data.Count -eq 0) {
@@ -320,6 +333,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -327,7 +341,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -336,7 +350,7 @@ Active Connections, Associated Processes and DLLs
     function Get-ARPData {
         param ([string]$FilePath)
         $Name = "3-011 Get-NetNeighbor"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress
             if ($Data.Count -eq 0) {
@@ -344,6 +358,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -351,7 +366,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -360,7 +375,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetIPAddrs {
         param ([string]$FilePath)
         $Name = "3-012 Get-NetIPAddress"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetIPAddress | Sort-Object -Property IPAddress
             if ($Data.Count -eq 0) {
@@ -368,6 +383,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -375,7 +391,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -384,7 +400,7 @@ Active Connections, Associated Processes and DLLs
     function Get-HostsFile {
         param ([string]$FilePath)
         $Name = "3-013 Get-HostsFile"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-Content "$Env:windir\system32\drivers\etc\hosts" -Raw
             if ($Data.Count -eq 0) {
@@ -392,6 +408,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -399,7 +416,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -408,7 +425,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetworksFile {
         param ([string]$FilePath)
         $Name = "3-014 Get-NetworksFile"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-Content "$Env:windir\system32\drivers\etc\networks" -Raw
             if ($Data.Count -eq 0) {
@@ -416,6 +433,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -423,7 +441,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -432,7 +450,7 @@ Active Connections, Associated Processes and DLLs
     function Get-ProtocolFile {
         param ([string]$FilePath)
         $Name = "3-015 Get-ProtocolFile"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-Content "$Env:windir\system32\drivers\etc\protocol" -Raw
             if ($Data.Count -eq 0) {
@@ -440,6 +458,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -447,7 +466,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -456,7 +475,7 @@ Active Connections, Associated Processes and DLLs
     function Get-ServicesFile {
         param ([string]$FilePath)
         $Name = "3-016 Get-servicesFile"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-Content "$Env:windir\system32\drivers\etc\services" -Raw
             if ($Data.Count -eq 0) {
@@ -464,6 +483,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -471,7 +491,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -480,7 +500,7 @@ Active Connections, Associated Processes and DLLs
     function Get-SmbShares {
         param ([string]$FilePath)
         $Name = "3-017 Get-SmbShare"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-SmbShare
             if ($Data.Count -eq 0) {
@@ -488,6 +508,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -495,7 +516,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -504,7 +525,7 @@ Active Connections, Associated Processes and DLLs
     function Get-WifiPasswords {
         param ([string]$FilePath)
         $Name = "3-018 Get-WifiPasswords"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } }
             if ($Data.Count -eq 0) {
@@ -512,6 +533,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -519,7 +541,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -528,7 +550,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetInterfaces {
         param ([string]$FilePath)
         $Name = "3-019 Get-NetIPInterface"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetIPInterface | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -536,6 +558,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -543,7 +566,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -552,7 +575,7 @@ Active Connections, Associated Processes and DLLs
     function Get-NetRouteData {
         param ([string]$FilePath)
         $Name = "3-020 Get-NetRoute"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-NetRoute | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -560,6 +583,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -567,7 +591,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -576,7 +600,7 @@ Active Connections, Associated Processes and DLLs
     function Get-DnsCacheDataAsTxt {
         param ([string]$FilePath)
         $Name = "3-021 DNS Cache (as Txt)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = ipconfig /displaydns | Out-String
             if ($Data.Count -eq 0) {
@@ -584,6 +608,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -591,7 +616,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -599,12 +624,14 @@ Active Connections, Associated Processes and DLLs
     #! 3-022
     function Get-DnsCacheDataAsCsv {
         $Name = "3-022 Dns Cache (as Csv)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         $FileName = "3-022_DnsClientCache.csv"
         try {
             Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
             Show-Message("[INFO] Saving output from '$Name'") -Blue
+
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
 
             Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
         }
@@ -612,7 +639,7 @@ Active Connections, Associated Processes and DLLs
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }

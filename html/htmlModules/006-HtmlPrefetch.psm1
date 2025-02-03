@@ -9,12 +9,14 @@ function Export-PrefetchHtmlPage {
 
     Add-Content -Path $FilePath -Value $HtmlHeader
 
+    $FunctionName = $MyInvocation.MyCommand.Name
+
 
     #6-001
     function Get-DetailedPrefetchData {
         param ([string]$FilePath)
         $Name = "6-001 Prefetch Files"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
             if ($Data.Count -eq 0) {
@@ -22,6 +24,7 @@ function Export-PrefetchHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }

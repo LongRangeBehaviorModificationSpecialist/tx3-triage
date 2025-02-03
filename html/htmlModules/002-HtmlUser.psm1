@@ -9,12 +9,14 @@ function Export-UserHtmlPage {
 
     Add-Content -Path $FilePath -Value $HtmlHeader
 
+    $FunctionName = $MyInvocation.MyCommand.Name
+
 
     #* 2-001
     function Get-WhoAmI {
         param ([string]$FilePath)
         $Name = "2-001 WhoAmI"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = whoami /ALL /FO LIST | Out-String
             if ($Data.Count -eq 0) {
@@ -22,6 +24,7 @@ function Export-UserHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromString $Name $Data $FilePath
             }
         }
@@ -29,7 +32,7 @@ function Export-UserHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -38,7 +41,7 @@ function Export-UserHtmlPage {
     function Get-UserProfile {
         param ([string]$FilePath)
         $Name = "2-002 Win32_UserProfile"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -46,6 +49,7 @@ function Export-UserHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -53,7 +57,7 @@ function Export-UserHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -62,7 +66,7 @@ function Export-UserHtmlPage {
     function Get-UserInfo {
         param ([string]$FilePath)
         $Name = "2-003 Win32_UserAccount"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -70,6 +74,7 @@ function Export-UserHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -77,7 +82,7 @@ function Export-UserHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -86,7 +91,7 @@ function Export-UserHtmlPage {
     function Get-LocalUserData {
         param ([string]$FilePath)
         $Name = "2-004 Get-LocalUser"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-LocalUser
             if ($Data.Count -eq 0) {
@@ -94,6 +99,7 @@ function Export-UserHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -101,7 +107,7 @@ function Export-UserHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -110,7 +116,7 @@ function Export-UserHtmlPage {
     function Get-LogonSession {
         param ([string]$FilePath)
         $Name = "2-005 Win32_LogonSession"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *
             if ($Data.Count -eq 0) {
@@ -118,6 +124,7 @@ function Export-UserHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -125,7 +132,7 @@ function Export-UserHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -133,11 +140,11 @@ function Export-UserHtmlPage {
     # 2-006
     # TODO -- SKIPPED for now.  Will come back and figure out how to code this function
 
-    # 2-007
+    # 2-006
     function Get-LastLogons {
         param ([string]$FilePath)
-        $Name = "2-007 WinEvent Security (4624 or 4648)"
-        Show-Message("Running '$Name' command") -Header -Gray
+        $Name = "2-006 WinEvent Security (4624 or 4648)"
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Cmd = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
 
@@ -154,6 +161,7 @@ function Export-UserHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -161,7 +169,7 @@ function Export-UserHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }

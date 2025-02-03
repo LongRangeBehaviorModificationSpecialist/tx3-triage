@@ -5,6 +5,7 @@ script-help.ps1
 tx3TriageCert.cer
 tx3TriageCert.pfx
 arrayList.ps1
+SearchTerms.txt
 
 
 modules/000-Testing.psm1

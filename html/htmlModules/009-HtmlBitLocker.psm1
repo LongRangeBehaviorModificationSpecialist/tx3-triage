@@ -9,12 +9,14 @@ function Export-BitLockerHtmlPage {
 
     Add-Content -Path $FilePath -Value $HtmlHeader
 
+    $FunctionName = $MyInvocation.MyCommand.Name
+
 
     #* 9-001
     function Search-BitlockerVolumes {
         param ([string]$FilePath)
         $Name = "9-001 BitLocker Data"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if (-not $Data) {
@@ -22,6 +24,7 @@ function Export-BitLockerHtmlPage {
             }
             else {
                 Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
@@ -29,7 +32,7 @@ function Export-BitLockerHtmlPage {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -38,7 +41,7 @@ function Export-BitLockerHtmlPage {
     function Get-BitlockerRecoveryKeys {
         param ([string]$FilePath)
         $Name = "9-002 BitLocker Recovery Keys"
-        Show-Message("Running '$Name' command") -Header -Gray
+        Show-Message("Running '$Name' command") -Header -DarkGray
         try {
             $Info = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if (-not $Info) {
@@ -72,13 +75,14 @@ function Export-BitLockerHtmlPage {
                 }
             }
             Show-Message("[INFO] Saving output from '$Name'") -Blue
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
             Save-OutputToHtmlFile -FromString $Name $Data $FilePath
         }
         catch {
             # Error handling
             $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
-            # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }

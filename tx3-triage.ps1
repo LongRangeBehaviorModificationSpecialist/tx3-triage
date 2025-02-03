@@ -14,6 +14,7 @@
 
 #>
 
+
 param (
     # Name of the user
     [Parameter(Mandatory = $True)]
@@ -99,7 +100,7 @@ foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
 if ($Html) {
     $HtmlModule = ".\html\Export-HtmlReport.psm1"
     Import-Module -Name $HtmlModule -Force
-    Show-Message("`nModule file: '$($HtmlModule)' was imported successfully") -NoTime -Blue
+    Show-Message("Module file: '$($HtmlModule)' was imported successfully") -NoTime -Blue
 
     Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
 }

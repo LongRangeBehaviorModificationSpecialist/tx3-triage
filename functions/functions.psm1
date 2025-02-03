@@ -98,7 +98,7 @@ function Show-Message {
         [switch]$Magenta,
         [switch]$Red,
         [switch]$Yellow,
-        [switch]$Gray,
+        [switch]$DarkGray,
         [switch]$BlueOnGray,
         [switch]$YellowOnRed
     )
@@ -110,7 +110,7 @@ function Show-Message {
     elseif ($Magenta) { "Magenta" }
     elseif ($Red) { "Red" }
     elseif ($Yellow) { "Yellow" }
-    elseif ($Gray) { "Gray" }
+    elseif ($DarkGray) { "DarkGray" }
     elseif ($BlueOnGray) { "BlueOnGray" }
     elseif ($YellowOnRed) { "YellowOnRed" }
     else { "White" }
@@ -126,7 +126,7 @@ function Show-Message {
     # Display the message with the appropriate color
     switch ($Color) {
         "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
-        "Gray" { Write-Host $FormattedMessage -ForegroundColor Gray }
+        "DarkGray" { Write-Host $FormattedMessage -ForegroundColor DarkGray }
         "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
         "Magenta" { Write-Host $FormattedMessage -ForegroundColor DarkMagenta }
         "Red" { Write-Host $FormattedMessage -ForegroundColor DarkRed }
