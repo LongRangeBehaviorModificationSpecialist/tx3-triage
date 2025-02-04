@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang='en' dir='ltr'>
+
+    <head>
+
+        <title>HP-PROBOOK-MAS Triage Data</title>
+
+        <meta charset='utf-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1' />
+
+        <script src='https://unpkg.com/ionicons@5.1.2/dist/ionicons.js'></script>
+        <link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400; 500&display=swap' rel='stylesheet'>
+        <link href='https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css' rel='stylesheet'>
+
+        <link rel='stylesheet' type='text/css' href='../css/style.css' />
+
+        <script>
+            window.console = window.console || function (t) { };
+        </script>
+
+        <script>
+            if (document.location.search.match(/type=embed/gi)) {
+                window.parent.postMessage('resize', '*');
+            }
+        </script>
+
+    </head>
+
+    <body class='data_body' translate='no'>
+
+<button type='button' class='collapsible'>9-001 BitLocker Data</button>
+<div class='content'>
+<pre>
+<p>
+<table>
+<tr><td>ComputerName:</td><td>HP-PROBOOK-MAS</td></tr>
+<tr><td>MountPoint:</td><td>C:</td></tr>
+<tr><td>EncryptionMethod:</td><td>XtsAes128</td></tr>
+<tr><td>EncryptionMethodFlags:</td><td>None</td></tr>
+<tr><td>AutoUnlockEnabled:</td><td></td></tr>
+<tr><td>AutoUnlockKeyStored:</td><td>False</td></tr>
+<tr><td>MetadataVersion:</td><td>2</td></tr>
+<tr><td>VolumeStatus:</td><td>FullyEncrypted</td></tr>
+<tr><td>ProtectionStatus:</td><td>On</td></tr>
+<tr><td>LockStatus:</td><td>Unlocked</td></tr>
+<tr><td>EncryptionPercentage:</td><td>100</td></tr>
+<tr><td>WipePercentage:</td><td>0</td></tr>
+<tr><td>VolumeType:</td><td>OperatingSystem</td></tr>
+<tr><td>CapacityGB:</td><td>475.4795</td></tr>
+<tr><td>KeyProtector:</td><td>System.Collections.ObjectModel.ReadOnlyCollection`1[Microsoft.BitLocker.Structures.BitLockerVolumeKeyProtector]</td></tr>
+<tr><td><hr></td></tr>
+<tr><td>ComputerName:</td><td>HP-PROBOOK-MAS</td></tr>
+<tr><td>MountPoint:</td><td>D:</td></tr>
+<tr><td>EncryptionMethod:</td><td>None</td></tr>
+<tr><td>EncryptionMethodFlags:</td><td>None</td></tr>
+<tr><td>AutoUnlockEnabled:</td><td></td></tr>
+<tr><td>AutoUnlockKeyStored:</td><td></td></tr>
+<tr><td>MetadataVersion:</td><td>0</td></tr>
+<tr><td>VolumeStatus:</td><td>FullyDecrypted</td></tr>
+<tr><td>ProtectionStatus:</td><td>Off</td></tr>
+<tr><td>LockStatus:</td><td>Unlocked</td></tr>
+<tr><td>EncryptionPercentage:</td><td>0</td></tr>
+<tr><td>WipePercentage:</td><td>0</td></tr>
+<tr><td>VolumeType:</td><td>Data</td></tr>
+<tr><td>CapacityGB:</td><td>931.4805</td></tr>
+<tr><td>KeyProtector:</td><td>System.Collections.ObjectModel.ReadOnlyCollection`1[Microsoft.BitLocker.Structures.BitLockerVolumeKeyProtector]</td></tr>
+<tr><td><hr></td></tr>
+<tr><td>ComputerName:</td><td>HP-PROBOOK-MAS</td></tr>
+<tr><td>MountPoint:</td><td>E:</td></tr>
+<tr><td>EncryptionMethod:</td><td>None</td></tr>
+<tr><td>EncryptionMethodFlags:</td><td>None</td></tr>
+<tr><td>AutoUnlockEnabled:</td><td></td></tr>
+<tr><td>AutoUnlockKeyStored:</td><td></td></tr>
+<tr><td>MetadataVersion:</td><td>0</td></tr>
+<tr><td>VolumeStatus:</td><td>FullyDecrypted</td></tr>
+<tr><td>ProtectionStatus:</td><td>Off</td></tr>
+<tr><td>LockStatus:</td><td>Unlocked</td></tr>
+<tr><td>EncryptionPercentage:</td><td>0</td></tr>
+<tr><td>WipePercentage:</td><td>0</td></tr>
+<tr><td>VolumeType:</td><td>Data</td></tr>
+<tr><td>CapacityGB:</td><td>920.374</td></tr>
+<tr><td>KeyProtector:</td><td>System.Collections.ObjectModel.ReadOnlyCollection`1[Microsoft.BitLocker.Structures.BitLockerVolumeKeyProtector]</td></tr>
+</table>
+
+</p>
+</pre>
+</div>
+
+<button type='button' class='collapsible'>9-002 BitLocker Recovery Keys</button>
+<div class='content'>
+<pre>
+<p>      <pre> [*] Drive C: Recovery Key -> 432421-154341-394625-178860-602118-346698-702779-387343 </pre>     <pre> [*] Drive D: Does not have a recovery key or is not protected by BitLocker </pre>     <pre> [*] Drive E: Does not have a recovery key or is not protected by BitLocker </pre> 
+</p>
+</pre>
+</div>
+        <script>
+            var coll = document.getElementsByClassName('collapsible');
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    var content = this.nextElementSibling;
+                    if (content.style.display === 'block') {
+                        content.style.display = 'none';
+                    } else {
+                        content.style.display = 'block';
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>

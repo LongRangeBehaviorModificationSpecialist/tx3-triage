@@ -91,10 +91,10 @@ function Write-HtmlLogEntry {
 
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
-Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\html\vars.psm1' was imported successfully")
+Write-HtmlLogEntry("[$($PSCommandPath), Ln: $(Get-LineNum)] Module file '.\html\vars.psm1' was imported successfully")
 
 Import-Module -Name .\html\HtmlReportStaticPages.psm1 -Global -Force
-Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully")
+Write-HtmlLogEntry("[$($PSCommandPath), Ln: $(Get-LineNum)] Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully")
 
 
 
@@ -237,11 +237,7 @@ function Export-HtmlReport {
 
 
     # Create `keywords.txt` file to use to search file names
-    # $KeywordFile = New-Item -Path "$StaticFolder\keywords.txt" -ItemType File
     $KeywordListFile = "$($PSScriptRoot)\static\SearchTerms.txt"
-    Write-Host "`nKeyword file is located at $KeywordListFile`n"
-    # Add-Content -Path "$StaticFolder\keywords.txt" -Value $KeywordList -Encoding UTF8
-    # Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($KeywordFile)' file was created")
 
 
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
@@ -313,13 +309,13 @@ function Export-HtmlReport {
     try {
         Invoke-DeviceOutput
         Invoke-UserOutput
-        # Invoke-NetworkOutput
-        # Invoke-ProcessOutput
-        # Invoke-SystemOutput
-        # Invoke-PrefetchOutput
-        # Invoke-EventLogOutput
-        # Invoke-FirewallOutput
-        # Invoke-BitLockerOutput
+        Invoke-NetworkOutput
+        Invoke-ProcessOutput
+        Invoke-SystemOutput
+        Invoke-PrefetchOutput
+        Invoke-EventLogOutput
+        Invoke-FirewallOutput
+        Invoke-BitLockerOutput
         # Invoke-FilesOutput
     }
     catch {
@@ -337,6 +333,7 @@ function Export-HtmlReport {
     $HtmlEndTime = (Get-Date).ToUniversalTime()
     $HtmlDuration = New-TimeSpan -Start $HtmlStartTime -End $HtmlEndTime
     $HtmlExeTime = "$($HtmlDuration.Days) days $($HtmlDuration.Hours) hours $($HtmlDuration.Minutes) minutes $($HtmlDuration.Seconds) seconds"
+
 
     Show-Message("Script execution completed in: $HtmlExeTime`n") -Header -Green
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Script execution completed in: $HtmlExeTime")
