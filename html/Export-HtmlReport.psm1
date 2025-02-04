@@ -17,16 +17,9 @@ function Save-OutputToHtmlFile {
         [string]$OutputFilePath,
         [switch]$FromPipe,
         [switch]$FromString
-        # [switch]$BitLocker
     )
 
     process {
-
-#         $PreContent = "`n</h5>
-# <button type='button' class='collapsible'>$($Name)</button>
-# <div class='content'>
-# <pre>
-# <p>"
 
         $PreContentEdit = "
 <button type='button' class='collapsible'>$($Name)</button>
@@ -63,11 +56,11 @@ function Save-OutputToSingleHtmlFile {
         [string]$OutputHtmlFilePath,
         [switch]$FromPipe,
         [switch]$FromString
-        # [switch]$BitLocker
     )
 
     process {
-        Add-Content -Path $OutputHtmlFilePath -Value $HtmlHeader
+
+        Add-Content -Path $OutputHtmlFilePath -Value $HtmlDetailsHeader
 
         if ($FromPipe) {
                 $Data | ConvertTo-Html -As List -Fragment | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
@@ -125,9 +118,11 @@ function Write-HtmlLogEntry {
 
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
+Show-Message("Module file '.\html\vars.psm1' was imported successfully") -NoTime
 Write-HtmlLogEntry("[$($PSCommandPath), Ln: $(Get-LineNum)] Module file '.\html\vars.psm1' was imported successfully")
 
 Import-Module -Name .\html\HtmlReportStaticPages.psm1 -Global -Force
+Show-Message("Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully") -NoTime
 Write-HtmlLogEntry("[$($PSCommandPath), Ln: $(Get-LineNum)] Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully")
 
 
@@ -225,10 +220,18 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] images files were copied from the source directory to the $($ImgFolder) directory")
 
 
+    # Write the encoded text to the `style.css` file
     $CssStyleFileName = Join-Path -Path $CssFolder -ChildPath "style.css"
     $CssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($CssEncodedFileText))
     Add-Content -Path $CssStyleFileName -Value $CssDecodedText
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$CssStyleFileName' file was created")
+
+
+    # Write the encoded text to the `styledetails.css` file
+    $CssStyleDetailsFileName = Join-Path -Path $CssFolder -ChildPath "styledetails.css"
+    $CssDetailsDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($CssDetailsEncodedFileText))
+    Add-Content -Path $CssStyleDetailsFileName -Value $CssDetailsDecodedText
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$CssStyleDetailsFileName' file was created")
 
 
     # Create the `readme.css` file
