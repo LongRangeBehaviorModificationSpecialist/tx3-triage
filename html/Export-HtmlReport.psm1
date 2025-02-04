@@ -50,6 +50,40 @@ function Save-OutputToHtmlFile {
 }
 
 
+function Save-OutputToSingleHtmlFile {
+
+    [CmdletBinding()]
+
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Name,
+        [Parameter(Mandatory, Position = 1)]
+        [object]$Data,
+        [Parameter(Mandatory, Position = 2)]
+        [string]$OutputHtmlFilePath,
+        [switch]$FromPipe,
+        [switch]$FromString
+        # [switch]$BitLocker
+    )
+
+    process {
+        Add-Content -Path $OutputHtmlFilePath -Value $HtmlHeader
+
+        if ($FromPipe) {
+                $Data | ConvertTo-Html -As List -Fragment | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
+            }
+
+        if ($FromString) {
+            Add-Content -Path $OutputHtmlFilePath -Value $Data -NoNewline
+        }
+
+        Add-Content -Path $OutputHtmlFilePath -Value $EndingHtml
+    }
+}
+
+
+
+
 function Write-HtmlLogEntry {
 
     [CmdletBinding()]
@@ -169,8 +203,11 @@ function Export-HtmlReport {
     $CssFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "css" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$CssFolder' directory was created")
 
-    $PagesFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "pages" -Force
+    $PagesFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "htmlpages" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$PagesFolder' directory was created")
+
+    # $DetailPagesFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "details" -Force
+    # Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$DetailPagesFolder' directory was created")
 
     $StaticFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "static" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$StaticFolder' directory was created")
@@ -275,9 +312,16 @@ function Export-HtmlReport {
     }
 
     function Invoke-PrefetchOutput {
-        $PrefetchHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "006_PrefetchInfo.html"
-        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-        Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile
+        try {
+            $PrefetchHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "006_PrefetchInfo.html"
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+            write-host "`$PrefetchHtmlOutputFile value is: $PrefetchHtmlOutputFile"
+            Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile -PagesFolder $PagesFolder
+        }
+        catch {
+            $ErrorMessage = "Module: ``$(Split-Path -Path $MyInvocation.ScriptName -Leaf)``, function: ``$($MyInvocation.MyCommand.Name)``, Ln: $($PSItem.InvocationInfo.ScriptLineNumber) - $($PSItem.Exception.Message)"
+            Show-Message("[ERROR] $ErrorMessage") -Red
+        }
     }
 
     function Invoke-EventLogOutput {
@@ -307,15 +351,15 @@ function Export-HtmlReport {
 
     # Run the functions
     try {
-        Invoke-DeviceOutput
-        Invoke-UserOutput
-        Invoke-NetworkOutput
-        Invoke-ProcessOutput
-        Invoke-SystemOutput
+        # Invoke-DeviceOutput
+        # Invoke-UserOutput
+        # Invoke-NetworkOutput
+        # Invoke-ProcessOutput
+        # Invoke-SystemOutput
         Invoke-PrefetchOutput
-        Invoke-EventLogOutput
-        Invoke-FirewallOutput
-        Invoke-BitLockerOutput
+        # Invoke-EventLogOutput
+        # Invoke-FirewallOutput
+        # Invoke-BitLockerOutput
         # Invoke-FilesOutput
     }
     catch {
@@ -341,4 +385,4 @@ function Export-HtmlReport {
 }
 
 
-Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Show-FinishedHtmlMessage, Write-HtmlLogEntry -Variable *
+Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Save-OutputToSingleHtmlFile, Show-FinishedHtmlMessage, Write-HtmlLogEntry -Variable *
