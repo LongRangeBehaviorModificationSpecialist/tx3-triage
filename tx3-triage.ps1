@@ -92,8 +92,6 @@ $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
     Import-Module -Name $file.FullName -Force -Global
-    # Show-Message("Module file: '$($file.Name)' was imported successfully") -NoTime -Blue
-    # Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: '$($file.Name)' was imported successfully")
 }
 
 
@@ -169,8 +167,6 @@ function Get-TriageData {
 
     foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
-        # Show-Message("Module file: ``$($file.Name)`` was imported successfully") -NoTime -Blue
-        # Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] Module file: ``$($file.Name)`` was imported successfully")
     }
 
     Show-Message("`nAll modules from ``$ModulesDirectory`` have been imported successfully.") -NoTime -Green
@@ -182,6 +178,7 @@ function Get-TriageData {
     Write-LogEntry("$BeginRecord")
     Write-LogEntry("[$($ScriptName), Ln: $(Get-LineNum)] PowerShell transcript started") -DebugMessage
     Write-Host ""
+
 
     # Write the data to the log file and display start time message on the screen
     Write-LogEntry("`n-----------------------------------------------") -NoTime  -NoLevel
@@ -387,7 +384,7 @@ INSTRUCTIONS
         if ($AllDrives) {
             # Validate conflicting switches
             if ($ListDrives -and $NoListDrives) {
-                Show-Message("[ERROR] You cannot use both ``-ListDrives`` and ``-NoListDrives`` switches in the same command") -Red
+                Show-Message("[ERROR] You cannot use both '-ListDrives' and '-NoListDrives' switches in the same command") -Red
                 return
             }
             # Get a list of available drives on the examined machine
@@ -397,19 +394,19 @@ INSTRUCTIONS
             $DrivesToScan = switch ($true) {
                 $ListDrives {
                     if (-not $DriveList) {
-                        Show-Message "[ERROR] ``-ListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`",`"D`",`"F`")``" -Red
+                        Show-Message "[ERROR] '-ListDrives' requires a valid drive list [Example: '-DriveList @(`"C`",`"D`",`"F`")'" -Red
                         return
                     }
                     $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object {
                         if ($_ -notin $AvailableDrives) {
-                            Show-Message "[WARNING] Drive ``$($_):\`` is not available and will be skipped" -Yellow
+                            Show-Message "[WARNING] Drive '$($_):\' is not available and will be skipped" -Yellow
                         }
                         $_
                     }
                 }
                 $NoListDrives {
                     if (-not $DriveList) {
-                        Show-Message "[ERROR] ``-NoListDrives`` requires a valid drive list [Example: ``-DriveList @(`"C`", `"D`")``" -Red
+                        Show-Message "[ERROR] '-NoListDrives' requires a valid drive list [Example: '-DriveList @(`"C`", `"D`")'" -Red
                         return
                     }
                     $AvailableDrives | Where-Object { $_ -notin $DriveList }
@@ -747,7 +744,7 @@ Hashing result files...
 
 
     Show-Message("Script execution completed in: $DiffForShow`n") -Green
-    Show-Message("The results are available in the ``\$(($CaseFolderName).Name)\`` directory") -Green
+    Show-Message("The results are available in the '\$(($CaseFolderName).Name)\' directory") -Green
 
 
     # Stop the transcript

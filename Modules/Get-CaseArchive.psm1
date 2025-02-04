@@ -10,11 +10,11 @@ function Get-CaseArchive {
     try {
         $ExecutionTime = Measure-Command {
             # Show beginning message
-            Show-Message("Creating Case Archive file -> ``$($CaseFolderName.Name).zip``") -Green
+            Show-Message("Creating Case Archive file -> '$($CaseFolderName.Name).zip'") -Green
             $CaseFolderParent = Split-Path -Path $CaseFolderName -Parent
             $CaseFolderTitle = (Get-Item -Path $CaseFolderName).Name
             Compress-Archive -Path $CaseFolderName -DestinationPath "$CaseFolderParent\$CaseFolderTitle.zip" -Force
-            Show-Message("Case Archive file -> ``$($CaseFolderName.Name).zip`` created successfully") -Green
+            Show-Message("Case Archive file -> '$($CaseFolderName.Name).zip' created successfully") -Green
         }
 
         # Finish logging

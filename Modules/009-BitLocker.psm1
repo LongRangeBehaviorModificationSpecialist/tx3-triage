@@ -16,7 +16,7 @@ function Get-BitlockerRecoveryKeys {
 
     $File = Join-Path -Path $BitlockerFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
 
     try {
         # Run the command

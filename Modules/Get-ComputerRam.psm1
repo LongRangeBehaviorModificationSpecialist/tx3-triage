@@ -31,11 +31,11 @@ function Get-ComputerRam {
             $RamFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $RamFolderName -Force
 
             if (-not (Test-Path $RamFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$RamFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$RamFolder'"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created ``$($RamFolder.Name)`` folder in the case directory"
+            $CreateDirMsg = "Created '$($RamFolder.Name)' folder in the case directory"
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 

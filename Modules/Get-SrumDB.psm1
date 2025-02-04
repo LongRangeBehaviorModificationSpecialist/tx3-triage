@@ -33,11 +33,11 @@ function Get-SrumDB {
             $SrumFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $SrumFolderName
 
             if (-not (Test-Path $SrumFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$SrumFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$SrumFolder'"
             }
 
             # Show & log $CreateDirMsg messages
-            $CreateDirMsg = "Created ``$($SrumFolder.Name)`` folder in the case directory"
+            $CreateDirMsg = "Created '$($SrumFolder.Name)' folder in the case directory"
             Show-Message("$CreateDirMsg") -Green
             Write-LogEntry("[$($SrumFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 

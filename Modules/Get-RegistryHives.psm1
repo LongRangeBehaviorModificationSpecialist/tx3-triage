@@ -29,11 +29,11 @@ function Get-RegistryHives {
             $RegHiveFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $RegHiveFolderName -Force
 
             if (-not (Test-Path $RegHiveFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$RegHiveFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$RegHiveFolder'"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created ``$($RegHiveFolder.Name)`` folder in the case directory"
+            $CreateDirMsg = "Created '$($RegHiveFolder.Name)' folder in the case directory"
             Show-Message("$CreateDirMsg") -Green
             Write-LogEntry("[$($RegistryFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 

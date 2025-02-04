@@ -34,11 +34,11 @@ function Get-EventLogs {
             $EventLogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $EventLogFolderName -Force
 
             if (-not (Test-Path $EventLogFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$EventLogFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$EventLogFolder'"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created ``$($EventLogFolder.Name)`` folder in the case directory"
+            $CreateDirMsg = "Created '$($EventLogFolder.Name)' folder in the case directory"
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
@@ -75,7 +75,7 @@ function Get-EventLogs {
                 }
 
                 # Show & log $CopyMsg messages of each file copied
-                $CopyMsg = "Copied file -> ``$($File.Name)``"
+                $CopyMsg = "Copied file -> '$($File.Name)'"
                 Show-Message($CopyMsg) -Green
                 Write-LogEntry("[$($EventLogFuncName), Ln: $(Get-LineNum)] $CopyMsg")
             }

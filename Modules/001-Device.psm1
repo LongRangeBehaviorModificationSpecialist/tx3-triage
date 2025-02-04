@@ -16,7 +16,7 @@ function Get-VariousData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -58,7 +58,7 @@ function Get-TPMData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -100,7 +100,7 @@ function Get-PSInfo {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Measure the time it takes to run the PsInfo command
         $ExecutionTime = Measure-Command {
@@ -143,7 +143,7 @@ function Get-PSDriveData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -185,7 +185,7 @@ function Get-LogicalDiskData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -227,7 +227,7 @@ function Get-ComputerData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -269,7 +269,7 @@ function Get-SystemDataCMD {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -311,7 +311,7 @@ function Get-SystemDataPS {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -353,7 +353,7 @@ function Get-OperatingSystemData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the first command
         $ExecutionTime = Measure-Command {
@@ -395,7 +395,7 @@ function Get-PhysicalMemory {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -437,7 +437,7 @@ function Get-EnvVars {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -479,7 +479,7 @@ function Get-PhysicalDiskData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -521,7 +521,7 @@ function Get-DiskPartitions {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -563,7 +563,7 @@ function Get-Win32DiskParts {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -605,7 +605,7 @@ function Get-Win32StartupApps {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -661,7 +661,7 @@ function Get-DataFromReg {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
 
     try {
 
@@ -727,7 +727,7 @@ function Get-SoftwareLicenseData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -769,7 +769,7 @@ function Get-AutoRunsData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -811,7 +811,7 @@ function Get-BiosData {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -853,7 +853,7 @@ function Get-ConnectedDevices {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -895,7 +895,7 @@ function Get-HardwareInfo {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -946,7 +946,7 @@ function Get-Win32Products {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -992,7 +992,7 @@ function Get-OpenWindowTitles {
 
     $File = Join-Path -Path $DeviceFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {

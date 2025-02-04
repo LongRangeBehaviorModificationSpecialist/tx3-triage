@@ -16,7 +16,7 @@ function Get-WhoAmI {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -58,7 +58,7 @@ function Get-UserProfile {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -100,7 +100,7 @@ function Get-UserInfo {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -142,7 +142,7 @@ function Get-LocalUserData {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -184,7 +184,7 @@ function Get-LogonSession {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -228,7 +228,7 @@ function Get-PowershellConsoleHistoryAllUsers {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -279,10 +279,10 @@ function Get-LastLogons {
 
     $File = Join-Path -Path $UserFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         if (-not (Test-Path $UserFolder)) {
-            throw "The user folder ``$UserFolder`` does not exist."
+            throw "The user folder '$UserFolder' does not exist."
         }
         # Run the command
         $ExecutionTime = Measure-Command {

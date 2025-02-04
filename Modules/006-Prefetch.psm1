@@ -16,7 +16,7 @@ function Get-DetailedPrefetchData {
 
     $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -63,7 +63,7 @@ function Get-PrefetchFilesList {
 
     $File = Join-Path -Path $PrefetchFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {

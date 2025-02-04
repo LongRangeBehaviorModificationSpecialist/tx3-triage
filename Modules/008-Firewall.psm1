@@ -16,7 +16,7 @@ function Get-FirewallRules {
 
     $File = Join-Path -Path $FirewallFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
 
     try {
         # Run the command
@@ -57,7 +57,7 @@ function Get-AdvFirewallRules {
 
     $File = Join-Path -Path $FirewallFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
 
     try {
         # Run the command
@@ -98,7 +98,7 @@ function Get-DefenderExclusions {
 
     $File = Join-Path -Path $FirewallFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
 
     try {
         # Run the command

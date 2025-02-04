@@ -33,11 +33,11 @@ function Get-EncryptedDiskDetector {
             $EddFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $EddFolderName
 
             if (-not (Test-Path $EddFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$EddFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$EddFolder'"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created ``$($EddFolder.Name)`` folder in the case directory"
+            $CreateDirMsg = "Created '$($EddFolder.Name)' folder in the case directory"
             Show-Message("$CreateDirMsg") -Green
             Write-LogEntry("[$($EddFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 

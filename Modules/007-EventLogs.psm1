@@ -16,7 +16,7 @@ function Get-EventLogListBasic {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -64,7 +64,7 @@ function Get-EventLogListDetailed {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -113,7 +113,7 @@ function Get-SecurityEventCount {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -163,7 +163,7 @@ function Get-SecurityEventsLast30DaysTxt {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -213,7 +213,7 @@ function Get-SecurityEventsLast30DaysCsv {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -263,7 +263,7 @@ function Get-Application1002Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -315,7 +315,7 @@ function Get-System1014Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -368,7 +368,7 @@ function Get-Application1102Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -420,7 +420,7 @@ function Get-Security4616Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -472,7 +472,7 @@ function Get-Security4624Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -524,7 +524,7 @@ function Get-Security4625Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -576,7 +576,7 @@ function Get-Security4648Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -628,7 +628,7 @@ function Get-Security4672Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -680,7 +680,7 @@ function Get-Security4673Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -732,7 +732,7 @@ function Get-Security4674Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -783,7 +783,7 @@ function Get-Security4688Events {
     )
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -835,7 +835,7 @@ function Get-Security4720Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -887,7 +887,7 @@ function Get-System7036Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -939,7 +939,7 @@ function Get-System7045Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -991,7 +991,7 @@ function Get-System64001Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -1042,7 +1042,7 @@ function Get-AppInvEvts {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -1092,7 +1092,7 @@ function Get-TerminalServiceEvents {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command
@@ -1143,7 +1143,7 @@ function Get-PSOperational4104Events {
 
     $File = Join-Path -Path $EventLogFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
 
         # Run the command

@@ -16,7 +16,7 @@ function Get-RunningProcessesAll {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -58,7 +58,7 @@ function Get-RunningProcessesCsv {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -100,7 +100,7 @@ function Get-UniqueProcessHash {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -156,7 +156,7 @@ function Get-SvcHostsAndProcesses {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -198,7 +198,7 @@ function Get-RunningServices {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -240,7 +240,7 @@ function Get-InstalledDrivers {
 
     $File = Join-Path -Path $ProcessFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {

@@ -16,7 +16,7 @@ function Get-NetworkConfig {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -60,7 +60,7 @@ function Get-OpenNetworkConnections {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -104,7 +104,7 @@ function Get-NetstatDetailed {
         $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
         $TempFile = "$NetworkFolder\$($Num)_NetstatDetailed-TEMP.html"
         $FunctionName = $MyInvocation.MyCommand.Name
-        $Header = "$Num Running ``$FunctionName`` function"
+        $Header = "$Num Running '$FunctionName' function"
     }
     process {
         try {
@@ -227,7 +227,7 @@ function Get-NetstatBasic {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -269,7 +269,7 @@ function Get-NetTcpConnectionsAllTxt {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -311,7 +311,7 @@ function Get-NetTcpConnectionsAllCsv {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command (to export as CSV)
         $ExecutionTime = Measure-Command {
@@ -353,7 +353,7 @@ function Get-NetworkAdapters {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -395,7 +395,7 @@ function Get-NetIPConfig {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -437,7 +437,7 @@ function Get-RouteData {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -479,7 +479,7 @@ function Get-IPConfig {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -521,7 +521,7 @@ function Get-ARPData {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -563,7 +563,7 @@ function Get-NetIPAddrs {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -605,7 +605,7 @@ function Get-HostsFile {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -647,7 +647,7 @@ function Get-NetworksFile {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -689,7 +689,7 @@ function Get-ProtocolFile {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -731,7 +731,7 @@ function Get-ServicesFile {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -773,7 +773,7 @@ function Get-SmbShares {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -815,7 +815,7 @@ function Get-WifiPasswords {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -857,7 +857,7 @@ function Get-NetInterfaces {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
@@ -899,7 +899,7 @@ function Get-NetRouteData {
 
     $File = Join-Path -Path $NetworkFolder -ChildPath "$($Num)_$FileName"
     $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$FunctionName' function"
     try {
         # Run the command
         $ExecutionTime = Measure-Command {

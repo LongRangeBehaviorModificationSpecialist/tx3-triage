@@ -30,11 +30,11 @@ function Get-FileHashes {
             $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
 
             if (-not (Test-Path $HashResultsFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$HashResultsFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$HashResultsFolder'"
             }
 
             # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created ``$($HashResultsFolder.Name)`` folder in the case directory`n"
+            $CreateDirMsg = "Created '$($HashResultsFolder.Name)' folder in the case directory`n"
             Show-Message("$CreateDirMsg") -Green
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
@@ -70,7 +70,7 @@ function Get-FileHashes {
                 Show-Message("$ProgressMsg")
 
                 # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
-                $HashMsgFileName = "Completed hashing file: ``$($_.Name)``"
+                $HashMsgFileName = "Completed hashing file: '$($_.Name)'"
                 $HashValueMsg = "[SHA256]: $($FileHash)`n"
                 Show-Message("$HashMsgFileName") -Blue
                 Show-Message("$HashValueMsg") -Blue
@@ -82,7 +82,7 @@ function Get-FileHashes {
             $Results | Export-Csv -Path $HashOutputFilePath -NoTypeInformation -Encoding UTF8
 
             # Show & log $FileMsg message
-            $FileMsg = "Hash values saved to -> ``$HashOutputFileName```n"
+            $FileMsg = "Hash values saved to -> '$HashOutputFileName'`n"
             Show-Message("$FileMsg") -Blue
             Write-LogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
         }

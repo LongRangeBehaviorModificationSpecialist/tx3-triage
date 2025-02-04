@@ -1,5 +1,5 @@
 # Date Last Updated
-[string]$Dlu = "2025-01-31"
+[string]$Dlu = "2025-02-03"
 
 
 # [datetime]$StartTime = (Get-Date).ToUniversalTime()
@@ -40,8 +40,6 @@ $ExecutableFileTypes = @(
 
 
 function Get-TimeStamp {
-    # return "[{0:yyyy-MM-dd} {0:HH:mm:ss.ffff}]" -f (Get-Date).ToUniversalTime()
-    # return "[{0:yyyy-MM-dd} {0:HH.mm.ss.ffff}]" -f (Get-Date)
     return Get-Date -Format "[yyyy-MM-dd HH:mm:ss.ffff K]"
 }
 
@@ -116,9 +114,9 @@ function Show-Message {
     else { "White" }
 
     # Generate timestamp if -NoTime is not provided
-    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { $Null }
+    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
 
-    $HeaderText = if ($Header) { "`n" } else { $Null }
+    $HeaderText = if ($Header) { "`n" } else { "" }
 
     # Format the full message
     $FormattedMessage = "$HeaderText$DisplayTimeStamp $Message"
@@ -148,7 +146,7 @@ function Show-FinishMessage {
         [timespan]$ExecutionTime
     )
 
-        Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds`n") -Blue
+        Show-Message("'$($FunctionName)' function finished in $($ExecutionTime.TotalSeconds) seconds`n") -Blue
 }
 
 
@@ -161,7 +159,7 @@ function Write-LogFinishedMessage {
         [timespan]$ExecutionTime
     )
 
-    Write-LogEntry("Function ``$FunctionName`` finished in $($ExecutionTime.TotalSeconds) seconds`n")
+    Write-LogEntry("Function '$FunctionName' finished in $($ExecutionTime.TotalSeconds) seconds`n")
 }
 
 
@@ -183,7 +181,7 @@ function Set-CaseFolders {
 
     foreach ($Folder in $Folders) {
         New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
-        Write-Host "Created ``$($Folder)`` Folder" -ForegroundColor Green
+        Write-Host "Created '$($Folder)' Folder" -ForegroundColor Green
     }
 
 
@@ -254,10 +252,10 @@ function Show-OutputSavedToFile {
     )
 
     if ($NoTime) {
-        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -NoTime -Green
+        Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -NoTime -Green
     }
     else {
-        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -Green
+        Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -Green
     }
 }
 
@@ -269,7 +267,7 @@ function Write-LogOutputAppended {
         [string]$File
     )
 
-    Write-LogEntry("Output appended to -> ``$([System.IO.Path]::GetFileName($File))``")
+    Write-LogEntry("Output appended to -> '$([System.IO.Path]::GetFileName($File))'")
 }
 
 
@@ -280,7 +278,7 @@ function Write-LogOutputSaved {
         [string]$File
     )
 
-    Write-LogEntry("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``")
+    Write-LogEntry("Output saved to -> '$([System.IO.Path]::GetFileName($File))'")
 }
 
 
@@ -291,7 +289,7 @@ function Write-NoDataFound {
         [string]$FunctionName
     )
 
-    $NoDataMsg = "No data found for ``$($FunctionName)`` function"
+    $NoDataMsg = "No data found for '$($FunctionName)' function"
     Show-Message("$NoDataMsg") -Yellow
     Write-LogEntry("$NoDataMsg")
 }

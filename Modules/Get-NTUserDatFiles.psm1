@@ -33,11 +33,11 @@ function Get-NTUserDatFiles {
             $NTUserFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $NTUserFolderName
 
             if (-not (Test-Path $NTUserFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$NTUserFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$NTUserFolder'"
             }
 
             # Show & log $CreateDirMsg messages
-            $CreateDirMsg = "Created ``$($NTUserFolder.Name)`` folder in the case directory"
+            $CreateDirMsg = "Created '$($NTUserFolder.Name)' folder in the case directory"
             Show-Message("$CreateDirMsg")
             Write-LogEntry("[$($NTUserFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 

@@ -22,7 +22,7 @@ function Get-AllFilesList {
 
     try {
         if (-not (Test-Path $CaseFolderName)) {
-            throw "Case folder ``$CaseFolderName`` does not exist"
+            throw "Case folder '$CaseFolderName' does not exist"
         }
 
         $ExecutionTime = Measure-Command {
@@ -35,7 +35,7 @@ function Get-AllFilesList {
             $FilesListsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $FilesListFolderName
 
             if (-not (Test-Path $FilesListsFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> ``$FilesListsFolder``"
+                throw "[ERROR] The necessary folder does not exist -> '$FilesListsFolder'"
             }
 
             # Iterate over filtered drives
@@ -67,7 +67,7 @@ function Get-AllFilesList {
                 Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $DoneMessage")
 
                 # Show & log $FileTitle message
-                $FileTitle = "Output saved to -> ``$([System.IO.Path]::GetFileName($FileListingSaveFile))```n"
+                $FileTitle = "Output saved to -> '$([System.IO.Path]::GetFileName($FileListingSaveFile))'`n"
                 Show-Message("$FileTitle") -Green
                 Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $FileTitle")
             }
