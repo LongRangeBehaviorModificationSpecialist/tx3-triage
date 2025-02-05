@@ -15,7 +15,8 @@
 #>
 
 
-param (
+param
+(
     # Name of the user
     [Parameter(Mandatory = $True)]
     [string]$User,
@@ -90,53 +91,65 @@ $ScriptDirectory = $(Get-Location)
 $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
 
-foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
+foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
+{
     Import-Module -Name $file.FullName -Force -Global
 }
 
 
-if ($Html) {
+if ($Html)
+{
     $HtmlModule = ".\html\Export-HtmlReport.psm1"
     Import-Module -Name $HtmlModule -Force
     Show-Message("Module file: '$($HtmlModule)' was imported successfully") -NoTime -Blue
 
     Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
 }
-else {
+else
+{
     Get-TriageData
 }
 
 
 
-function Get-ParameterValues {
+function Get-ParameterValues
+{
 
     [CmdletBinding()]
 
-    param (
+    param
+    (
         # The $MyInvocation for the caller -- DO NOT pass this (dot-source Get-ParameterValues instead)
         $Invocation = $MyInvocation,
         # The $PSBoundParameters for the caller -- DO NOT pass this (dot-source Get-ParameterValues instead)
         $BoundParameters = $PSBoundParameters
     )
 
-    if ($MyInvocation.Line[($MyInvocation.OffsetInLine - 1)] -ne '.') {
+    if ($MyInvocation.Line[($MyInvocation.OffsetInLine - 1)] -ne '.')
+    {
         throw "Get-ParameterValues must be dot-sourced, like this: . Get-ParameterValues"
     }
 
-    if ($PSBoundParameters.Count -gt 0) {
+    if ($PSBoundParameters.Count -gt 0)
+    {
         throw "You should not pass parameters to Get-ParameterValues, just dot-source it like this: ``. Get-ParameterValues``"
     }
 
     [Hashtable]$ParameterValues = @{}
-    foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator()) {
-        try {
+    foreach ($Parameter in $Invocation.MyCommand.Parameters.GetEnumerator())
+    {
+        try
+        {
             $Key = $Parameter.Key
-            if ($Null -ne ($Value = Get-Variable -Name $Key -ValueOnly -ErrorAction Ignore)) {
-                if ($Value -ne ($Null -as $Parameter.Value.ParameterType)) {
+            if ($Null -ne ($Value = Get-Variable -Name $Key -ValueOnly -ErrorAction Ignore))
+            {
+                if ($Value -ne ($Null -as $Parameter.Value.ParameterType))
+                {
                     $ParameterValues[$Key] = $Value
                 }
             }
-            if ($BoundParameters.ContainsKey($Key)) {
+            if ($BoundParameters.ContainsKey($Key))
+            {
                 $ParameterValues[$Key] = $BoundParameters[$Key]
             }
         }
@@ -165,7 +178,8 @@ function Get-TriageData {
     # Construct the path to the 'modules' directory
     $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
 
-    foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force)) {
+    foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
+    {
         Import-Module -Name $file.FullName -Force -Global
     }
 
@@ -242,17 +256,20 @@ INSTRUCTIONS
     Read-Host -Prompt "`nPress [ENTER] to begin data collection -> "
 
 
-    if ($Null -eq $User) {
+    if ($Null -eq $User)
+    {
         [String]$User = Read-Host -Prompt "[*] Enter user's name -> "
     }
 
 
-    if ($Null -eq $Agency) {
+    if ($Null -eq $Agency)
+    {
         [String]$Agency = Read-Host -Prompt "`n[*] Enter agency name -> "
     }
 
 
-    if ($Null -eq $CaseNumber) {
+    if ($Null -eq $CaseNumber)
+    {
         [String]$CaseNumber = Read-Host -Prompt "`n[*] Enter case number -> "
     }
 
@@ -273,7 +290,8 @@ INSTRUCTIONS
 
     # Running Encrypted Disk Detector
     function Invoke-Edd {
-        if ($Edd) {
+        if ($Edd)
+        {
             Get-EncryptedDiskDetector $CaseFolderName $ComputerName
 
             # Read the contents of the EDD text file and show the results on the screen
@@ -283,7 +301,8 @@ INSTRUCTIONS
             Write-Host ""
             Read-Host -Prompt "Press [ENTER] to continue data collection -> "
         }
-        else {
+        else
+        {
             # If the user does not want to execute EDD
             Show-Message("[WARNING] Encrypted Disk Detector will NOT be run`n") -Yellow
 
@@ -293,13 +312,13 @@ INSTRUCTIONS
     }
 
     function Invoke-Processes {
-
         # Run the scripts that collect the optional data that was included in the command line switches
-
-        if ($Process) {
+        if ($Process)
+        {
             Get-RunningProcesses $CaseFolderName $ComputerName
         }
-        else {
+        else
+        {
             # If the user does not want to execute ProcessCapture
             Show-Message("[WARNING] Process Capture will NOT be run`n") -Yellow
             # Write message that Processes Capture was not collected to the .log file
@@ -308,10 +327,12 @@ INSTRUCTIONS
     }
 
     function Invoke-Ram {
-        if ($Ram) {
+        if ($Ram)
+        {
             Get-ComputerRam $CaseFolderName $ComputerName
         }
-        else {
+        else
+        {
             # Display message that the RAM was not collected
             Show-Message("[WARNING] RAM will NOT be collected`n") -Yellow
             # Write message that RAM was not collected to the .log file
@@ -320,10 +341,12 @@ INSTRUCTIONS
     }
 
     function Invoke-Registry {
-        if ($Registry) {
+        if ($Registry)
+        {
             Get-RegistryHives $CaseFolderName $ComputerName
         }
-        else {
+        else
+        {
             # Display message that Registry Hive files will not be collected
             Show-Message("[WARNING] Registry Hive files will NOT be collected`n") -Yellow
             # Write message that Registry Hive files will not be collected to the .log file
@@ -332,10 +355,12 @@ INSTRUCTIONS
     }
 
     function Invoke-EventLogs {
-        if ($EventLogs) {
+        if ($EventLogs)
+        {
             Get-EventLogs $CaseFolderName $ComputerName -NumOfEventLogs $NumOfEventLogs
         }
-        else {
+        else
+        {
             # Display message that event logs will not be collected
             Show-Message("[WARNING] Windows Event Logs will NOT be collected`n") -Yellow
             # Write message that event logs will not be collected to the .log file
@@ -344,10 +369,12 @@ INSTRUCTIONS
     }
 
     function Invoke-NTUser {
-        if ($NTUser) {
+        if ($NTUser)
+        {
             Get-NTUserDatFiles $CaseFolderName $ComputerName
         }
-        else {
+        else
+        {
             # Display message that NTUSER.DAT file will not be collected
             Show-Message("[WARNING] NTUSER.DAT files will NOT be collected`n") -Yellow
             # Write message that NTUSER.DAT files will not be collected to the .log file
@@ -356,10 +383,12 @@ INSTRUCTIONS
     }
 
     function Invoke-Prefetch {
-        if ($Prefetch) {
+        if ($Prefetch)
+        {
             Get-PrefetchFiles $CaseFolderName $ComputerName -NumOfPFRecords $NumOfPFRecords
         }
-        else {
+        else
+        {
             # Display message that prefetch files will not be collected
             Show-Message("[WARNING] Windows Prefetch files will NOT be collected`n") -Yellow
             # Write message that prefetch files will not be collected to the .log file
@@ -368,10 +397,12 @@ INSTRUCTIONS
     }
 
     function Invoke-SrumDB {
-        if ($Srum) {
+        if ($Srum)
+        {
             Get-SrumDB $CaseFolderName $ComputerName
         }
-        else {
+        else
+        {
             # Display message that file lists will not be collected
             Show-Message("[WARNING] SRUM.dat database will NOT be collected`n") -Yellow
             # Write message that file lists will not be collected to the .log file
@@ -381,9 +412,11 @@ INSTRUCTIONS
 
     function Invoke-ListAllFiles {
         # If -AllDrives is used, invoke Get-AllFilesList with additional parameters
-        if ($AllDrives) {
+        if ($AllDrives)
+        {
             # Validate conflicting switches
-            if ($ListDrives -and $NoListDrives) {
+            if ($ListDrives -and $NoListDrives)
+            {
                 Show-Message("[ERROR] You cannot use both '-ListDrives' and '-NoListDrives' switches in the same command") -Red
                 return
             }
@@ -391,40 +424,51 @@ INSTRUCTIONS
             $AvailableDrives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name
 
             # Determine drives to scan based on user input
-            $DrivesToScan = switch ($true) {
-                $ListDrives {
-                    if (-not $DriveList) {
+            $DrivesToScan = switch ($true)
+            {
+                $ListDrives
+                {
+                    if (-not $DriveList)
+                    {
                         Show-Message "[ERROR] '-ListDrives' requires a valid drive list [Example: '-DriveList @(`"C`",`"D`",`"F`")'" -Red
                         return
                     }
-                    $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object {
-                        if ($_ -notin $AvailableDrives) {
+                    $DriveList | Where-Object { $AvailableDrives -contains $_ } | ForEach-Object
+                    {
+                        if ($_ -notin $AvailableDrives)
+                        {
                             Show-Message "[WARNING] Drive '$($_):\' is not available and will be skipped" -Yellow
                         }
                         $_
                     }
                 }
-                $NoListDrives {
-                    if (-not $DriveList) {
+                $NoListDrives
+                {
+                    if (-not $DriveList)
+                    {
                         Show-Message "[ERROR] '-NoListDrives' requires a valid drive list [Example: '-DriveList @(`"C`", `"D`")'" -Red
                         return
                     }
                     $AvailableDrives | Where-Object { $_ -notin $DriveList }
                 }
-                default {
+                default
+                {
                     $AvailableDrives
                 }
             }
             # Log selected drives and run the function
-            if ($DrivesToScan) {
+            if ($DrivesToScan)
+            {
                 Show-Message "Scanning the following drives: $($DrivesToScan -join ', ')" -Green
                 Get-AllFilesList $CaseFolderName $ComputerName -DriveList $DrivesToScan
             }
-            else {
+            else
+            {
                 Show-Message "[ERROR] No valid drives selected for scanning" -Red
             }
         }
-        else {
+        else
+        {
             # Display message that file lists will not be collected
             Show-Message("[WARNING] All file listings will NOT be collected`n") -Yellow
             # Write message that file lists will not be collected to the .log file
@@ -433,7 +477,8 @@ INSTRUCTIONS
     }
 
 
-    if (-not $HashResults) {
+    if (-not $HashResults)
+    {
         # Display message that output files will not be hashed
         Show-Message("[WARNING] Saved files will NOT be hashed`n") -Yellow
 
@@ -442,7 +487,8 @@ INSTRUCTIONS
     }
 
 
-    if (-not $Archive) {
+    if (-not $Archive)
+    {
         # Display message that prefetch files will not be collected
         Show-Message("[WARNING] Case archive (.zip) file will NOT be created`n") -Yellow
 
@@ -453,7 +499,8 @@ INSTRUCTIONS
 
     function Invoke-Yolo {
         # Run all the collection options
-        if ($Yolo) {
+        if ($Yolo)
+        {
             Get-EncryptedDiskDetector $CaseFolderName $ComputerName
             Get-RunningProcesses $CaseFolderName $ComputerName
             Get-ComputerRam $CaseFolderName $ComputerName
@@ -722,13 +769,15 @@ Hashing result files...
 
 
     # If the `-HashResults` switch was passed when the script was run
-    if ($HashResults) {
+    if ($HashResults)
+    {
         Get-FileHashes $CaseFolderName $ComputerName
     }
 
 
     # If the `-Archive` switch was passed when the script was run
-    if ($Archive) {
+    if ($Archive)
+    {
         # Stop the transcript before the .zip file is made
         $StopTranscript = "`n$(Stop-Transcript)"
         Show-Message("$StopTranscript") -NoTime -Green

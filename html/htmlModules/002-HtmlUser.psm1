@@ -6,7 +6,6 @@ $UserPropertyArray = [ordered]@{
     "2-004_Local_User_Data"                 = ("Get-LocalUser", "Pipe")
     "2-005_Win32_LogonSession"              = ("Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *", "Pipe")
     "2-006_Win_Event_Security_4624_or_4648" = ("Get-WinEvent -LogName 'Security' -FilterXPath '*[System[EventID=4624 or EventID=4648]]'", "Pipe")
-
 }
 
 
@@ -14,7 +13,8 @@ function Export-UserHtmlPage {
 
     [CmdletBinding()]
 
-    param (
+    param
+    (
         [string]$FilePath,
         [string]$PagesFolder
     )
@@ -26,12 +26,15 @@ function Export-UserHtmlPage {
 
     # 2-000
     function Get-UserData {
-        param (
+
+        param
+        (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $UserPropertyArray.GetEnumerator()) {
+        foreach ($item in $UserPropertyArray.GetEnumerator())
+        {
             $Name = $item.Key
             $Command = $item.value[0]
             $Type = $item.value[1]
@@ -40,33 +43,33 @@ function Export-UserHtmlPage {
             Show-Message("Running ``$Name`` command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try {
+            try
+            {
                 $Data = Invoke-Expression -Command $Command
-
-                if ($Data.Count -eq 0) {
-
+                if ($Data.Count -eq 0)
+                {
                     Show-Message("No data found for ``$Name``") -Yellow
-
                     Write-HtmlLogEntry("No data found for ``$Name``")
                 }
-                else {
-
+                else
+                {
                     Show-Message("[INFO] Saving output from ``$Name``") -Blue
-
                     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
 
                     Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
-                    if ($Type -eq "Pipe") {
+                    if ($Type -eq "Pipe")
+                    {
                         Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
                     }
-
-                    if ($Type -eq "String") {
+                    if ($Type -eq "String")
+                    {
                         Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
                     }
                 }
             }
-            catch {
+            catch
+            {
                 $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
                 Show-Message("[ERROR] $ErrorMessage") -Red
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
@@ -79,7 +82,6 @@ function Export-UserHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-
     Get-UserData -FilePath $FilePath -PagesFolder $PagesFolder
 
 

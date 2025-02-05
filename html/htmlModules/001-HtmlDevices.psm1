@@ -1,26 +1,25 @@
 $DevicePropertyArray = [ordered]@{
 
-    "1-001_Computer_Details" = ("Get-ComputerDetails", "Pipe")
-    "1-002_TPM_Details"      = ("Get-TPMDetails", "Pipe")
+    "1-001_ComputerDetails" = ("Get-ComputerDetails", "Pipe")
+    "1-002_TPMDetails"      = ("Get-TPMDetails", "Pipe")
     "1-003_PSInfo"           = (".\bin\PsInfo.exe -accepteula -s -h -d | Out-String", "String")
     "1-004_PSDrive"          = ("Get-PSDrive -PSProvider FileSystem | Select-Object -Property *", "Pipe")
-    "1-005_Win32_Logical_Disk" = ("Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *", "Pipe")
-    "1-006_Computer_Info"      = ("Get-ComputerInfo", "Pipe")
-    "1-007_system_info"        = ("systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *", "Pipe")
-    "1-008_Win32_Computer_System" = ("Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *", "Pipe")
-    "1-009_Win32_Operating_System" = ("Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *", "Pipe")
-    "1-010 Win32_PhysicalMemory"   = ("Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *", "Pipe")
-    "1-011_Env_Vars"               = ("Get-ChildItem -Path env:", "Pipe")
-    "1-012_Disk_Info"              = ("Get-Disk | Select-Object -Property * | Sort-Object DiskNumber", "Pipe")
+    "1-005_Win32LogicalDisk" = ("Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *", "Pipe")
+    "1-006_ComputerInfo"      = ("Get-ComputerInfo", "Pipe")
+    "1-007_SystemInfo"        = ("systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *", "Pipe")
+    "1-008_Win32ComputerSystem" = ("Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *", "Pipe")
+    "1-009_Win32OperatingSystem" = ("Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *", "Pipe")
+    "1-010 Win32PhysicalMemory"   = ("Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *", "Pipe")
+    "1-011_EnvVars"               = ("Get-ChildItem -Path env:", "Pipe")
+    "1-012_DiskInfo"              = ("Get-Disk | Select-Object -Property * | Sort-Object DiskNumber", "Pipe")
     "1-013_Partitions"             = ("Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber", "Pipe")
-    "1-014_Win32_Disk_Partitions"  = ("Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name", "Pipe")
-    "1-015_Win32_Startup_Command"  = ("Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *", "Pipe")
-    "1-016_Software_Licensing_Service" = ("Get-WmiObject -ClassName SoftwareLicensingService", "Pipe")
-    "1-017_Win32_Bios"                 = ("Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *", "Pipe")
-    "1-018_Pnp_Device"                 = ("Get-PnpDevice", "Pipe")
-    "1-019_Win32_PnP_Entity"           = ("Get-CimInstance Win32_PnPEntity | Select-Object -Property *", "Pipe")
-    "1-020_Win32_Product"              = ("Get-WmiObject Win32_Product", "Pipe")
-
+    "1-014_Win32DiskPartitions"  = ("Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name", "Pipe")
+    "1-015_Win32StartupCommand"  = ("Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *", "Pipe")
+    "1-016_SoftwareLicensingService" = ("Get-WmiObject -ClassName SoftwareLicensingService", "Pipe")
+    "1-017_Win32Bios"                 = ("Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *", "Pipe")
+    "1-018_PnpDevice"                 = ("Get-PnpDevice", "Pipe")
+    "1-019_Win32PnPEntity"           = ("Get-CimInstance Win32_PnPEntity | Select-Object -Property *", "Pipe")
+    "1-020_Win32Product"              = ("Get-WmiObject Win32_Product", "Pipe")
 }
 
 
@@ -28,7 +27,8 @@ function Export-DeviceHtmlPage {
 
     [CmdletBinding()]
 
-    param (
+    param
+    (
         [string]$FilePath,
         [string]$PagesFolder
     )
@@ -40,12 +40,15 @@ function Export-DeviceHtmlPage {
 
     # 1-000
     function Get-DeviceData {
-        param (
+
+        param
+        (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $DevicePropertyArray.GetEnumerator()) {
+        foreach ($item in $DevicePropertyArray.GetEnumerator())
+        {
             $Name = $item.Key
             $Command = $item.value[0]
             $Type = $item.value[1]
@@ -54,29 +57,33 @@ function Export-DeviceHtmlPage {
             Show-Message("Running ``$Name`` command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try {
+            try
+            {
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0) {
+                if ($Data.Count -eq 0)
+                {
                     Show-Message("No data found for ``$Name``") -Yellow
                     Write-HtmlLogEntry("No data found for ``$Name``")
                 }
-                else {
+                else
+                {
                     Show-Message("[INFO] Saving output from ``$Name``") -Blue
-
                     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
 
                     Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
-                    if ($Type -eq "Pipe") {
+                    if ($Type -eq "Pipe")
+                    {
                         Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
                     }
-
-                    if ($Type -eq "String") {
+                    if ($Type -eq "String")
+                    {
                         Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
                     }
                 }
             }
-            catch {
+            catch
+            {
                 $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
                 Show-Message("[ERROR] $ErrorMessage") -Red
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
@@ -87,25 +94,27 @@ function Export-DeviceHtmlPage {
 
     # 1-021
     function Get-AutoRunsData {
-        param (
+
+        param
+        (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        $Name = "1-018_AutoRuns"
+        $Name = "1-021_AutoRuns"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try {
-            $TempCsvFile = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files\1-018_AutoRuns-TEMP.csv"
+        try
+        {
+            $TempCsvFile = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files\1-021_AutoRuns-TEMP.csv"
 
             Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
 
             $Data = Import-Csv -Path $TempCsvFile
 
             Show-Message("[INFO] Saving output from ``$Name``") -Blue
-
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
 
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
@@ -115,7 +124,8 @@ function Export-DeviceHtmlPage {
             # Remove the temp csv file
             Remove-Item -Path $TempCsvFile -Force
         }
-        catch {
+        catch
+        {
             $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
@@ -125,25 +135,29 @@ function Export-DeviceHtmlPage {
 
     # 1-022
     function Get-OpenWindowTitles {
-        param (
+
+        param
+        (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        $Name = "1-023_Open_Window_Titles"
+        $Name = "1-022_Open_Window_Titles"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try {
+        try
+        {
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle
-            if ($Data.Count -eq 0) {
+            if ($Data.Count -eq 0)
+            {
                 Show-Message("[INFO] No data found for ``$Name``") -Yellow
                 Write-HtmlLogEntry("No data found for ``$Name``")
             }
-            else {
+            else
+            {
                 Show-Message("[INFO] Saving output from ``$Name``") -Blue
-
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
 
                 Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
@@ -151,7 +165,8 @@ function Export-DeviceHtmlPage {
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
             }
         }
-        catch {
+        catch
+        {
             $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
