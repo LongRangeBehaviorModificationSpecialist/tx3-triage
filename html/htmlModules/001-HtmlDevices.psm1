@@ -1,10 +1,36 @@
+$DevicePropertyArray = [ordered]@{
+
+    "1-001_Computer_Details" = ("Get-ComputerDetails", "Pipe")
+    "1-002_TPM_Details"      = ("Get-TPMDetails", "Pipe")
+    "1-003_PSInfo"           = (".\bin\PsInfo.exe -accepteula -s -h -d | Out-String", "String")
+    "1-004_PSDrive"          = ("Get-PSDrive -PSProvider FileSystem | Select-Object -Property *", "Pipe")
+    "1-005_Win32_Logical_Disk" = ("Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *", "Pipe")
+    "1-006_Computer_Info"      = ("Get-ComputerInfo", "Pipe")
+    "1-007_system_info"        = ("systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *", "Pipe")
+    "1-008_Win32_Computer_System" = ("Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *", "Pipe")
+    "1-009_Win32_Operating_System" = ("Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *", "Pipe")
+    "1-010 Win32_PhysicalMemory"   = ("Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *", "Pipe")
+    "1-011_Env_Vars"               = ("Get-ChildItem -Path env:", "Pipe")
+    "1-012_Disk_Info"              = ("Get-Disk | Select-Object -Property * | Sort-Object DiskNumber", "Pipe")
+    "1-013_Partitions"             = ("Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber", "Pipe")
+    "1-014_Win32_Disk_Partitions"  = ("Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name", "Pipe")
+    "1-015_Win32_Startup_Command"  = ("Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *", "Pipe")
+    "1-016_Software_Licensing_Service" = ("Get-WmiObject -ClassName SoftwareLicensingService", "Pipe")
+    "1-017_Win32_Bios"                 = ("Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *", "Pipe")
+    "1-018_Pnp_Device"                 = ("Get-PnpDevice", "Pipe")
+    "1-019_Win32_PnP_Entity"           = ("Get-CimInstance Win32_PnPEntity | Select-Object -Property *", "Pipe")
+    "1-020_Win32_Product"              = ("Get-WmiObject Win32_Product", "Pipe")
+
+}
+
+
 function Export-DeviceHtmlPage {
 
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FilePath
+        [string]$FilePath,
+        [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
@@ -12,430 +38,65 @@ function Export-DeviceHtmlPage {
     $FunctionName = $MyInvocation.MyCommand.Name
 
 
-    # 1-001
-    function Get-VariousData {
-        param ([string]$FilePath)
-        $Name = "1-001 Get-ComputerDetails"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-ComputerDetails
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
+    # 1-000
+    function Get-DeviceData {
+        param (
+            [string]$FilePath,
+            [string]$PagesFolder
+        )
+
+        foreach ($item in $DevicePropertyArray.GetEnumerator()) {
+            $Name = $item.Key
+            $Command = $item.value[0]
+            $Type = $item.value[1]
+
+            $FileName = "$Name.html"
+            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+
+            try {
+                $Data = Invoke-Expression -Command $Command
+                if ($Data.Count -eq 0) {
+                    Show-Message("No data found for ``$Name``") -Yellow
+                    Write-HtmlLogEntry("No data found for ``$Name``")
+                }
+                else {
+                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
+
+                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+
+                    Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                    }
+
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+                    }
+                }
             }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            catch {
+                $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+                Show-Message("[ERROR] $ErrorMessage") -Red
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
             }
+            Show-FinishedHtmlMessage $Name
         }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
     }
 
-    # 1-002
-    function Get-TPMData {
-        param ([string]$FilePath)
-        $Name = "1-002 Get-TPMDetails"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-TPMDetails
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    #* 1-003
-    function Get-PSInfo {
-        param ([string]$FilePath)
-        $Name = "1-003 PSInfo.exe"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
-        try {
-            $Data = .\bin\PsInfo.exe -accepteula -s -h -d | Out-String
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-004
-    function Get-PSDriveData {
-        param ([string]$FilePath)
-        $Name = "1-004 Get-PSDrive"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-PSDrive -PSProvider FileSystem | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-005
-    function Get-LogicalDiskData {
-        param ([string]$FilePath)
-        $Name = "1-005 Win32_LogicalDisk"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-006
-    function Get-ComputerData {
-        param ([string]$FilePath)
-        $Name = "1-006 Get-ComputerInfo"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-ComputerInfo
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-007
-    function Get-SystemDataCMD {
-        param ([string]$FilePath)
-        $Name = "1-007 systeminfo"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-008
-    function Get-SystemDataPS {
-        param ([string]$FilePath)
-        $Name = "1-008 Win32_ComputerSystem"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-009
-    function Get-OperatingSystemData {
-        param ([string]$FilePath)
-        $Name = "1-009 Win32_OperatingSystem"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-010
-    function Get-PhysicalMemory {
-        param ([string]$FilePath)
-        $Name = "1-010 Win32_PhysicalMemory"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-011
-    function Get-EnvVars {
-        param ([string]$FilePath)
-        $Name = "1-011 Get-EnvVars"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-ChildItem -Path env:
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-012
-    function Get-PhysicalDiskData {
-        param ([string]$FilePath)
-        $Name = "1-012 Get-Disk"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-Disk | Select-Object -Property * | Sort-Object DiskNumber
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-013
-    function Get-DiskPartitions {
-        param ([string]$FilePath)
-        $Name = "1-013 Get-Partition"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-014
-    function Get-Win32DiskParts {
-        param ([string]$FilePath)
-        $Name = "1-014 Win32_DiskPartition"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-015
-    function Get-Win32StartupApps {
-        param ([string]$FilePath)
-        $Name = "1-015 Win32_StartupCommand"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-016
-    # SKIPPING
-
-    # 1-017
-    function Get-SoftwareLicenseData {
-        param ([string]$FilePath)
-        $Name = "1-017 SoftwareLicensingService"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-WmiObject -ClassName SoftwareLicensingService
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-018
+    # 1-021
     function Get-AutoRunsData {
-        param ([string]$FilePath)
-        $Name = "1-018 AutoRuns.exe"
-        Show-Message("Running '$Name' command") -Header -DarkGray
+        param (
+            [string]$FilePath,
+            [string]$PagesFolder
+        )
+
+        $Name = "1-018_AutoRuns"
+        $FileName = "$Name.html"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+
         try {
             $TempCsvFile = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files\1-018_AutoRuns-TEMP.csv"
 
@@ -443,152 +104,56 @@ function Export-DeviceHtmlPage {
 
             $Data = Import-Csv -Path $TempCsvFile
 
-            Show-Message("[INFO] Saving output from '$Name'") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-            Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+            Show-Message("[INFO] Saving output from ``$Name``") -Blue
+
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+
+            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+            Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+
             # Remove the temp csv file
             Remove-Item -Path $TempCsvFile -Force
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-019
-    function Get-BiosData {
-        param ([string]$FilePath)
-        $Name = "1-019 Win32_Bios"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-020
-    function Get-ConnectedDevices {
-        param ([string]$FilePath)
-        $Name = "1-020 Get-PnpDevice"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-PnpDevice
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-021
-    function Get-HardwareInfo {
-        param ([string]$FilePath)
-        $Name = "1-021 Win32_PnPEntity"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance Win32_PnPEntity | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                # foreach ($Item in $Data) {
-                #     $Item | Add-Member -MemberType NoteProperty -Name "Host" -Value $Env:COMPUTERNAME
-                #     $Item | Add-Member -MemberType NoteProperty -Name "DateScanned" -Value $DateScanned
-                # }
-
-                # $Data | Select-Object Host, DateScanned, PnPClass, Caption, Description, DeviceID
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+            Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
     # 1-022
-    function Get-Win32Products {
-        param ([string]$FilePath)
-        $Name = "1-022 Win32_Product"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-WmiObject Win32_Product
-            if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
-
-    # 1-023
     function Get-OpenWindowTitles {
-        param ([string]$FilePath)
-        $Name = "1-023 Get-OpenWindowTitles"
-        Show-Message("Running '$Name' command") -Header -DarkGray
+        param (
+            [string]$FilePath,
+            [string]$PagesFolder
+        )
+
+        $Name = "1-023_Open_Window_Titles"
+        $FileName = "$Name.html"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+
         try {
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle
             if ($Data.Count -eq 0) {
-                Show-Message("[INFO] No data found for '$Name'") -Yellow
-                Write-HtmlLogEntry("No data found for '$Name'")
+                Show-Message("[INFO] No data found for ``$Name``") -Yellow
+                Write-HtmlLogEntry("No data found for ``$Name``")
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
+
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+
+                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
             }
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+            Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
@@ -598,28 +163,9 @@ function Export-DeviceHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-VariousData $FilePath
-    Get-TPMData $FilePath
-    Get-PSInfo $FilePath
-    Get-PSDriveData $FilePath
-    Get-LogicalDiskData $FilePath
-    Get-ComputerData $FilePath
-    Get-SystemDataCMD $FilePath
-    Get-SystemDataPS $FilePath
-    Get-OperatingSystemData $FilePath
-    Get-PhysicalMemory $FilePath
-    Get-EnvVars $FilePath
-    Get-PhysicalDiskData $FilePath
-    Get-DiskPartitions $FilePath
-    Get-Win32DiskParts $FilePath
-    Get-Win32StartupApps $FilePath
-    Get-SoftwareLicenseData $FilePath
-    Get-AutoRunsData -FilePath $FilePath
-    Get-BiosData $FilePath
-    Get-ConnectedDevices $FilePath
-    Get-HardwareInfo $FilePath
-    Get-Win32Products $FilePath
-    Get-OpenWindowTitles $FilePath
+    Get-DeviceData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-AutoRunsData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-OpenWindowTitles -FilePath $FilePath -PagesFolder $PagesFolder
 
 
     # Add the closing text to the .html file

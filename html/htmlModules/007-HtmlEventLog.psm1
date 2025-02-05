@@ -56,7 +56,7 @@ function Export-EventLogHtmlPage {
             $EventID = $item.value[1]
             $Properties = $item.value[2]
 
-            Show-Message("Running '$Name'") -Header -DarkGray
+            Show-Message("Running ``$Name``") -Header -DarkGray
 
             try {
                 Show-Message("Searching for $LogName Log (Event ID: $EventID)") -DarkGray
@@ -69,7 +69,7 @@ function Export-EventLogHtmlPage {
                     Show-Message("[INFO] The LogFile $LogName exists, but contains no Events that match the EventID of $EventID") -Yellow
                 }
                 else {
-                    Show-Message("[INFO] Saving output from '$Name'") -Blue
+                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
                     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                     Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
                 }
@@ -90,10 +90,10 @@ function Export-EventLogHtmlPage {
         try {
             $Data = Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending
             if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
@@ -102,8 +102,7 @@ function Export-EventLogHtmlPage {
                 Show-Message("$NoMatchingEventsMsg") -Yellow
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
@@ -118,10 +117,10 @@ function Export-EventLogHtmlPage {
         try {
             $Data = Get-WinEvent -ListLog * | Where-Object { $_.IsEnabled -eq "True" } | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending
             if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
@@ -130,8 +129,7 @@ function Export-EventLogHtmlPage {
             Show-Message("$NoMatchingEventsMsg") -Yellow
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
@@ -150,10 +148,10 @@ function Export-EventLogHtmlPage {
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-EventLog -LogName Security -After $CutoffDate | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending
             if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
@@ -162,8 +160,7 @@ function Export-EventLogHtmlPage {
             Show-Message("$NoMatchingEventsMsg") -Yellow
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
@@ -181,10 +178,10 @@ function Export-EventLogHtmlPage {
         try {
             $Data = Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack))
             if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
@@ -193,8 +190,7 @@ function Export-EventLogHtmlPage {
             Show-Message("$NoMatchingEventsMsg") -Yellow
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
@@ -214,15 +210,14 @@ function Export-EventLogHtmlPage {
             # $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from '$Name'") -Blue
+            Show-Message("[INFO] Saving output from ``$Name``") -Blue
 
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
 
-            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='../files/$FileName'>$FileName</a></pre></p></div>"
+            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
@@ -238,17 +233,16 @@ function Export-EventLogHtmlPage {
         try {
             $Data = Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending
             if (-not $Data) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
@@ -263,17 +257,16 @@ function Export-EventLogHtmlPage {
         try {
             $Data = Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending
             if (-not $Data) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
                 Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
             }
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in Module ``$ModuleName`` [Ln: $($PSItem.InvocationInfo.ScriptLineNumber)] - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("$ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }

@@ -3,11 +3,8 @@ function Export-PrefetchHtmlPage {
     [CmdletBinding()]
 
     param (
-        # [Parameter(Mandatory = $True, Position = 0)]
         [string]$FilePath,
         [string]$PagesFolder
-        # [Parameter(Mandatory = $True, Position = 1)]
-        # [string]$DetailsFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
@@ -21,30 +18,29 @@ function Export-PrefetchHtmlPage {
             [string]$FilePath,
             [string]$PagesFolder
         )
-        $Name = "6-001 Prefetch Files"
-        $FileName = "6-001_DetailedPrefetchData.html"
+        $Name = "6-001_Detailed_Prefetch_File_Data"
+        $FileName = "$Name.html"
         Show-Message("Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
-        write-output "Created $($OutputHtmlFilePath) file"
-        # $OutputHtmlFilePath = Join-Path -Path $PagesFolder -ChildPath $FileName
-        write-host "`n`$OutputHtmlFile variable = $OutputHtmlFilePath`n"
+
         try {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
             if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
+                Write-HtmlLogEntry("No data found for ``$Name``")
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
 
-                Add-Content -Path $FilePath -Value "`n<h5 class='info_header'> $Name </h5><button type='button' class='collapsible'>$($Name)</button><div class='content'><pre>FILE: <a href='.\$FileName'>$FileName</a></pre></p></div>"
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+
+                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
             }
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Module: ``$(Split-Path -Path $MyInvocation.ScriptName -Leaf)``, function: ``$($MyInvocation.MyCommand.Name)``, Ln: $($PSItem.InvocationInfo.ScriptLineNumber) - $($PSItem.Exception.Message)"
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
             Show-Message("[ERROR] $ErrorMessage") -Red
             # Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }

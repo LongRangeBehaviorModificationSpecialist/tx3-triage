@@ -1,10 +1,22 @@
+$UserPropertyArray = [ordered]@{
+
+    "2-001_WhoAmI"                          = ("whoami /ALL /FO LIST | Out-String", "String")
+    "2-002_Win32_User_Profile"              = ("Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *", "Pipe")
+    "2-003_Win32_User_Account"              = ("Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *", "Pipe")
+    "2-004_Local_User_Data"                 = ("Get-LocalUser", "Pipe")
+    "2-005_Win32_LogonSession"              = ("Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *", "Pipe")
+    "2-006_Win_Event_Security_4624_or_4648" = ("Get-WinEvent -LogName 'Security' -FilterXPath '*[System[EventID=4624 or EventID=4648]]'", "Pipe")
+
+}
+
+
 function Export-UserHtmlPage {
 
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FilePath
+        [string]$FilePath,
+        [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
@@ -12,178 +24,63 @@ function Export-UserHtmlPage {
     $FunctionName = $MyInvocation.MyCommand.Name
 
 
-    #* 2-001
-    function Get-WhoAmI {
-        param ([string]$FilePath)
-        $Name = "2-001 WhoAmI"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = whoami /ALL /FO LIST | Out-String
-            if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromString $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
+    # 2-000
+    function Get-UserData {
+        param (
+            [string]$FilePath,
+            [string]$PagesFolder
+        )
 
-    # 2-002
-    function Get-UserProfile {
-        param ([string]$FilePath)
-        $Name = "2-002 Win32_UserProfile"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_UserProfile | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
+        foreach ($item in $UserPropertyArray.GetEnumerator()) {
+            $Name = $item.Key
+            $Command = $item.value[0]
+            $Type = $item.value[1]
 
-    # 2-003
-    function Get-UserInfo {
-        param ([string]$FilePath)
-        $Name = "2-003 Win32_UserAccount"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_UserAccount | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
+            $FileName = "$Name.html"
+            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-    # 2-004
-    function Get-LocalUserData {
-        param ([string]$FilePath)
-        $Name = "2-004 Get-LocalUser"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-LocalUser
-            if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
+            try {
+                $Data = Invoke-Expression -Command $Command
 
-    # 2-005
-    function Get-LogonSession {
-        param ([string]$FilePath)
-        $Name = "2-005 Win32_LogonSession"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Data = Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property *
-            if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
-            }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
-        }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
-    }
+                if ($Data.Count -eq 0) {
 
-    # 2-006
-    # TODO -- SKIPPED for now.  Will come back and figure out how to code this function
+                    Show-Message("No data found for ``$Name``") -Yellow
 
-    # 2-006
-    function Get-LastLogons {
-        param ([string]$FilePath)
-        $Name = "2-006 WinEvent Security (4624 or 4648)"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
-            $Cmd = Get-WinEvent -LogName 'Security' -FilterXPath "*[System[EventID=4624 or EventID=4648]]"
+                    Write-HtmlLogEntry("No data found for ``$Name``")
+                }
+                else {
 
-            $Data = @()
-            foreach ($LogonEvent in $Cmd) {
-                $Data += [PSCustomObject]@{
-                    Time      = $LogonEvent.TimeCreated
-                    LogonType = if ($LogonEvent.Id -eq 4648) { "Explicit" } else { "Interactive" }
-                    Message   = $LogonEvent.Message
+                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
+
+                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+
+                    Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                    }
+
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+                    }
                 }
             }
-            if ($Data.Count -eq 0) {
-                Show-Message("No data found for '$Name'") -Yellow
+            catch {
+                $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+                Show-Message("[ERROR] $ErrorMessage") -Red
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
             }
-            else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
-            }
+            Show-FinishedHtmlMessage $Name
         }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
-        }
-        Show-FinishedHtmlMessage $Name
     }
 
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-WhoAmI $FilePath
-    Get-UserProfile $FilePath
-    Get-UserInfo $FilePath
-    Get-LocalUserData $FilePath
-    Get-LogonSession $FilePath
-    Get-LastLogons $FilePath
+
+    Get-UserData -FilePath $FilePath -PagesFolder $PagesFolder
 
 
     # Add the closing text to the .html file

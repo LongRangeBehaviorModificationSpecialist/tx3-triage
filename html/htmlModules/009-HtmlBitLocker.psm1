@@ -3,8 +3,8 @@ function Export-BitLockerHtmlPage {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FilePath
+        [string]$FilePath,
+        [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
@@ -15,23 +15,28 @@ function Export-BitLockerHtmlPage {
     #* 9-001
     function Search-BitlockerVolumes {
         param ([string]$FilePath)
-        $Name = "9-001 BitLocker Data"
-        Show-Message("Running '$Name' command") -Header -DarkGray
+        $Name = "9-001_BitLocker_Volumes"
+        $FileName = "$Name.html"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
         try {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if (-not $Data) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
+                Write-HtmlLogEntry("No data found for ``$Name``")
             }
             else {
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+                Show-Message("[INFO] Saving output from ``$Name``") -Blue
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+
+                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
             }
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+            Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
@@ -40,12 +45,15 @@ function Export-BitLockerHtmlPage {
     #9-002
     function Get-BitlockerRecoveryKeys {
         param ([string]$FilePath)
-        $Name = "9-002 BitLocker Recovery Keys"
-        Show-Message("Running '$Name' command") -Header -DarkGray
+        $Name = "9-002_BitLocker_Recovery_Keys"
+        $FileName = "$Name.html"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
         try {
             $Info = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if (-not $Info) {
-                Show-Message("No data found for '$Name'") -Yellow
+                Show-Message("No data found for ``$Name``") -Yellow
+                Write-HtmlLogEntry("No data found for ``$Name``")
             }
             else {
                 $Data = @()
@@ -58,30 +66,32 @@ function Export-BitLockerHtmlPage {
 
                     # Write output based on the protection status of each drive
                     if ($ProtectionStatus -eq "On" -and $Null -ne $RecoveryKey) {
-                        $Message = "     <pre> [*] Drive $DriveLetter Recovery Key -> $($RecoveryKey.RecoveryPassword) </pre>"
+                        $Message = "     [*] Drive $DriveLetter Recovery Key -> $($RecoveryKey.RecoveryPassword)"
                         $Data += $Message
                         # Add-Content -Path $FilePath -Value "<pre> $Message </pre>" -NoNewline
                     }
                     elseif ($ProtectionStatus -eq "Unknown" -and $LockStatus -eq "Locked") {
-                        $Message = "    <pre> [*] Drive $DriveLetter This drive is mounted on the system, but IT IS NOT decrypted </pre>"
+                        $Message = "    [*] Drive $DriveLetter This drive is mounted on the system, but IT IS NOT decrypted"
                         $Data += $Message
                         # Add-Content -Path $FilePath -Value "<pre> $Message </pre>" -NoNewline
                     }
                     else {
-                        $Message = "    <pre> [*] Drive $DriveLetter Does not have a recovery key or is not protected by BitLocker </pre>"
+                        $Message = "    [*] Drive $DriveLetter Does not have a recovery key or is not protected by BitLocker"
                         $Data += $Message
                         # Add-Content -Path $FilePath -Value "<pre> $Message </pre>" -NoNewline
                     }
                 }
             }
-            Show-Message("[INFO] Saving output from '$Name'") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-            Save-OutputToHtmlFile -FromString $Name $Data $FilePath
+            Show-Message("[INFO] Saving output from ``$Name``") -Blue
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+
+            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+            Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+            Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
@@ -91,8 +101,8 @@ function Export-BitLockerHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Search-BitlockerVolumes $FilePath
-    Get-BitlockerRecoveryKeys $FilePath
+    Search-BitlockerVolumes -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-BitlockerRecoveryKeys -FilePath $FilePath -PagesFolder $PagesFolder
 
 
     # Add the closing text to the .html file
