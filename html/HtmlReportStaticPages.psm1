@@ -80,23 +80,23 @@ function Write-HtmlNavPage {
 
     </head>
 
-    <body class='nav__background'>
+    <body class='nav_background'>
 
         <div class='center'>
-            <img src='../images/customLogo.png' class='nav-image' />
+            <img src='../images/customLogo.png' class='nav_image' />
         </div>
 
         <div>
 
             <div class='heading'>Triage Report</div>
 
-            <div class='report-section'>
+            <div class='report_section'>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='./front.html' target='content'>Cover Page</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='./readme.html' target='content'>Read Me First</a>
                 </button>
 
@@ -104,42 +104,46 @@ function Write-HtmlNavPage {
 
             <div class='heading'>Category Report</div>
 
-            <div class='report-section'>
+            <div class='report_section'>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/001_DeviceInfo.html' target='content'>Device Information</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/002_UserInfo.html' target='content'>User Data</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/003_NetworkInfo.html' target='content'>Network Information</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/004_ProcessInfo.html' target='content'>Processes Information</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/005_SystemInfo.html' target='content'>System Information</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/006_PrefetchInfo.html' target='content'>Prefetch File Data</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/007_EventLogInfo.html' target='content'>Event Log Data</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/008_FirewallInfo.html' target='content'>Firewall Data/Settings</a>
                 </button>
 
-                <button class='nav-list-item'>
+                <button class='nav_list_item'>
                     <a href='../htmlpages/009_BitLockerInfo.html' target='content'>BitLocker Data</a>
+                </button>
+
+                <button class='nav_list_item'>
+                    <a href='../htmlpages/010_FileKeywordMatches.html' target='content'>File Keyword Search Results</a>
                 </button>
 
             </div>
@@ -201,41 +205,41 @@ function Write-HtmlFrontPage {
 
     </head>
 
-    <body class='front__background'>
+    <body class='front_background'>
 
-        <div class='caseinfo'>
+        <div class='case_info'>
 
-            <h1 class='topHeading'>Triage Report</h1>
+            <h1 class='top_heading'>Triage Report</h1>
 
             <br>
 
-            <table class='frontpage__table'>
+            <table class='frontpage_table'>
 
                 <br>
 
                 <tr>
-                    <td class='caseinfo__details'>Examiner <strong>:</strong></td>
-                    <td class='caseinfo__text'>$($User)</td>
+                    <td class='case_info_details'>Examiner <strong>:</strong></td>
+                    <td class='case_info_text'>$($User)</td>
                 </tr>
 
                 <tr>
-                    <td class='caseinfo__details'>Report Generated <strong>:</strong></td>
-                    <td class='caseinfo__text'>$($ReportGenTime) ET</td>
+                    <td class='case_info_details'>Report Generated <strong>:</strong></td>
+                    <td class='case_info_text'>$($ReportGenTime) ET</td>
                 </tr>
 
                 <tr>
-                    <td class='caseinfo__details'>Computer Name <strong>:</strong></td>
-                    <td class='caseinfo__text'>$($ComputerName)</td>
+                    <td class='case_info_details'>Computer Name <strong>:</strong></td>
+                    <td class='case_info_text'>$($ComputerName)</td>
                 </tr>
 
                 <tr>
-                    <td class='caseinfo__details'>IPv4 Address <strong>:</strong></td>
-                    <td class='caseinfo__text'>$($Ipv4)</td>
+                    <td class='case_info_details'>IPv4 Address <strong>:</strong></td>
+                    <td class='case_info_text'>$($Ipv4)</td>
                 </tr>
 
                 <tr>
-                    <td class='caseinfo__details'>IPv6 Address <strong>:</strong></td>
-                    <td class='caseinfo__text'>$($Ipv6)</td>
+                    <td class='case_info_details'>IPv6 Address <strong>:</strong></td>
+                    <td class='case_info_text'>$($Ipv6)</td>
                 </tr>
 
              </table>
@@ -292,16 +296,16 @@ function Write-HtmlReadMePage {
 
     </head>
 
-    <body class='readme-background'>
+    <body class='readme_background'>
 
-        <div class='caseinfo'>
+        <div class='case_info'>
 
-            <div class='topHeading'>&mdash; &mdash; WARNING &mdash; &mdash;</div>
+            <div class='top_heading'>&mdash; WARNING &mdash;</div>
 
-            <h3 class='lineFirst'>CRIMINAL REPORT PRODUCT</h3>
-            <h3 class='lineSecond'>DIGITAL COPY</h3>
+            <h3 class='first_line'>CRIMINAL REPORT PRODUCT</h3>
+            <h3 class='second_line'>DIGITAL COPY</h3>
 
-            <div class='numList'>
+            <div class='number_list'>
 
                 <ol type='1'>
 

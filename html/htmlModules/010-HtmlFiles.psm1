@@ -2,9 +2,11 @@ function Export-FilesHtmlPage {
 
     [CmdletBinding()]
 
-    param (
+    param
+    (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$FilePath,
+        [string]$PagesFolder,
         [string]$KeywordFile
     )
 
@@ -15,33 +17,42 @@ function Export-FilesHtmlPage {
 
     # 10-001
     function Search-FilesByKeywords {
-        # Get-ChildItem "C:\Users\" -Recurse -Include *passwords*.txt
-        param (
+
+        param
+        (
             [string]$FilePath,
             [string]$KeywordFile,
-            [string]$SearchDirectory = "C:"
+            [string]$PagesFolder,
+            [string]$SearchDirectory = "G:\"
         )
-        $Name = "10-001 Search File Names With Keywords"
-        Show-Message("Running '$Name' command") -Header -DarkGray
-        try {
+
+        $Name = "10-001_KeywordFileSearch"
+        $FileName = "$Name.html"
+        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+
+        try
+        {
             # Ensure the keyword file exists
-            if (-Not (Test-Path $KeywordFile)) {
+            if (-Not (Test-Path $KeywordFile))
+            {
                 Write-Error "Keyword file not found: $KeywordFile"
-                return
             }
 
-            # Ensure the search directory exists
-            if (-Not (Test-Path $SearchDirectory -PathType Container)) {
+            # Ensure the directory to be searched exists
+            if (-Not (Test-Path $SearchDirectory -PathType Container))
+            {
                 Write-Error "Search directory not found: $SearchDirectory"
-                return
             }
 
+            Show-Message("Keyword file identified as ``$keywordFile``") -Green
             # Read keywords from the file, removing empty lines and trimming whitespace
-            $keywords = Get-Content $KeywordFile | Where-Object { $_.Trim() -ne "" }
+            $keywords = Get-Content -Path $KeywordFile | Where-Object { $_ -ne "" } | Sort-Object -Unique
+            write-host "keywords = $keywords"
 
-            if (-Not $keywords) {
+            if (-Not $keywords)
+            {
                 Write-Error "No valid keywords found in file: $KeywordFile"
-                return
             }
 
             # Convert keywords into a single regex pattern for efficiency
@@ -49,31 +60,51 @@ function Export-FilesHtmlPage {
 
             # Search for matching files using optimized regex
             $Results = Get-ChildItem -Path $SearchDirectory -Recurse -File | Where-Object { $_.Name -match $pattern }
-            if (-not $Results) {
-                Show-Message("No data found for '$Name'") -Yellow
+
+
+            # $Results = Get-ChildItem -Path $SearchDirectory -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+            #     $file = $_
+            #     foreach ($term in $keywords)
+            #     {
+            #         if ($file.Name -like "*$term*")
+            #         {
+            #             write-host "$($file.Name)"
+            #             $file.FullName | Out-File -Append -FilePath $OutputHtmlFilePath
+            #         }
+            #     }
+            # }
+
+            if ($Results.Count -eq 0)
+            {
+                Invoke-NoDataFoundMessage $Name
             }
-            else {
+            else
+            {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
+                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
                 $Data = $Results | Select-Object -Property FullName, Name
-                Show-Message("[INFO] Saving output from '$Name'") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-                Save-OutputToHtmlFile -FromPipe $Name $Data $FilePath
+
+                Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
-        catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
+        catch
+        {
+            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
+            Show-Message("[ERROR] $ErrorMessage") -Red
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
         }
         Show-FinishedHtmlMessage $Name
     }
 
 
-
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Search-FilesByKeywords $FilePath -KeywordFile $KeywordFile
+    Search-FilesByKeywords -FilePath $FilePath -PagesFolder $PagesFolder -KeywordFile $KeywordFile
 
 
     # Add the closing text to the .html file
@@ -82,3 +113,23 @@ function Export-FilesHtmlPage {
 
 
 Export-ModuleMember -Function Export-FilesHtmlPage
+
+
+#TODO - Test both functions and see which one return results faster
+<# Another possible way to implement this function is listed below
+
+# Stream through files and search for matches
+Get-ChildItem -Path $searchDrive -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+    $file = $_
+    foreach ($term in $searchTerms)
+    {
+        if ($file.Name -like "*$term*")
+        {
+            # Write the matching file's full path to the output file
+            $file.FullName | Out-File -FilePath $outputFilePath -Append
+        }
+    }
+}
+
+
+#>

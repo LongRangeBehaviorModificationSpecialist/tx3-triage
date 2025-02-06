@@ -99,7 +99,7 @@ function Export-SystemHtmlPage {
                 if (-not (Test-Path -Path $RegKey))
                 {
                     Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                    Show-Message("[INFO] No data found for ``$Name``") -Yellow
+                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
                 }
                 else
                 {
@@ -107,7 +107,7 @@ function Export-SystemHtmlPage {
                     if (-not $Data)
                     {
                         Show-Message("[INFO] The registry key [$RegKey] exists, but contains no data") -Yellow
-                        Write-HtmlLogEntry("No data found for ``$Name``")
+                        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] The registry key [$RegKey] exists, but contains no data")
                     }
                     else
                     {

@@ -1,9 +1,6 @@
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
-# $ReturnHtmlSnippet = "<a href='#top' class='top'>(Return to Top)</a>"
-
-
 function Save-OutputToHtmlFile {
 
     [CmdletBinding()]
@@ -63,7 +60,7 @@ function Save-OutputToSingleHtmlFile {
 
     process
     {
-        Add-Content -Path $OutputHtmlFilePath -Value $HtmlDetailsHeader
+        Add-Content -Path $OutputHtmlFilePath -Value $HtmlHeader
 
         if ($FromPipe)
         {
@@ -71,14 +68,12 @@ function Save-OutputToSingleHtmlFile {
         }
         if ($FromString)
         {
-            Add-Content -Path $OutputHtmlFilePath -Value "<pre>`n$Data`n</pre>" -NoNewline
+            Add-Content -Path $OutputHtmlFilePath -Value "<pre>`n<p>`n$Data`n</p>`n</pre>" -NoNewline
         }
 
         Add-Content -Path $OutputHtmlFilePath -Value $EndingHtml
     }
 }
-
-
 
 
 function Write-HtmlLogEntry {
@@ -129,12 +124,53 @@ function Write-HtmlLogEntry {
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
 Show-Message("Module file '.\html\vars.psm1' was imported successfully") -NoTime -Blue
-Write-HtmlLogEntry("[$($PSCommandPath), Ln: $(Get-LineNum)] Module file ``.\html\vars.psm1`` was imported successfully")
+Write-HtmlLogEntry("[$(Split-Path -Path $PSCommandPath -Leaf), Ln: $(Get-LineNum)] Module file ``.\html\vars.psm1`` was imported successfully")
 
 Import-Module -Name .\html\HtmlReportStaticPages.psm1 -Global -Force
 Show-Message("Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully") -NoTime -Blue
-Write-HtmlLogEntry("[$($PSCommandPath), Ln: $(Get-LineNum)] Module file ``.\html\HtmlReportStaticPages.psm1`` was imported successfully")
+Write-HtmlLogEntry("[$(Split-Path -Path $PSCommandPath -Leaf), Ln: $(Get-LineNum)] Module file ``.\html\HtmlReportStaticPages.psm1`` was imported successfully")
 
+
+function Invoke-SaveOutputMessage {
+
+    param
+    (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$FunctionName,
+        [Parameter(Mandatory, Position = 1)]
+        [int]$LineNumber,
+        [Parameter(Mandatory, Position = 2)]
+        [string]$Name,
+        [string]$FileName,
+        [switch]$Start,
+        [switch]$Finish
+    )
+
+    if ($Start)
+    {
+        $msg = "Saving output from ``$($Name)``"
+    }
+    if ($Finish)
+    {
+        $msg = "Output from ``$($Name)`` saved to ``$FileName``"
+    }
+    Show-Message("[INFO] $msg") -Blue
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $LineNumber] $msg")
+}
+
+
+function Invoke-NoDataFoundMessage {
+
+    param
+    (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Name
+    )
+
+    $msg = "No data found for ``$($Name)``"
+    Show-Message("[WARNING] $msg") -Yellow
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
+}
 
 
 function Show-FinishedHtmlMessage {
@@ -190,11 +226,11 @@ function Export-HtmlReport {
     foreach ($file in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force))
     {
         Import-Module -Name $file.FullName -Force -Global
-        Show-Message("Module file: ``.\$($file.Name)`` was imported successfully") -NoTime -Blue
+        Show-Message("Module file: '.\$($file.Name)' was imported successfully") -NoTime -Blue
         Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\$($file.Name)`` was imported successfully")
     }
 
-    Show-Message("Triage exam began at $StartTimeString") -NoTime -Header -Yellow
+    Show-Message("[INFO] tx3-triage script execution began") -Header -Yellow
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Trige exam began at $StartTimeString")
 
 
@@ -230,38 +266,36 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] images files were copied from the source directory to the $($ImgFolder) directory")
 
 
-    # Write the encoded text to the `style.css` file
-    $CssStyleFileName = Join-Path -Path $CssFolder -ChildPath "style.css"
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$CssStyleFileName`` file was created")
-    $CssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($CssEncodedFileText))
-    Add-Content -Path $CssStyleFileName -Value $CssDecodedText
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $CssStyleFileName -Leaf)'")
+    # Create and write the encoded text to the `style.css` file
+    $StyleCssFile = Join-Path -Path $CssFolder -ChildPath "style.css"
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$StyleCssFile`` file was created")
+    $CssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($StyleCssEncodedText))
+    Add-Content -Path $StyleCssFile -Value $CssDecodedText
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $StyleCssFile -Leaf)'")
 
 
-    # Write the encoded text to the `styledetails.css` file
-    $CssStyleDetailsFileName = Join-Path -Path $CssFolder -ChildPath "styledetails.css"
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$CssStyleDetailsFileName`` file was created")
-    $CssDetailsDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($CssDetailsEncodedFileText))
-    Add-Content -Path $CssStyleDetailsFileName -Value $CssDetailsDecodedText
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $CssStyleDetailsFileName -Leaf)'")
-
-
-    # Create the `readme.css` file
+    # Create and write the encoded text to the `readme.css` file
     $ReadMeCssFile = New-Item -Path "$CssFolder\readme.css" -ItemType File
-    Add-Content -Path $ReadmeCssFile -Value $ReadMeHtmlFileCss
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$ReadMeCssFile`` file was created")
+    $ReadMeCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($ReadMeCssEncodedText))
+    Add-Content -Path $ReadmeCssFile -Value $ReadMeCssDecodedText
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $ReadMeCssFile -Leaf)'")
 
 
-    # Create the `nav.css` file
+    # Create and write the encoded text to the`nav.css` file
     $NavCssFile = New-Item -Path "$CssFolder\nav.css" -ItemType File
-    Add-Content -Path $NavCssFile -Value $NavHtmlFileCss
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$NavCssFile`` file was created")
+    $NavCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($NavCssEncodedText))
+    Add-Content -Path $navCssFile -Value $NavCssDecodedText
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $NavCssFile -Leaf)'")
 
 
-    # Create the `front.css` file
+    # Create and write the encoded text to the `front.css` file
     $FrontCssFile = New-Item -Path "$CssFolder\front.css" -ItemType File
-    Add-Content -Path $FrontCssFile -Value $FrontHtmlFileCss
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$FrontCssFile`` file was created")
+    $FrontCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($FrontCssEncodedText))
+    Add-Content -Path $FrontCssFile -Value $FrontCssDecodedText
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $FrontCssFile -Leaf)'")
 
 
     # Set and write the `TriageReport.html` homepage
@@ -289,7 +323,7 @@ function Export-HtmlReport {
 
 
     # Create `keywords.txt` file to use to search file names
-    $KeywordListFile = "$($PSScriptRoot)\static\SearchTerms.txt"
+    $KeywordListFile = "$($PSScriptRoot)\static\filenames.txt"
 
 
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
@@ -434,12 +468,12 @@ function Export-HtmlReport {
 
     }
 
-    function Invoke-FilesOutput {
+    function Invoke-KeywordSearch {
         try
         {
-            $FilesHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "010_FilesInfo.html"
+            $FilesHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "010_FileKeywordMatches.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
-            Export-FilesHtmlPage -FilePath $FilesHtmlOutputFile -KeywordFile $KeywordListFile
+            Export-FilesHtmlPage -FilePath $FilesHtmlOutputFile -PagesFolder $PagesFolder -KeywordFile $KeywordListFile
         }
         catch
         {
@@ -463,8 +497,8 @@ function Export-HtmlReport {
             # Invoke-PrefetchOutput
             # Invoke-EventLogOutput
             # Invoke-FirewallOutput
-            Invoke-BitLockerOutput
-            # Invoke-FilesOutput
+            # Invoke-BitLockerOutput
+            Invoke-KeywordSearch
         }
         catch
         {
@@ -492,4 +526,4 @@ function Export-HtmlReport {
 }
 
 
-Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Save-OutputToSingleHtmlFile, Show-FinishedHtmlMessage, Write-HtmlLogEntry -Variable *
+Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Save-OutputToSingleHtmlFile, Invoke-SaveOutputMessage, Invoke-NoDataFoundMessage, Show-FinishedHtmlMessage, Write-HtmlLogEntry -Variable *

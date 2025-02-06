@@ -165,6 +165,7 @@ function Get-ParameterValues
 #!
 #! ============================
 
+
 function Get-TriageData {
 
     Set-CaseFolders
@@ -183,7 +184,7 @@ function Get-TriageData {
         Import-Module -Name $file.FullName -Force -Global
     }
 
-    Show-Message("`nAll modules from ``$ModulesDirectory`` have been imported successfully.") -NoTime -Green
+    Show-Message("`nAll modules from $ModulesDirectory have been imported successfully.") -NoTime -Green
 
 
     # Start transcript to record all of the screen output

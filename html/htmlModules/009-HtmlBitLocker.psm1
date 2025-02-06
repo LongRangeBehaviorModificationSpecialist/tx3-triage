@@ -31,17 +31,17 @@ function Export-BitLockerHtmlPage {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if (-not $Data)
             {
-                Show-Message("No data found for ``$Name``") -Yellow
-                Write-HtmlLogEntry("No data found for ``$Name``")
+                Invoke-NoDataFoundMessage $Name
             }
             else
             {
-                Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                 Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch
@@ -71,11 +71,11 @@ function Export-BitLockerHtmlPage {
             $Info = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
             if (-not $Info)
             {
-                Show-Message("No data found for ``$Name``") -Yellow
-                Write-HtmlLogEntry("No data found for ``$Name``")
+                Invoke-NoDataFoundMessage $Name
             }
             else
             {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
                 $Data = @()
                 # Iterate through each drive
                 foreach ($Vol in $Info)
@@ -103,12 +103,12 @@ function Export-BitLockerHtmlPage {
                     }
                 }
             }
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
 
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
             Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {

@@ -62,13 +62,11 @@ function Export-NetworkHtmlPage {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0)
                 {
-                    Show-Message("No data found for ``$Name``") -Yellow
-                    Write-HtmlLogEntry("No data found for ``$Name``")
+                    Invoke-NoDataFoundMessage $Name
                 }
                 else
                 {
-                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                     Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
@@ -80,6 +78,7 @@ function Export-NetworkHtmlPage {
                     {
                         Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
                     }
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch
@@ -195,10 +194,11 @@ Active Connections, Associated Processes and DLLs
             # Delete the temp .html file
             Remove-Item -Path $TempFile -Force
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
@@ -218,12 +218,13 @@ Active Connections, Associated Processes and DLLs
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
@@ -253,15 +254,15 @@ Active Connections, Associated Processes and DLLs
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } }
             if ($Data.Count -eq 0)
             {
-                Show-Message("No data found for ``$Name``") -Yellow
-                Write-HtmlLogEntry("No data found for ``$Name``")
+                Invoke-NoDataFoundMessage $Name
             }
             else
             {
-                Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch
@@ -282,12 +283,13 @@ Active Connections, Associated Processes and DLLs
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
