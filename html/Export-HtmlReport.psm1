@@ -64,7 +64,7 @@ function Save-OutputToSingleHtmlFile {
 
         if ($FromPipe)
         {
-                $Data | ConvertTo-Html -As List -Fragment | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
+            $Data | ConvertTo-Html -As List -Fragment | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
         }
         if ($FromString)
         {
@@ -140,12 +140,8 @@ function Invoke-ShowErrorMessage {
 
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
-Show-Message("Module file '.\html\vars.psm1' was imported successfully") -NoTime -Blue
-Write-HtmlLogEntry("[$(Split-Path -Path $PSCommandPath -Leaf), Ln: $(Get-LineNum)] Module file ``.\html\vars.psm1`` was imported successfully")
 
 Import-Module -Name .\html\HtmlReportStaticPages.psm1 -Global -Force
-Show-Message("Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully") -NoTime -Blue
-Write-HtmlLogEntry("[$(Split-Path -Path $PSCommandPath -Leaf), Ln: $(Get-LineNum)] Module file ``.\html\HtmlReportStaticPages.psm1`` was imported successfully")
 
 
 function Invoke-SaveOutputMessage {
@@ -234,8 +230,18 @@ function Export-HtmlReport {
 
 
     [datetime]$HtmlStartTime = (Get-Date).ToUniversalTime()
-    # [datetime]$StartTimeString = Get-Date -UFormat "%A %B %d, %Y %H:%M:%S %Z"
-    [string]$StartTimeString = Get-Date -Format "yyyy-MM-dd HH:mm:ss.ffff K"
+
+
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Operator Name Entered: $User")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Agency Name Entered: $Agency")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Case Number Entered: $CaseNumber")
+
+    Show-Message("Module file '.\html\vars.psm1' was imported successfully") -NoTime -Blue
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\html\vars.psm1`` was imported successfully")
+
+    Show-Message("Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully") -NoTime -Blue
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\html\HtmlReportStaticPages.psm1`` was imported successfully")
+
 
     $HtmlModulesDirectory = "html\htmlModules"
 
@@ -248,7 +254,7 @@ function Export-HtmlReport {
     }
 
     Show-Message("[INFO] tx3-triage script execution began") -Header -Yellow
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Trige exam began at $StartTimeString")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Trige exam began")
 
 
     # $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
@@ -264,7 +270,7 @@ function Export-HtmlReport {
     $CssFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "css" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$CssFolder`` directory was created")
 
-    $PagesFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "htmlpages" -Force
+    $PagesFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "webpages" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$PagesFolder`` directory was created")
 
     $StaticFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "static" -Force
@@ -277,8 +283,8 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$ImgFolder`` directory was created")
 
 
-    $MasterImgFolder = Join-Path -Path $Cwd -ChildPath "html\Resources\images"
     # Copy the necessary folders to the new case directory
+    $MasterImgFolder = Join-Path -Path $Cwd -ChildPath "html\Resources\images"
     Copy-Item  $MasterImgFolder -Destination $ImgFolder -Force -Recurse
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] images files were copied from the source directory to the $($ImgFolder) directory")
 
@@ -340,7 +346,7 @@ function Export-HtmlReport {
 
 
     # Create `keywords.txt` file to use to search file names
-    $KeywordListFile = "$($PSScriptRoot)\static\HPFileSearchNames.txt"
+    $KeywordListFile = "$(Split-Path -Path $PSScriptRoot -Parent)\static\HPFileSearchNames.txt"
 
 
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
@@ -514,8 +520,11 @@ function Export-HtmlReport {
     $HtmlExeTime = "$($HtmlDuration.Days) days $($HtmlDuration.Hours) hours $($HtmlDuration.Minutes) minutes $($HtmlDuration.Seconds) seconds"
 
 
-    Show-Message("Script execution completed in: $HtmlExeTime`n") -Header -Green
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Script execution completed in: $HtmlExeTime")
+    Show-Message("Html script execution completed in: $HtmlExeTime`n") -Header -Green
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Html script execution completed in: $HtmlExeTime")
+
+    # Show a popup message when script is complete
+    (New-Object -ComObject Wscript.Shell).popup("Html script has finished running", 0, "Done", 0x1) | Out-Null
 
 }
 

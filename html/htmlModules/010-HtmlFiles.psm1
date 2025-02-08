@@ -48,41 +48,40 @@ function Export-FilesHtmlPage {
             Show-Message("Keyword file identified as ``$keywordFile``") -Green
 
             # Read keywords from the file, removing empty lines and trimming whitespace
-            $keywords = Get-Content -Path $KeywordFile | Where-Object { $_ -ne "" }
+            $keywords = Get-Content -Path $KeywordFile
 
             if (-Not $keywords)
             {
                 Write-Error "No valid keywords found in file: $KeywordFile"
             }
 
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
+            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+            Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>"
             # Stream through files and search for matches
-            $Results = Get-ChildItem -Path $SearchDirectory -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
-                foreach ($word in $keywords)
+            $Data = @()
+            Get-ChildItem -Path $SearchDirectory -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+                foreach ($string in $keywords)
                 {
-                    if ($_.Name -like "*$word*")
+                    if ($_.FullName -like "*$string*")
                     {
-                        # Write the matching file's full path to the output file
-                        $_.FullName | Sort-Object -Property FullName -Unique | Out-File -FilePath $OutputHtmlFilePath -Append -Encoding UTF8
+                        if ($Data -notcontains $_.FullName)
+                        {
+                            $Data += $_.FullName
+                        }
                     }
                 }
             }
-
-            if ($Results.Count -eq 0)
+            foreach ($file in $Data )
             {
-                Invoke-NoDataFoundMessage $Name
+                Add-Content -Path $OutputHtmlFilePath -Value "<tr><td>$($file)</td></tr>"
             }
-            else
-            {
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+            Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n$EndingHtml"
 
-                $Data = $Results | Select-Object -Property FullName
-
-                Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
-
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
-            }
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
@@ -104,23 +103,3 @@ function Export-FilesHtmlPage {
 
 
 Export-ModuleMember -Function Export-FilesHtmlPage
-
-
-#TODO - Test both functions and see which one return results faster
-<# Another possible way to implement this function is listed below
-
-# Stream through files and search for matches
-Get-ChildItem -Path $searchDrive -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
-    $file = $_
-    foreach ($term in $searchTerms)
-    {
-        if ($file.Name -like "*$term*")
-        {
-            # Write the matching file's full path to the output file
-            $file.FullName | Out-File -FilePath $outputFilePath -Append
-        }
-    }
-}
-
-
-#>

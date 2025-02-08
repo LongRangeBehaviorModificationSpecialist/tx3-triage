@@ -2,6 +2,8 @@
 
 <#
 
+.\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -gui
+
 .\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -html
 
 .\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -HashResults -Srum -Edd -Prefetch -NumOfPFRecords 5 -AllDrives -ListDrives -DriveList @("J","E") -NTUser -Registry -EventLogs -Archive
@@ -17,15 +19,8 @@
 
 param
 (
-    # Name of the user
-    [Parameter(Mandatory = $True)]
-    [string]$User,
-    # Name of investigating agency
-    [Parameter(Mandatory = $True)]
-    [string]$Agency,
-    # Investigating agency's case number
-    [Parameter(Mandatory = $True)]
-    [string]$CaseNumber,
+    # Use the GUI
+    [switch]$Gui,
     # Make an .html output report
     [switch]$Html,
     # Run Encrypted Disk Detector
@@ -81,6 +76,11 @@ Import-Module .\functions\functions.psm1 -Force -Global
 Show-Message("`nModule file: '.\functions\functions.psm1' was imported successfully") -NoTime -Blue
 
 
+$HtmlModule = ".\html\Export-HtmlReport.psm1"
+Import-Module -Name $HtmlModule -Force -Global
+Show-Message("Module file: '$($HtmlModule)' was imported successfully") -NoTime -Blue
+
+
 # Name of the folder containing the .psm1 files that are to be imported
 $ModulesFolder = "modules"
 
@@ -95,21 +95,6 @@ foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
 {
     Import-Module -Name $file.FullName -Force -Global
 }
-
-
-if ($Html)
-{
-    $HtmlModule = ".\html\Export-HtmlReport.psm1"
-    Import-Module -Name $HtmlModule -Force
-    Show-Message("Module file: '$($HtmlModule)' was imported successfully") -NoTime -Blue
-
-    Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
-}
-else
-{
-    Get-TriageData
-}
-
 
 
 function Get-ParameterValues
@@ -159,14 +144,19 @@ function Get-ParameterValues
 }
 
 
-#! ============================
-#!
 #! MAIN FUNCTION OF SCRIPT
-#!
-#! ============================
-
 
 function Get-TriageData {
+
+    # Name of the user
+    [Parameter(Mandatory = $True)]
+    [string]$User,
+    # Name of investigating agency
+    [Parameter(Mandatory = $True)]
+    [string]$Agency,
+    # Investigating agency's case number
+    [Parameter(Mandatory = $True)]
+    [string]$CaseNumber
 
     Set-CaseFolders
 
@@ -178,6 +168,7 @@ function Get-TriageData {
 
     # Construct the path to the 'modules' directory
     $ModulesDirectory = Join-Path -Path $ScriptDirectory -ChildPath $ModulesFolder
+
 
     foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
     {
@@ -806,6 +797,21 @@ Hashing result files...
 
 }
 
+
+if ($Gui)
+{
+    $GuiModule = ".\gui\GuiMain.psm1"
+    Import-Module -Name $GuiModule -Force
+    Show-Message("Module file: '$($GuiModule)' was imported successfully") -NoTime -Blue
+
+    Get-Gui
+}
+
+
+if ($Html)
+{
+    Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
+}
 
 
 # SIG # Begin signature block

@@ -18,6 +18,8 @@ $NetworkPropertyArray = [ordered]@{
     "3-016_NetIP_Interface"                     = ("Get-NetIPInterface | Select-Object -Property *", "Pipe")
     "3-017_NetRoute_All"                        = ("Get-NetRoute | Select-Object -Property *", "Pipe")
     "3-018_Dns_Cache_Txt"                       = ("ipconfig /displaydns | Out-String", "String")
+    "3-019_IPInfo"                              = ("powershell -nop irm ipinfo.io", "String")
+    "3-020_IPInfo_Cont"                         = ("nslookup myip.opendns.com resolver1.opendns.com", "String")
 }
 
 
@@ -89,7 +91,7 @@ function Export-NetworkHtmlPage {
         }
     }
 
-    #! 3-019 (Html Output)
+    #! 3-021 (Html Output)
     function Get-NetstatDetailed {
 
         param
@@ -97,7 +99,7 @@ function Export-NetworkHtmlPage {
             [string]$FilePath
         )
 
-        $Name = "3-019_NetstatConnectionsDetailed"
+        $Name = "3-021_NetstatConnectionsDetailed"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $TempFile = "$FilesFolder\$Name-TEMP.html"
         $FileName = "$Name.html"
@@ -205,10 +207,10 @@ Active Connections, Associated Processes and DLLs
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-020 (Csv Output)
+    #! 3-022 (Csv Output)
     function Get-NetTcpConnectionsAsCsv {
 
-        $Name = "3-020_NetTcpConnectionsAsCsv"
+        $Name = "3-022_NetTcpConnectionsAsCsv"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $FileName = "$Name.csv"
 
@@ -229,7 +231,7 @@ Active Connections, Associated Processes and DLLs
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-021 (Keep seperate)
+    #! 3-023 (Keep seperate)
     function Get-WifiPasswords {
 
         param
@@ -238,7 +240,7 @@ Active Connections, Associated Processes and DLLs
             [string]$PagesFolder
         )
 
-        $Name = "3-021_WifiPasswords"
+        $Name = "3-023_WifiPasswords"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -266,10 +268,10 @@ Active Connections, Associated Processes and DLLs
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-022 (Csv Output)
+    #! 3-024 (Csv Output)
     function Get-DnsCacheDataAsCsv {
 
-        $Name = "3-022_DnsCacheAsCsv"
+        $Name = "3-024_DnsCacheAsCsv"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $FileName = "$Name.csv"
 

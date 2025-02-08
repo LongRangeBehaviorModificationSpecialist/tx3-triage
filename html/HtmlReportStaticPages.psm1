@@ -107,43 +107,43 @@ function Write-HtmlNavPage {
             <div class='report_section'>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/001_DeviceInfo.html' target='content'>Device Information</a>
+                    <a href='../webpages/001_DeviceInfo.html' target='content'>Device Information</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/002_UserInfo.html' target='content'>User Data</a>
+                    <a href='../webpages/002_UserInfo.html' target='content'>User Data</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/003_NetworkInfo.html' target='content'>Network Information</a>
+                    <a href='../webpages/003_NetworkInfo.html' target='content'>Network Information</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/004_ProcessInfo.html' target='content'>Processes Information</a>
+                    <a href='../webpages/004_ProcessInfo.html' target='content'>Processes Information</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/005_SystemInfo.html' target='content'>System Information</a>
+                    <a href='../webpages/005_SystemInfo.html' target='content'>System Information</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/006_PrefetchInfo.html' target='content'>Prefetch File Data</a>
+                    <a href='../webpages/006_PrefetchInfo.html' target='content'>Prefetch File Data</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/007_EventLogInfo.html' target='content'>Event Log Data</a>
+                    <a href='../webpages/007_EventLogInfo.html' target='content'>Event Log Data</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/008_FirewallInfo.html' target='content'>Firewall Data/Settings</a>
+                    <a href='../webpages/008_FirewallInfo.html' target='content'>Firewall Data/Settings</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/009_BitLockerInfo.html' target='content'>BitLocker Data</a>
+                    <a href='../webpages/009_BitLockerInfo.html' target='content'>BitLocker Data</a>
                 </button>
 
                 <button class='nav_list_item'>
-                    <a href='../htmlpages/010_FileKeywordMatches.html' target='content'>File Keyword Search Results</a>
+                    <a href='../webpages/010_FileKeywordMatches.html' target='content'>File Keyword Search Results</a>
                 </button>
 
             </div>

@@ -20,6 +20,8 @@ $DevicePropertyArray = [ordered]@{
     "1-018_PnpDevice"                = ("Get-PnpDevice", "Pipe")
     "1-019_Win32PnPEntity"           = ("Get-CimInstance Win32_PnPEntity | Select-Object -Property *", "Pipe")
     "1-020_Win32Product"             = ("Get-WmiObject Win32_Product", "Pipe")
+    "1-021_DiskAllocation"           = ("fsutil volume allocationReport C:", "String")
+    "1-022_PNPEnumDevices"           = ("pnputil /enum-devices", "String")
 }
 
 
@@ -91,7 +93,7 @@ function Export-DeviceHtmlPage {
         }
     }
 
-    #1-021
+    #1-023
     function Get-TimeZoneInfo {
 
         param
@@ -100,7 +102,7 @@ function Export-DeviceHtmlPage {
             [string]$PagesFolder
         )
 
-        $Name = "1-021_TimeZoneInfo"
+        $Name = "1-023_TimeZoneInfo"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name``") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -141,7 +143,7 @@ function Export-DeviceHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 1-022 (Keep as seperate function)
+    #! 1-024 (Keep as seperate function)
     function Get-AutoRunsData {
 
         param
@@ -150,7 +152,7 @@ function Export-DeviceHtmlPage {
             [string]$PagesFolder
         )
 
-        $Name = "1-022_AutoRuns"
+        $Name = "1-024_AutoRuns"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -185,7 +187,7 @@ function Export-DeviceHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 1-023 (Keep as seperate function)
+    #! 1-025 (Keep as seperate function)
     function Get-OpenWindowTitles {
 
         param
@@ -194,7 +196,7 @@ function Export-DeviceHtmlPage {
             [string]$PagesFolder
         )
 
-        $Name = "1-023_OpenWindowTitles"
+        $Name = "1-025_OpenWindowTitles"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -223,7 +225,7 @@ function Export-DeviceHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
-    #! 1-024 (Keep as seperate function)
+    #! 1-026 (Keep as seperate function)
     function Get-FullSystemInfo {
 
         param
@@ -232,7 +234,7 @@ function Export-DeviceHtmlPage {
             [string]$PagesFolder
         )
 
-        $Name = "1-024_FullSystemInfo"
+        $Name = "1-026_FullSystemInfo"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $FileName = "$Name.html"
         $tempFile = "$FilesFolder\$Name-TEMP.txt"
