@@ -121,6 +121,23 @@ function Write-HtmlLogEntry {
     Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
 }
 
+function Invoke-ShowErrorMessage {
+
+    param
+    (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$ScriptName,
+        [Parameter(Mandatory, Position = 1)]
+        [int]$LineNumber,
+        [Parameter(Mandatory, Position = 2)]
+        [string]$Message
+    )
+
+        $ErrorMessage = "In Module: $ScriptName, Ln: $LineNumber, MESSAGE: $Message"
+        Show-Message("[ERROR] $ErrorMessage") -Red
+        Write-HtmlLogEntry("$ErrorMessage") -ErrorMessage
+}
+
 
 Import-Module -Name .\html\vars.psm1 -Global -Force
 Show-Message("Module file '.\html\vars.psm1' was imported successfully") -NoTime -Blue
@@ -323,7 +340,7 @@ function Export-HtmlReport {
 
 
     # Create `keywords.txt` file to use to search file names
-    $KeywordListFile = "$($PSScriptRoot)\static\filenames.txt"
+    $KeywordListFile = "$($PSScriptRoot)\static\HPFileSearchNames.txt"
 
 
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
@@ -339,9 +356,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -354,10 +369,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -370,9 +382,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -385,9 +395,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -400,9 +408,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -415,9 +421,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -430,9 +434,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -445,9 +447,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
 
     }
@@ -461,9 +461,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
 
     }
@@ -477,9 +475,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -502,9 +498,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[ERROR] $ErrorMessage")
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
@@ -526,4 +520,4 @@ function Export-HtmlReport {
 }
 
 
-Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Save-OutputToSingleHtmlFile, Invoke-SaveOutputMessage, Invoke-NoDataFoundMessage, Show-FinishedHtmlMessage, Write-HtmlLogEntry -Variable *
+Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Save-OutputToSingleHtmlFile, Invoke-SaveOutputMessage, Invoke-NoDataFoundMessage, Show-FinishedHtmlMessage, Write-HtmlLogEntry, Invoke-ShowErrorMessage -Variable *

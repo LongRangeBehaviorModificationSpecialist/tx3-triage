@@ -81,12 +81,13 @@ function Export-EventLogHtmlPage {
                 }
                 else
                 {
-                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                     Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
                     Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch [System.Exception]
@@ -96,9 +97,7 @@ function Export-EventLogHtmlPage {
             }
             catch
             {
-                $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $ErrorMessage") -Red
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -128,13 +127,11 @@ function Export-EventLogHtmlPage {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0)
                 {
-                    Show-Message("No data found for ``$Name``") -Yellow
-                    Write-HtmlLogEntry("No data found for ``$Name``")
+                    Invoke-NoDataFoundMessage $Name
                 }
                 else
                 {
-                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                     Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
@@ -146,13 +143,12 @@ function Export-EventLogHtmlPage {
                     {
                         Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
                     }
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch
             {
-                $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $ErrorMessage") -Red
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -173,18 +169,17 @@ function Export-EventLogHtmlPage {
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from $($MyInvocation.MyCommand.Name) saved to $(Split-Path -Path $FilePath -Leaf)")
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }

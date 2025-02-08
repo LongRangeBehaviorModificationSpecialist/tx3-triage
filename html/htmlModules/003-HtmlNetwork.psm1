@@ -83,9 +83,7 @@ function Export-NetworkHtmlPage {
             }
             catch
             {
-                $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $ErrorMessage") -Red
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -106,6 +104,8 @@ function Export-NetworkHtmlPage {
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             [datetime]$DateTime = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
             $Head = "
 <style>
@@ -194,17 +194,13 @@ Active Connections, Associated Processes and DLLs
             # Delete the temp .html file
             Remove-Item -Path $TempFile -Force
 
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
 
             Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -228,9 +224,7 @@ Active Connections, Associated Processes and DLLs
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -267,9 +261,7 @@ Active Connections, Associated Processes and DLLs
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -293,9 +285,7 @@ Active Connections, Associated Processes and DLLs
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -307,9 +297,9 @@ Active Connections, Associated Processes and DLLs
 
     Get-NetworkData -FilePath $FilePath -PagesFolder $PagesFolder
     Get-NetstatDetailed -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-NetTcpConnectionsAsCsv  # Do not pass $FilePath variable to function
+    Get-NetTcpConnectionsAsCsv  # No need to pass variables to this function
     Get-WifiPasswords -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-DnsCacheDataAsCsv  # Do not pass $FilePath variable to function
+    Get-DnsCacheDataAsCsv  # No need to pass variables to this function
 
 
     # Add the closing text to the .html file

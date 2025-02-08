@@ -47,13 +47,11 @@ function Export-ProcessHtmlPage {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0)
                 {
-                    Show-Message("No data found for ``$Name``") -Yellow
-                    Write-HtmlLogEntry("No data found for ``$Name``")
+                    Invoke-NoDataFoundMessage $Name
                 }
                 else
                 {
-                    Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                     Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
@@ -65,13 +63,12 @@ function Export-ProcessHtmlPage {
                     {
                         Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
                     }
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch
             {
-                $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $ErrorMessage") -Red
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -86,18 +83,17 @@ function Export-ProcessHtmlPage {
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -111,6 +107,8 @@ function Export-ProcessHtmlPage {
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             $Data = @()
             foreach ($P in (Get-WmiObject Win32_Process | Select-Object Name, ExecutablePath, CommandLine, ParentProcessId, ProcessId))
             {
@@ -129,16 +127,13 @@ function Export-ProcessHtmlPage {
             }
             ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -152,18 +147,17 @@ function Export-ProcessHtmlPage {
 
         try
         {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+
             Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Show-Message("[INFO] Saving output from ``$Name``") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($Name)`` saved to $FileName")
-
             Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -173,9 +167,9 @@ function Export-ProcessHtmlPage {
     # Run the functions from the module
     # ----------------------------------
     Get-ProcessesData -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-RunningProcessesAsCsv  # Do not pass $FilePath variable to function
-    Get-UniqueProcessHashAsCsv  # Do not pass $FilePath variable to function
-    Get-RunningServicesAsCsv  # Do not pass $FilePath variable to function
+    Get-RunningProcessesAsCsv  # No need to pass variables to this function
+    Get-UniqueProcessHashAsCsv  # No need to pass variables to this function
+    Get-RunningServicesAsCsv  # No need to pass variables to this function
 
 
     # Add the closing text to the .html file

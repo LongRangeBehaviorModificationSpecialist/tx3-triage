@@ -23,7 +23,7 @@ function Export-FilesHtmlPage {
             [string]$FilePath,
             [string]$KeywordFile,
             [string]$PagesFolder,
-            [string]$SearchDirectory = "G:\"
+            [string]$SearchDirectory = "D:\"
         )
 
         $Name = "10-001_KeywordFileSearch"
@@ -46,33 +46,26 @@ function Export-FilesHtmlPage {
             }
 
             Show-Message("Keyword file identified as ``$keywordFile``") -Green
+
             # Read keywords from the file, removing empty lines and trimming whitespace
-            $keywords = Get-Content -Path $KeywordFile | Where-Object { $_ -ne "" } | Sort-Object -Unique
-            write-host "keywords = $keywords"
+            $keywords = Get-Content -Path $KeywordFile | Where-Object { $_ -ne "" }
 
             if (-Not $keywords)
             {
                 Write-Error "No valid keywords found in file: $KeywordFile"
             }
 
-            # Convert keywords into a single regex pattern for efficiency
-            $pattern = ($keywords | ForEach-Object { [regex]::Escape($_) }) -join "|"
-
-            # Search for matching files using optimized regex
-            $Results = Get-ChildItem -Path $SearchDirectory -Recurse -File | Where-Object { $_.Name -match $pattern }
-
-
-            # $Results = Get-ChildItem -Path $SearchDirectory -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
-            #     $file = $_
-            #     foreach ($term in $keywords)
-            #     {
-            #         if ($file.Name -like "*$term*")
-            #         {
-            #             write-host "$($file.Name)"
-            #             $file.FullName | Out-File -Append -FilePath $OutputHtmlFilePath
-            #         }
-            #     }
-            # }
+            # Stream through files and search for matches
+            $Results = Get-ChildItem -Path $SearchDirectory -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+                foreach ($word in $keywords)
+                {
+                    if ($_.Name -like "*$word*")
+                    {
+                        # Write the matching file's full path to the output file
+                        $_.FullName | Sort-Object -Property FullName -Unique | Out-File -FilePath $OutputHtmlFilePath -Append -Encoding UTF8
+                    }
+                }
+            }
 
             if ($Results.Count -eq 0)
             {
@@ -84,7 +77,7 @@ function Export-FilesHtmlPage {
 
                 Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
-                $Data = $Results | Select-Object -Property FullName, Name
+                $Data = $Results | Select-Object -Property FullName
 
                 Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
 
@@ -93,9 +86,7 @@ function Export-FilesHtmlPage {
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }

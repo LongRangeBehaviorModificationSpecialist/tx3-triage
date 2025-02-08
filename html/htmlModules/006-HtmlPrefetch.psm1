@@ -32,24 +32,22 @@ function Export-PrefetchHtmlPage {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
             if ($Data.Count -eq 0)
             {
-                Show-Message("No data found for ``$Name``") -Yellow
-                Write-HtmlLogEntry("No data found for ``$Name``")
+                Invoke-NoDataFoundMessage $Name
             }
             else
             {
-                Show-Message("[INFO] Saving output from ``$Name``") -Blue
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Output from ``$($MyInvocation.MyCommand.Name)`` saved to $FileName")
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
                 Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch
         {
-            $ErrorMessage = "In Module: $(Split-Path -Path $MyInvocation.ScriptName -Leaf), Ln: $($PSItem.InvocationInfo.ScriptLineNumber), MESSAGE: $($PSItem.Exception.Message)"
-            Show-Message("[ERROR] $ErrorMessage") -Red
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
