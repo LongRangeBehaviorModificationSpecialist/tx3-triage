@@ -21,7 +21,7 @@ function Write-HtmlHomePage {
 
     <frameset cols='20%,80%' frameborder='1' border='1' framespacing='1'>
 
-        <frame name='menu' src='Resources/static/nav.html' marginheight='0' marginwidth='0' scrolling='auto'>
+        <frame name='menu' src='Resources/static/nav.html' marginheight='0' marginwidth='0' scrolling='no'>
         <frame name='content' src='Resources/static/front.html' marginheight='0' marginwidth='0' scrolling='auto'>
 
         <!-- <frame name='content' src='Resources/front.html' marginheight='0' marginwidth='0' scrolling='auto'> -->
@@ -92,59 +92,45 @@ function Write-HtmlNavPage {
 
             <div class='report_section'>
 
-                <button class='nav_list_item'>
-                    <a href='./front.html' target='content'>Cover Page</a>
-                </button>
+                <a class='nav_list_item' href='./front.html' target='content'>
+                    Cover Page
+                </a>
 
-                <button class='nav_list_item'>
-                    <a href='./readme.html' target='content'>Read Me First</a>
-                </button>
+                <a class='nav_list_item' href='./readme.html' target='content'>
+                    Read Me First
+                </a>
 
             </div>
 
-            <div class='heading'>Category Report</div>
+            <div class='heading'>Category Reports</div>
 
-            <div class='report_section'>
+            <div class='dropdown'>
 
-                <button class='nav_list_item'>
+                <button class='dropbtn'>Choose a Category</button>
+
+                <div class='dropdown-content'>
+
                     <a href='../webpages/001_DeviceInfo.html' target='content'>Device Information</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/002_UserInfo.html' target='content'>User Data</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/003_NetworkInfo.html' target='content'>Network Information</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/004_ProcessInfo.html' target='content'>Processes Information</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/005_SystemInfo.html' target='content'>System Information</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/006_PrefetchInfo.html' target='content'>Prefetch File Data</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/007_EventLogInfo.html' target='content'>Event Log Data</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/008_FirewallInfo.html' target='content'>Firewall Data/Settings</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/009_BitLockerInfo.html' target='content'>BitLocker Data</a>
-                </button>
 
-                <button class='nav_list_item'>
                     <a href='../webpages/010_FileKeywordMatches.html' target='content'>File Keyword Search Results</a>
-                </button>
+
+                </div>
 
             </div>
 

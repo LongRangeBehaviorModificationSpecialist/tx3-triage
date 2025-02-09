@@ -498,8 +498,8 @@ function Export-HtmlReport {
             # Invoke-SystemOutput
             # Invoke-PrefetchOutput
             # Invoke-EventLogOutput
-            # Invoke-FirewallOutput
-            # Invoke-BitLockerOutput
+            Invoke-FirewallOutput
+            Invoke-BitLockerOutput
             Invoke-KeywordSearch
         }
         catch
