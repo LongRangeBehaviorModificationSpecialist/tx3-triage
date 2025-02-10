@@ -65,57 +65,71 @@ function Get-Gui {
     $Form.Controls.Add($TextBoxCaseNumber)
 
 
-    # Radio button group
-    $groupBox = New-Object System.Windows.Forms.GroupBox
-    $groupBox.Text = "Select an Output Format"
-    $groupBox.Font = New-Object System.Drawing.Font("Arial", 11)
-    $groupBox.Location = New-Object System.Drawing.Point(10, 125)
-    $groupBox.Size = New-Object System.Drawing.Size(370, 65)
-    $form.Controls.Add($groupBox)
+    # # Radio button group
+    # $groupBox = New-Object System.Windows.Forms.GroupBox
+    # $groupBox.Text = "Select an Output Format"
+    # $groupBox.Font = New-Object System.Drawing.Font("Arial", 11)
+    # $groupBox.Location = New-Object System.Drawing.Point(10, 125)
+    # $groupBox.Size = New-Object System.Drawing.Size(370, 65)
+    # $form.Controls.Add($groupBox)
 
 
-    $htmlButton = New-Object System.Windows.Forms.RadioButton
-    $htmlButton.Text = "Html Output"
-    $htmlButton.Width = 185
-    $htmlButton.Location = New-Object System.Drawing.Point(10, 25)
-    $groupBox.Controls.Add($htmlButton)
+    # $htmlButton = New-Object System.Windows.Forms.RadioButton
+    # $htmlButton.Text = "Html Output"
+    # $htmlButton.Width = 185
+    # $htmlButton.Location = New-Object System.Drawing.Point(10, 25)
+    # $groupBox.Controls.Add($htmlButton)
 
 
-    $filesButton = New-Object System.Windows.Forms.RadioButton
-    $filesButton.Text = "Files Output"
-    $filesButton.Width = 185
-    $filesButton.Location = New-Object System.Drawing.Point(195, 25)
-    $groupBox.Controls.Add($filesButton)
+    # $filesButton = New-Object System.Windows.Forms.RadioButton
+    # $filesButton.Text = "Files Output"
+    # $filesButton.Width = 185
+    # $filesButton.Location = New-Object System.Drawing.Point(195, 25)
+    # $groupBox.Controls.Add($filesButton)
 
 
-    # Define a button for initiating the copy and hash verification
-    $ButtonCopy = New-Object Windows.Forms.Button
-    $ButtonCopy.Text = "Run Function"
-    $ButtonCopy.Font = New-Object System.Drawing.Font("Arial", 11)
-    $ButtonCopy.Width = 150
-    $ButtonCopy.Height = 50
-    $ButtonCopy.Padding = New-Object System.Windows.Forms.Padding(10)
-    $ButtonCopy.Location = New-Object Drawing.Point(10, 220)
-    $ButtonCopy.Add_Click({
+    # Define a button for initiating the html report
+    $ButtonHtmlReport = New-Object Windows.Forms.Button
+    $ButtonHtmlReport.Text = "Html Output"
+    $ButtonHtmlReport.Font = New-Object System.Drawing.Font("Arial", 11)
+    $ButtonHtmlReport.Width = 150
+    $ButtonHtmlReport.Height = 50
+    $ButtonHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
+    $ButtonHtmlReport.Location = New-Object Drawing.Point(10, 130)
+    $ButtonHtmlReport.Add_Click({
 
         $User = $TextBoxUserName.Text
         $Agency = $TextBoxAgency.Text
         $CaseNumber = $TextBoxCaseNumber.Text
 
-        if ($htmlButton)
-        {
-            Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
-            $Form.Close()
-        }
+        Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
+        $Form.Close()
 
-        if ($filesButton)
-        {
-            Get-TriageData
-            $Form.Close()
-        }
     })
     # Add the button
-    $Form.Controls.Add($ButtonCopy)
+    $Form.Controls.Add($ButtonHtmlReport)
+
+
+    # Define a button for initiating the files report
+    $ButtonFilesOutput = New-Object Windows.Forms.Button
+    $ButtonFilesOutput.Text = "Files Output"
+    $ButtonFilesOutput.Font = New-Object System.Drawing.Font("Arial", 11)
+    $ButtonFilesOutput.Width = 150
+    $ButtonFilesOutput.Height = 50
+    $ButtonFilesOutput.Padding = New-Object System.Windows.Forms.Padding(10)
+    $ButtonFilesOutput.Location = New-Object Drawing.Point(180, 130)
+    $ButtonFilesOutput.Add_Click({
+
+            $User = $TextBoxUserName.Text
+            $Agency = $TextBoxAgency.Text
+            $CaseNumber = $TextBoxCaseNumber.Text
+
+            Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
+            $Form.Close()
+
+        })
+    # Add the button
+    $Form.Controls.Add($ButtonFilesOutput)
 
     # Display the form
     [void]$Form.ShowDialog()

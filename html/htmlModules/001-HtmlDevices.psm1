@@ -1,27 +1,27 @@
 $DevicePropertyArray = [ordered]@{
 
-    "1-001_ComputerDetails"          = ("Get-ComputerDetails", "Pipe")
-    "1-002_TPMDetails"               = ("Get-TPMDetails", "Pipe")
-    "1-003_PSInfo"                   = (".\bin\PsInfo.exe -accepteula -s -h -d | Out-String", "String")
-    "1-004_PSDrive"                  = ("Get-PSDrive -PSProvider FileSystem | Select-Object -Property *", "Pipe")
-    "1-005_Win32LogicalDisk"         = ("Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *", "Pipe")
-    "1-006_ComputerInfo"             = ("Get-ComputerInfo", "Pipe")
-    "1-007_SystemInfo"               = ("systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *", "Pipe")
-    "1-008_Win32ComputerSystem"      = ("Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *", "Pipe")
-    "1-009_Win32OperatingSystem"     = ("Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *", "Pipe")
-    "1-010 Win32PhysicalMemory"      = ("Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *", "Pipe")
-    "1-011_EnvVars"                  = ("Get-ChildItem -Path env:", "Pipe")
-    "1-012_DiskInfo"                 = ("Get-Disk | Select-Object -Property * | Sort-Object DiskNumber", "Pipe")
-    "1-013_Partitions"               = ("Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber", "Pipe")
-    "1-014_Win32DiskPartitions"      = ("Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name", "Pipe")
-    "1-015_Win32StartupCommand"      = ("Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *", "Pipe")
-    "1-016_SoftwareLicensingService" = ("Get-WmiObject -ClassName SoftwareLicensingService", "Pipe")
-    "1-017_Win32Bios"                = ("Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *", "Pipe")
-    "1-018_PnpDevice"                = ("Get-PnpDevice", "Pipe")
-    "1-019_Win32PnPEntity"           = ("Get-CimInstance Win32_PnPEntity | Select-Object -Property *", "Pipe")
-    "1-020_Win32Product"             = ("Get-WmiObject Win32_Product", "Pipe")
-    "1-021_DiskAllocation"           = ("fsutil volume allocationReport C:", "String")
-    "1-022_PNPEnumDevices"           = ("pnputil /enum-devices", "String")
+    "1-001_ComputerDetails"          = ("Computer Details", "Get-ComputerDetails", "Pipe")
+    "1-002_TPMDetails"               = ("TPM Details", "Get-TPMDetails", "Pipe")
+    "1-003_PSInfo"                   = ("PS Info", ".\bin\PsInfo.exe -accepteula -s -h -d | Out-String", "String")
+    "1-004_PSDrive"                  = ("PS Drive Info", "Get-PSDrive -PSProvider FileSystem | Select-Object -Property *", "Pipe")
+    "1-005_Win32LogicalDisk"         = ("Win32_LogicalDisk", "Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property *", "Pipe")
+    "1-006_ComputerInfo"             = ("ComputerInfo", "Get-ComputerInfo", "Pipe")
+    "1-007_SystemInfo"               = ("systeminfo", "systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *", "Pipe")
+    "1-008_Win32ComputerSystem"      = ("Win32_ComputerSystem", "Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property *", "Pipe")
+    "1-009_Win32OperatingSystem"     = ("Win32_OperatingSystem", "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property *", "Pipe")
+    "1-010 Win32PhysicalMemory"      = ("Win32_PhysicalMemory", "Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property *", "Pipe")
+    "1-011_EnvVars"                  = ("EnvVars", "Get-ChildItem -Path env:", "Pipe")
+    "1-012_DiskInfo"                 = ("Disk Info", "Get-Disk | Select-Object -Property * | Sort-Object DiskNumber", "Pipe")
+    "1-013_Partitions"               = ("Partitions", "Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber", "Pipe")
+    "1-014_Win32DiskPartitions"      = ("Win32_DiskPartitions", "Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name", "Pipe")
+    "1-015_Win32StartupCommand"      = ("Win32_StartupCommand", "Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property *", "Pipe")
+    "1-016_SoftwareLicensingService" = ("Software Licensing Service", "Get-WmiObject -ClassName SoftwareLicensingService", "Pipe")
+    "1-017_Win32Bios"                = ("Win32_Bios", "Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *", "Pipe")
+    "1-018_PnpDevice"                = ("PnP Devices", "Get-PnpDevice", "Pipe")
+    "1-019_Win32PnPEntity"           = ("Win32_PnPEntity", "Get-CimInstance Win32_PnPEntity | Select-Object -Property *", "Pipe")
+    "1-020_Win32Product"             = ("Win32_Product", "Get-WmiObject Win32_Product", "Pipe")
+    "1-021_DiskAllocation"           = ("FSUtil Volume", "fsutil volume allocationReport C:", "String")
+    "1-022_PNPEnumDevices"           = ("PnP Enum Devices", "pnputil /enum-devices", "String")
 }
 
 
@@ -54,8 +54,10 @@ function Export-DeviceHtmlPage {
         foreach ($item in $DevicePropertyArray.GetEnumerator())
         {
             $Name = $item.Key
-            $Command = $item.value[0]
-            $Type = $item.value[1]
+            $Title = $item.value[0]
+            $Command = $item.value[1]
+            $Type = $item.value[2]
+
 
             $FileName = "$Name.html"
             Show-Message("Running ``$Name`` command") -Header -DarkGray
@@ -66,13 +68,15 @@ function Export-DeviceHtmlPage {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0)
                 {
-                    Invoke-NoDataFoundMessage $Name
+                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
                 else
                 {
                     Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                    Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                     if ($Type -eq "Pipe")
                     {
@@ -103,6 +107,7 @@ function Export-DeviceHtmlPage {
         )
 
         $Name = "1-023_TimeZoneInfo"
+        $Title = "Time Zone Info"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name``") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -129,7 +134,10 @@ function Export-DeviceHtmlPage {
                 {
                     Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                    Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
+
                     Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
 
                     Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
@@ -153,6 +161,7 @@ function Export-DeviceHtmlPage {
         )
 
         $Name = "1-024_AutoRuns"
+        $Title = "AutoRuns Data"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -164,13 +173,15 @@ function Export-DeviceHtmlPage {
             $Data = Import-Csv -Path $TempCsvFile
             if (-not $Data)
             {
-                Invoke-NoDataFoundMessage $Name
+                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
             else
             {
                 Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
 
@@ -197,6 +208,7 @@ function Export-DeviceHtmlPage {
         )
 
         $Name = "1-025_OpenWindowTitles"
+        $Title = "Open Window Titles"
         $FileName = "$Name.html"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
@@ -206,13 +218,15 @@ function Export-DeviceHtmlPage {
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle
             if ($Data.Count -eq 0)
             {
-                Invoke-NoDataFoundMessage $Name
+                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
             else
             {
                 Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
+
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
 
                 Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
@@ -235,8 +249,9 @@ function Export-DeviceHtmlPage {
         )
 
         $Name = "1-026_FullSystemInfo"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $Title = "Full System Info"
         $FileName = "$Name.html"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
         $tempFile = "$FilesFolder\$Name-TEMP.txt"
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
@@ -250,7 +265,9 @@ function Export-DeviceHtmlPage {
 
             Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
 
-            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
             Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
@@ -270,10 +287,10 @@ function Export-DeviceHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    # Get-DeviceData -FilePath $FilePath -PagesFolder $PagesFolder
-    # Get-TimeZoneInfo -FilePath $FilePath -PagesFolder $PagesFolder
-    # Get-AutoRunsData -FilePath $FilePath -PagesFolder $PagesFolder
-    # Get-OpenWindowTitles -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-DeviceData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-TimeZoneInfo -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-AutoRunsData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-OpenWindowTitles -FilePath $FilePath -PagesFolder $PagesFolder
     Get-FullSystemInfo -FilePath $FilePath -PagesFolder $PagesFolder
 
 

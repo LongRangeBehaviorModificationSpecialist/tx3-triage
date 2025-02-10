@@ -24,6 +24,7 @@ function Export-PrefetchHtmlPage {
 
         $Name = "6-001_DetailedPrefetchFileData"
         $FileName = "$Name.html"
+        $Title = "Prefetch File Data (Detailed)"
         Show-Message("Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
@@ -32,13 +33,15 @@ function Export-PrefetchHtmlPage {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
             if ($Data.Count -eq 0)
             {
-                Invoke-NoDataFoundMessage $Name
+                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
             else
             {
                 Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
 

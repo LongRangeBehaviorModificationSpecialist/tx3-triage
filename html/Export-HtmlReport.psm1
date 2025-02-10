@@ -176,13 +176,15 @@ function Invoke-NoDataFoundMessage {
 
     param
     (
-        [Parameter(Mandatory, Position = 0)]
-        [string]$Name
+        [string]$Name,
+        [string]$FilePath,
+        [string]$Title
     )
 
     $msg = "No data found for ``$($Name)``"
     Show-Message("[WARNING] $msg") -Yellow
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
+    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>&ensp&ensp [No data found]</span></button>`n"
 }
 
 
@@ -194,7 +196,7 @@ function Show-FinishedHtmlMessage {
         [string]$Name
     )
 
-    Show-Message("[INFO] ``$Name`` done...") -Blue
+    Show-Message("[INFO] ``$Name`` done.") -Blue
 }
 
 
@@ -289,36 +291,12 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] images files were copied from the source directory to the $($ImgFolder) directory")
 
 
-    # Create and write the encoded text to the `style.css` file
-    $StyleCssFile = Join-Path -Path $CssFolder -ChildPath "style.css"
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$StyleCssFile`` file was created")
-    $CssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($StyleCssEncodedText))
-    Add-Content -Path $StyleCssFile -Value $CssDecodedText
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $StyleCssFile -Leaf)'")
-
-
-    # Create and write the encoded text to the `readme.css` file
-    $ReadMeCssFile = New-Item -Path "$CssFolder\readme.css" -ItemType File
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$ReadMeCssFile`` file was created")
-    $ReadMeCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($ReadMeCssEncodedText))
-    Add-Content -Path $ReadmeCssFile -Value $ReadMeCssDecodedText
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $ReadMeCssFile -Leaf)'")
-
-
-    # Create and write the encoded text to the`nav.css` file
-    $NavCssFile = New-Item -Path "$CssFolder\nav.css" -ItemType File
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$NavCssFile`` file was created")
-    $NavCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($NavCssEncodedText))
-    Add-Content -Path $navCssFile -Value $NavCssDecodedText
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $NavCssFile -Leaf)'")
-
-
-    # Create and write the encoded text to the `front.css` file
-    $FrontCssFile = New-Item -Path "$CssFolder\front.css" -ItemType File
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$FrontCssFile`` file was created")
-    $FrontCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($FrontCssEncodedText))
-    Add-Content -Path $FrontCssFile -Value $FrontCssDecodedText
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $FrontCssFile -Leaf)'")
+    # Create and write the encoded text to the `allstyle.css` file
+    $AllStyleCssFile = Join-Path -Path $CssFolder -ChildPath "allstyle.css"
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$AllStyleCssFile`` file was created")
+    $AllStyleCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AllStyleCssEncodedText))
+    Add-Content -Path $AllStyleCssFile -Value $AllStyleCssDecodedText
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $AllStyleCssFile -Leaf)'")
 
 
     # Set and write the `TriageReport.html` homepage
@@ -491,16 +469,16 @@ function Export-HtmlReport {
     {
         try
         {
-            # Invoke-DeviceOutput
-            # Invoke-UserOutput
-            # Invoke-NetworkOutput
-            # Invoke-ProcessOutput
-            # Invoke-SystemOutput
-            # Invoke-PrefetchOutput
-            # Invoke-EventLogOutput
+            Invoke-DeviceOutput
+            Invoke-UserOutput
+            Invoke-NetworkOutput
+            Invoke-ProcessOutput
+            Invoke-SystemOutput
+            Invoke-PrefetchOutput
+            Invoke-EventLogOutput
             Invoke-FirewallOutput
             Invoke-BitLockerOutput
-            Invoke-KeywordSearch
+            # Invoke-KeywordSearch
         }
         catch
         {
@@ -523,9 +501,9 @@ function Export-HtmlReport {
     Show-Message("Html script execution completed in: $HtmlExeTime`n") -Header -Green
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Html script execution completed in: $HtmlExeTime")
 
+
     # Show a popup message when script is complete
     (New-Object -ComObject Wscript.Shell).popup("Html script has finished running", 0, "Done", 0x1) | Out-Null
-
 }
 
 

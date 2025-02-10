@@ -64,7 +64,7 @@ function Write-HtmlNavPage {
         <link href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Cinzel&display=swap' rel='stylesheet' type='text/css'>
 
-        <link rel='stylesheet' type='text/css' href='../css/nav.css' />
+        <link rel='stylesheet' type='text/css' href='../css/allstyle.css' />
 
         <link rel='shortcut icon' type='img/png' href='../images/binary.png'>
 
@@ -175,7 +175,7 @@ function Write-HtmlFrontPage {
         <link href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Cinzel&display=swap' rel='stylesheet' type='text/css'>
 
-        <link rel='stylesheet' type='text/css' href='../css/front.css' />
+        <link rel='stylesheet' type='text/css' href='../css/allstyle.css' />
 
         <link rel='shortcut icon' type='img/png' href='../images/binary.png'>
 
@@ -266,7 +266,7 @@ function Write-HtmlReadMePage {
         <link href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Cinzel&display=swap' rel='stylesheet' type='text/css'>
 
-        <link rel='stylesheet' type='text/css' href='../css/readme.css' />
+        <link rel='stylesheet' type='text/css' href='../css/allstyle.css' />
 
         <link rel='shortcut icon' type='img/png' href='../images/binary.png'>
 

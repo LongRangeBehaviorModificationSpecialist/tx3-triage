@@ -1,8 +1,9 @@
 $ProcessesPropertyArray = [ordered]@{
 
-    "4-001_RunningProcessesAll"  = ("Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName", "Pipe")
-    "4-002 SvcHostsAndProcesses" = ("Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq 'svchost.exe' | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path", "Pipe")
-    "4-003_DriverQuery"          = ("driverquery | Out-String", "String")
+    "4-001_RunningProcessesAll"  = ("Win32_Process", "Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName", "Pipe")
+    "4-002 SvcHostsAndProcesses" = ("Svc Hosts & Processes", "Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq 'svchost.exe' | Select-Object ProcessID,
+                                   Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path", "Pipe")
+    "4-003_DriverQuery"          = ("DriverQuery", "driverquery | Out-String", "String")
 }
 
 
@@ -35,8 +36,9 @@ function Export-ProcessHtmlPage {
         foreach ($item in $ProcessesPropertyArray.GetEnumerator())
         {
             $Name = $item.Key
-            $Command = $item.value[0]
-            $Type = $item.value[1]
+            $Title = $item.value[0]
+            $Command = $item.value[1]
+            $Type = $item.value[2]
 
             $FileName = "$Name.html"
             Show-Message("Running ``$Name`` command") -Header -DarkGray
@@ -47,13 +49,15 @@ function Export-ProcessHtmlPage {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0)
                 {
-                    Invoke-NoDataFoundMessage $Name
+                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
                 else
                 {
                     Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
 
-                    Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+
+                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                     if ($Type -eq "Pipe")
                     {
@@ -78,8 +82,10 @@ function Export-ProcessHtmlPage {
     function Get-RunningProcessesAsCsv {
 
         $Name = "4-004_RunningProcessesAsCsv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $Title = "Running Processes (as Csv)"
         $FileName = "$Name.csv"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+
 
         try
         {
@@ -87,7 +93,9 @@ function Export-ProcessHtmlPage {
 
             Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
             Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
@@ -102,8 +110,10 @@ function Export-ProcessHtmlPage {
     function Get-UniqueProcessHashAsCsv {
 
         $Name = "4-005_UniqueProcessHashesAsCsv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $Title = "Unique Processes Hashes (as Csv)"
         $FileName = "$Name.csv"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
+
 
         try
         {
@@ -127,7 +137,9 @@ function Export-ProcessHtmlPage {
             }
             ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$FilesFolder\$FileName" -Encoding UTF8
 
-            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
             Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
@@ -142,8 +154,9 @@ function Export-ProcessHtmlPage {
     function Get-RunningServicesAsCsv {
 
         $Name = "4-006_RunningServicesAsCsv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        $Title = "Running Services (as Csv)"
         $FileName = "$Name.csv"
+        Show-Message("Running ``$Name`` command") -Header -DarkGray
 
         try
         {
@@ -151,7 +164,9 @@ function Export-ProcessHtmlPage {
 
             Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
+
+            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
             Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
