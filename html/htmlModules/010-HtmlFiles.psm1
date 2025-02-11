@@ -29,7 +29,7 @@ function Export-FilesHtmlPage {
         $Name = "10-001_KeywordFileSearch"
         $FileName = "$Name.html"
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try
         {

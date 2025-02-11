@@ -70,7 +70,7 @@ function Export-DeviceHtmlPage {
 
 
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -119,7 +119,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-022_PnpEnumDevices"
         $Title = "PnP Enum Devices"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try {
@@ -210,7 +210,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-024_AutoRuns"
         $Title = "AutoRuns Data"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try
@@ -225,8 +225,6 @@ function Export-DeviceHtmlPage {
             else
             {
                 Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
@@ -258,7 +256,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-025_OpenWindowTitles"
         $Title = "Open Window Titles"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try
@@ -272,7 +270,6 @@ function Export-DeviceHtmlPage {
             {
                 Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
-                # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                 Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
@@ -300,7 +297,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-026_FullSystemInfo"
         $Title = "Full System Info"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $tempFile = "$FilesFolder\$Name-TEMP.txt"
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 

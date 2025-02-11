@@ -58,7 +58,7 @@ function Export-NetworkHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -71,8 +71,6 @@ function Export-NetworkHtmlPage {
                 else
                 {
                     Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
                     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>"
 
@@ -107,7 +105,7 @@ function Export-NetworkHtmlPage {
         $Title = "Detailed Netstat Connections"
         $FileName = "$Name.html"
         $TempFile = "$FilesFolder\$Name-TEMP.html"
-        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try
         {
@@ -201,8 +199,6 @@ Active Connections, Associated Processes and DLLs
             # Delete the temp .html file
             Remove-Item -Path $TempFile -Force
 
-            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
-
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
             Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
@@ -220,15 +216,13 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-022_NetTcpConnectionsAsCsv"
         $Title = "Net TCP Connections (as Csv)"
         $FileName = "$Name.csv"
-        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try
         {
             Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-
-            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>"
 
@@ -253,12 +247,13 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-023_WifiPasswords"
         $Title = "Wifi Passwords"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try
         {
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } } | Out-String
+
             if ($Data.Count -eq 0)
             {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
@@ -287,7 +282,7 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-024_DnsCacheAsCsv"
         $Title = "DNS Cache (as Csv file)"
         $FileName = "$Name.csv"
-        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
 
         try
@@ -295,8 +290,6 @@ Active Connections, Associated Processes and DLLs
             Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-
-            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>"
 

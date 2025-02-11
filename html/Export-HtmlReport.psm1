@@ -291,8 +291,8 @@ function Export-HtmlReport {
 
 
     # Set and write the `TriageReport.html` homepage
-    $HtmlReportFile = New-Item -Path "$CaseFolderName\TriageReport.html" -ItemType File
-    Write-HtmlHomePage -FilePath $HtmlReportFile
+    $HtmlReportFile = New-Item -Path "$CaseFolderName\main.html" -ItemType File
+    Write-MainHtmlPage -FilePath $HtmlReportFile
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$HtmlReportFile`` file was created")
 
 
@@ -304,7 +304,7 @@ function Export-HtmlReport {
 
     # Set and write the `main.html` file to be displayed in the `TriageReport.html` page
     $MainReportFile = New-Item -Path "$StaticFolder\main.html" -ItemType File
-    Write-MainHtmlPage -FilePath $MainReportFile
+    Write-MainHtmlPage -FilePath $MainReportFile -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$MainReportFile`` file was created")
 
 
@@ -467,14 +467,14 @@ function Export-HtmlReport {
         try
         {
             # Invoke-DeviceOutput
-            Invoke-UserOutput
+            # Invoke-UserOutput
             # Invoke-NetworkOutput
             # Invoke-ProcessOutput
             # Invoke-SystemOutput
-            # Invoke-PrefetchOutput
+            Invoke-PrefetchOutput
             # Invoke-EventLogOutput
             # Invoke-FirewallOutput
-            # Invoke-BitLockerOutput
+            Invoke-BitLockerOutput
             # Invoke-KeywordSearch
         }
         catch

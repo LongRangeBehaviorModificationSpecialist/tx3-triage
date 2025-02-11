@@ -40,7 +40,7 @@ function Export-ProcessHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -81,7 +81,7 @@ function Export-ProcessHtmlPage {
         $Name = "4-004_RunningProcessesAsCsv"
         $Title = "Running Processes (as Csv)"
         $FileName = "$Name.csv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try
         {
@@ -106,7 +106,7 @@ function Export-ProcessHtmlPage {
         $Name = "4-005_UniqueProcessHashesAsCsv"
         $Title = "Unique Processes Hashes (as Csv)"
         $FileName = "$Name.csv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
 
         try
@@ -148,7 +148,7 @@ function Export-ProcessHtmlPage {
         $Name = "4-006_RunningServicesAsCsv"
         $Title = "Running Services (as Csv)"
         $FileName = "$Name.csv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try
         {

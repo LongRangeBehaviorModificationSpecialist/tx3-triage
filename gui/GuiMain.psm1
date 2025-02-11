@@ -103,7 +103,7 @@ function Get-Gui {
         $Agency = $TextBoxAgency.Text
         $CaseNumber = $TextBoxCaseNumber.Text
 
-        Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
+            Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
         $Form.Close()
 
     })
@@ -121,14 +121,14 @@ function Get-Gui {
     $ButtonFilesOutput.Location = New-Object Drawing.Point(180, 130)
     $ButtonFilesOutput.Add_Click({
 
-            $User = $TextBoxUserName.Text
-            $Agency = $TextBoxAgency.Text
-            $CaseNumber = $TextBoxCaseNumber.Text
+        $User = $TextBoxUserName.Text
+        $Agency = $TextBoxAgency.Text
+        $CaseNumber = $TextBoxCaseNumber.Text
 
-            Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
-            $Form.Close()
+        Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
+        $Form.Close()
 
-        })
+    })
     # Add the button
     $Form.Controls.Add($ButtonFilesOutput)
 

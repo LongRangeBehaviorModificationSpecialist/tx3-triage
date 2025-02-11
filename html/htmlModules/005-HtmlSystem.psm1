@@ -76,20 +76,16 @@ $SystemPropertiesArray = [ordered]@{
     "5-035_Win32Share"             = ("Win32 Share", "Get-CimInstance -ClassName Win32_Share | Select-Object -Property *", "Pipe")
     "5-036_Win32ScheduledJobs"     = ("Win32 Scheduled Jobs", "Get-CimInstance -ClassName Win32_ScheduledJob", "Pipe")
     "5-037_ScheduledTasks"         = ("Scheduled Tasks", "Get-ScheduledTask | Select-Object -Property * | Where-Object -Property State -ne 'Disabled'", "Pipe")
-    "5-038_ScheduledTaskRunInfo"   = ("Scheduled Task Run Info",
-                                     "Get-ScheduledTask | Where-Object -Property State -ne 'Disabled' | Get-ScheduledTaskInfo | Select-Object -Property *", "Pipe")
+    "5-038_ScheduledTaskRunInfo"   = ("Scheduled Task Run Info", "Get-ScheduledTask | Where-Object -Property State -ne 'Disabled' | Get-ScheduledTaskInfo | Select-Object -Property *", "Pipe")
     "5-039_HotFixes"               = ("Hot Fixes", "Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending", "Pipe")
     "5-040_InstalledAppsFromAppx"  = ("Installed Apps From Appx", "Get-AppxPackage", "Pipe")
     "5-041_VolumeShadowCopies"     = ("Volume Shadow Copies", "Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *", "Pipe")
-    "5-042_TemporaryInternetFiles" = ("Temporary Internet Files",
-                                     "Get-ChildItem -Recurse -Force `"$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files`" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending", "Pipe")
-    "5-043_StoredCookiesData"      = ("Stored Cookies",
-                                     "Get-ChildItem -Recurse -Force `"$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies`" | Select-Object Name | ForEach-Object { $N = $_.Name; Get-Content `"$($AppData)\Microsoft\Windows\cookies\$N`" | Select-String '/' }", "Pipe")
+    "5-042_TemporaryInternetFiles" = ("Temporary Internet Files", "Get-ChildItem -Recurse -Force `"$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files`" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending", "Pipe")
+    "5-043_StoredCookiesData"      = ("Stored Cookies", "Get-ChildItem -Recurse -Force `"$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies`" | Select-Object Name | ForEach-Object { $N = $_.Name; Get-Content `"$($AppData)\Microsoft\Windows\cookies\$N`" | Select-String '/' }", "Pipe")
     "5-044_GroupPolicies"          = ("Group Policies", "gpresult.exe /z | Out-String", "String")
     "5-045_AuditPolicy"            = ("Audit Policy", "auditpol /get /category:* | Out-String", "String")
     "5-046_HiddenFilesOnCDrive"    = ("Hidden Files On C:\ Drive", "Get-ChildItem -Path C:\ -Attributes Hidden -Recurse -Force", "Pipe")
-    "5-047_Last30AddedExeFiles"    = ("Last 30 Added Exe Files",
-                                     "Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object -Property Name -like '*.exe' | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 30 | Format-Table PSPath, LastWriteTime", "Pipe")
+    # "5-047_Last30AddedExeFiles"    = ("Last 30 Added Exe Files", "Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object -Property Name -like '*.exe' | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 30 | Format-Table PSPath, LastWriteTime", "Pipe")
     "5-048_ExecutableFileList"     = ("Executable File List", "Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object -Property Extension -eq '.exe'", "Pipe")
 }
 
@@ -125,9 +121,8 @@ function Export-SystemHtmlPage {
             $RegKey = $item.value[1]
             $Command = $item.value[2]
 
-
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -153,9 +148,9 @@ function Export-SystemHtmlPage {
                     {
                         Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
-
                         Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
+
+                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
 
                         Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
 
@@ -187,7 +182,7 @@ function Export-SystemHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -226,7 +221,7 @@ function Export-SystemHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-SelectRegistryValues -FilePath $FilePath
+    Get-SelectRegistryValues -FilePath $FilePath -PagesFolder $PagesFolder
     Get-SystemData -FilePath $FilePath -PagesFolder $PagesFolder
 
 

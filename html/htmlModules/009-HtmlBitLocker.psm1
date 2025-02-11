@@ -24,12 +24,12 @@ function Export-BitLockerHtmlPage {
         $Name = "9-001BitLockerVolumes"
         $Title = "BitLocker Volumes"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try
         {
-            $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
+            $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint | Out-String
             if (-not $Data)
             {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
@@ -40,7 +40,7 @@ function Export-BitLockerHtmlPage {
 
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
                 Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
@@ -63,7 +63,7 @@ function Export-BitLockerHtmlPage {
         $Name = "9-002_BitLockerRecoveryKeys"
         $Title = "BitLocker Recovery Keys"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try
@@ -106,7 +106,7 @@ function Export-BitLockerHtmlPage {
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-            Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
+            Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
             Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }

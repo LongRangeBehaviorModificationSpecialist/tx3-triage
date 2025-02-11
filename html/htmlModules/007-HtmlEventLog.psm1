@@ -25,7 +25,7 @@ $EventLogArray = [ordered]@{
 $OtherEventLogPropertyArray = [ordered]@{
 
     "7-020_BasicListOfEventLogs"     = ("Basic List Of Event Logs", "Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
-    "7-021_EventLogEnabledList"      = ("Event Log Enabled List", "Get-WinEvent -ListLog * | Where-Object -Property IsEnabled -eq 'True' } | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
+    "7-021_EventLogEnabledList"      = ("Event Log Enabled List", "Get-WinEvent -ListLog * | Where-Object -Property IsEnabled -eq 'True' | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
     "7-022_SecurityEventLogCounts"   = ("Security Event Log Counts", "Get-EventLog -LogName Security | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending", "Pipe")
     "7-023_SecurityEventsLast30Days" = ("Security Events Last 30 Days", "Get-EventLog -LogName Security -After $((Get-Date).AddDays(-[int]30))", "Pipe")
     "7-024_AppInventoryEvents"       = ("App Inventory Events", "Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending", "Pipe")
@@ -68,7 +68,7 @@ function Export-EventLogHtmlPage {
             $Properties = $item.value[3]
 
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -123,7 +123,7 @@ function Export-EventLogHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -171,7 +171,7 @@ function Export-EventLogHtmlPage {
         $Name = "7-026_SecurityEventsLast30DaysAsCsv"
         $Title = "Security Events Last 30 Days (as Csv)"
         $FileName = "$Name.csv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try
         {
