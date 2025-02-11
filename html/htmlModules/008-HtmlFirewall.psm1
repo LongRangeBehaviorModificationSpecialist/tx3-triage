@@ -50,28 +50,26 @@ function Export-FirewallHtmlPage {
                 }
                 else
                 {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-
-                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
                     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                     if ($Type -eq "Pipe")
                     {
-                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
                     }
                     if ($Type -eq "String")
                     {
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch
             {
-                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 
@@ -83,7 +81,7 @@ function Export-FirewallHtmlPage {
 
 
     # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $EndingHtml
+    Add-Content -Path $FilePath -Value $HtmlFooter
 }
 
 

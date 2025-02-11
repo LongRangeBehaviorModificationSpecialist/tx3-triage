@@ -24,14 +24,12 @@ $EventLogArray = [ordered]@{
 
 $OtherEventLogPropertyArray = [ordered]@{
 
-    "7-020_BasicListOfEventLogs"     = ("Basic List Of Event Logs", "Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount,
-                                       FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
+    "7-020_BasicListOfEventLogs"     = ("Basic List Of Event Logs", "Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
     "7-021_EventLogEnabledList"      = ("Event Log Enabled List", "Get-WinEvent -ListLog * | Where-Object -Property IsEnabled -eq 'True' } | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
     "7-022_SecurityEventLogCounts"   = ("Security Event Log Counts", "Get-EventLog -LogName Security | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending", "Pipe")
     "7-023_SecurityEventsLast30Days" = ("Security Events Last 30 Days", "Get-EventLog -LogName Security -After $((Get-Date).AddDays(-[int]30))", "Pipe")
     "7-024_AppInventoryEvents"       = ("App Inventory Events", "Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending", "Pipe")
-    "7-025_TerminalServiceEvents"    = ("Terminal Service Events", "Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational |
-                                       Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending", "Pipe")
+    "7-025_TerminalServiceEvents"    = ("Terminal Service Events", "Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending", "Pipe")
 }
 
 function Export-EventLogHtmlPage {
@@ -81,19 +79,17 @@ function Export-EventLogHtmlPage {
                 if ($Data.Count -eq 0)
                 {
                     Show-Message("[INFO] The LogFile $LogName exists, but contains no Events that match the EventID of $EventID") -Yellow
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>&ensp&ensp The LogFile $LogName exists, but contains no Events that match the EventID of $EventID</span></button>`n"
+                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>The LogFile $LogName exists, but contains no Events that match the EventID of $EventID</span></button>`n"
                 }
                 else
                 {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-
-                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
                     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                    Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                    Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
 
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch [System.Exception]
@@ -103,11 +99,12 @@ function Export-EventLogHtmlPage {
             }
             catch
             {
-                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
+
 
     # 7-000B
     function Get-OtherEventLogData {
@@ -138,30 +135,29 @@ function Export-EventLogHtmlPage {
                 }
                 else
                 {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-
-                    # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
                     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
                     if ($Type -eq "Pipe")
                     {
-                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
                     }
                     if ($Type -eq "String")
                     {
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch
             {
-                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
+
 
     #! 7-026 (Csv Output)
     function Get-SecurityEventsLast30DaysCsv {
@@ -173,28 +169,25 @@ function Export-EventLogHtmlPage {
         )
 
         $Name = "7-026_SecurityEventsLast30DaysAsCsv"
-        $Title = "Security Events Last 30 Days (asCsv)"
+        $Title = "Security Events Last 30 Days (as Csv)"
         $FileName = "$Name.csv"
         Show-Message("Running ``$Name`` command") -Header -DarkGray
 
-
         try
         {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
-            # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='../files/$FileName'>$FileName</a></p></div>"
-
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -207,7 +200,7 @@ function Export-EventLogHtmlPage {
 
 
     # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $EndingHtml
+    Add-Content -Path $FilePath -Value $HtmlFooter
 }
 
 

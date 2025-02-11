@@ -28,6 +28,7 @@ function Get-Gui {
 
     $TextBoxUserName = New-Object System.Windows.Forms.TextBox
     $TextBoxUserName.Width = 250
+    $TextBoxUserName.BorderStyle = FixedSingle
     $TextBoxUserName.Font = New-Object System.Drawing.Font("Arial", 11)
     $TextBoxUserName.Location = New-Object System.Drawing.Point(130, 20)
     $Form.Controls.Add($TextBoxUserName)

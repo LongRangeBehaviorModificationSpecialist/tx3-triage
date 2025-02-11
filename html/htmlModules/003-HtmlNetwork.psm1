@@ -1,26 +1,25 @@
 $NetworkPropertyArray = [ordered]@{
 
-    "3-001_Win32_Network_Adapter_Configuration" = ("Win32_NetworkAdapterConfiguration",
-                                                  "Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = 'IpAddress'; E = { $_.IpAddress -join '; ' } }, @{ N = 'DefaultIPgateway'; E = { $_.DefaultIPgateway -join '; ' } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass", "Pipe")
-    "3-002_Established_Network_Connections"     = ("Established NetTCPConnection", "Get-NetTCPConnection -State Established", "Pipe")
+    "3-001_Win32_Network_Adapter_Configuration" = ("Win32 Network Adapter Configuration",
+                                                  "Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = 'IpAddress'; E = { $_.IpAddress -join '; ' } }, @{ N = 'DefaultIPgateway'; E = { $_.DefaultIPgateway -join '; ' } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Out-String", "String")
+    "3-002_Established_Network_Connections"     = ("Established NetTCPConnection", "Get-NetTCPConnection -State Established | Format-List | Out-String", "String")
     "3-003_Netstat_Connections_Basic"           = ("netstat (Basic)", "netstat -nao | Out-String", "String")
-    "3-004_Net_TCP_Connections_Txt"             = ("Net TCP Connection (as Txt)", "Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort,
-                                                  State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending", "Pipe")
-    "3-005_Network_Adapter"                     = ("NetAdapter", "Get-NetAdapter | Select-Object -Property *", "Pipe")
-    "3-006_NetIP_Configuration"                 = ("NetIPConfiguration", "Get-NetIPConfiguration | Select-Object -Property *", "Pipe")
+    "3-004_Net_TCP_Connections_Txt"             = ("Net TCP Connection (as Txt)", "Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | Out-String", "String")
+    "3-005_Network_Adapter"                     = ("Net Adapter", "Get-NetAdapter | Select-Object -Property * | Out-String", "String")
+    "3-006_NetIP_Configuration"                 = ("Net IP Configuration", "Get-NetIPConfiguration | Select-Object -Property * | Out-String", "String")
     "3-007_route_PRINT"                         = ("route Info", "route PRINT | Out-String", "String")
     "3-008_ipconfig_all"                        = ("ipconfig /all", "ipconfig /all | Out-String", "String")
     "3-009_Dns_Cache_Txt"                       = ("ipconfig /displaydns", "ipconfig /displaydns | Out-String", "String")
-    "3-010_NetNeighbor"                         = ("NetNeighbor", "Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress", "Pipe")
-    "3-011_NetIP_Address"                       = ("NetIPAddress", "Get-NetIPAddress | Sort-Object -Property IPAddress", "Pipe")
+    "3-010_NetNeighbor"                         = ("Net Neighbor", "Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress | Out-String", "String")
+    "3-011_NetIP_Address"                       = ("Net IP Address", "Get-NetIPAddress | Sort-Object -Property IPAddress | Out-String", "String")
     "3-012_HostsFile"                           = ("hosts File", "Get-Content `"$Env:windir\system32\drivers\etc\hosts`" -Raw", "String")
     "3-013_NetworksFile"                        = ("networks File", "Get-Content `"$Env:windir\system32\drivers\etc\networks`" -Raw", "String")
     "3-014_ProtocolFile"                        = ("protocol File", "Get-Content `"$Env:windir\system32\drivers\etc\protocol`" -Raw", "String")
     "3-015_ServicesFile"                        = ("services File", "Get-Content `"$Env:windir\system32\drivers\etc\services`" -Raw", "String")
-    "3-016_SmbShare"                            = ("SmbShare", "Get-SmbShare", "Pipe")
-    "3-017_NetIP_Interface"                     = ("NetIPInterface", "Get-NetIPInterface | Select-Object -Property *", "Pipe")
-    "3-018_NetRoute_All"                        = ("NetRoute", "Get-NetRoute | Select-Object -Property *", "Pipe")
-    "3-019_IPInfo"                              = ("IP Address", "powershell -nop irm ipinfo.io", "String")
+    "3-016_SmbShare"                            = ("SmbShare", "Get-SmbShare | Out-String", "String")
+    "3-017_NetIP_Interface"                     = ("Net IP Interface", "Get-NetIPInterface | Select-Object -Property * | Out-String", "String")
+    "3-018_NetRoute_All"                        = ("Net Route", "Get-NetRoute | Select-Object -Property * | Out-String", "String")
+    "3-019_IPInfo"                              = ("IP Address", "powershell -nop irm ipinfo.io | Out-String", "String")
     "3-020_IPInfo_Cont"                         = ("IP Address (2)", "nslookup myip.opendns.com resolver1.opendns.com", "String")
 }
 
@@ -59,7 +58,7 @@ function Export-NetworkHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("Running ``$Name`` command") -Header -DarkGray
+            Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
             try
@@ -71,7 +70,7 @@ function Export-NetworkHtmlPage {
                 }
                 else
                 {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
                     # Add-Content -Path $FilePath -Value "`n<button type='button' class='collapsible'>$($Name)</button><div class='content'>FILE: <a href='.\$FileName'>$FileName</a></p></div>"
 
@@ -79,20 +78,20 @@ function Export-NetworkHtmlPage {
 
                     if ($Type -eq "Pipe")
                     {
-                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
                     }
                     if ($Type -eq "String")
                     {
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath
+                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch
             {
-                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 
@@ -108,11 +107,11 @@ function Export-NetworkHtmlPage {
         $Title = "Detailed Netstat Connections"
         $FileName = "$Name.html"
         $TempFile = "$FilesFolder\$Name-TEMP.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
 
         try
         {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
             [datetime]$DateTime = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
             $Head = "
@@ -206,13 +205,13 @@ Active Connections, Associated Processes and DLLs
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
     #! 3-022 (Csv Output)
@@ -221,11 +220,11 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-022_NetTcpConnectionsAsCsv"
         $Title = "Net TCP Connections (as Csv)"
         $FileName = "$Name.csv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
 
         try
         {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
@@ -233,16 +232,16 @@ Active Connections, Associated Processes and DLLs
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>"
 
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
-    #! 3-023 (Keep seperate)
+    #! 3-023 (Keep function seperate)
     function Get-WifiPasswords {
 
         param
@@ -254,32 +253,32 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-023_WifiPasswords"
         $Title = "Wifi Passwords"
         $FileName = "$Name.html"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
         try
         {
-            $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } }
+            $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } } | Out-String
             if ($Data.Count -eq 0)
             {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
             else
             {
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>"
 
-                Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath
+                Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
 
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
     #! 3-024 (Csv Output)
@@ -288,12 +287,12 @@ Active Connections, Associated Processes and DLLs
         $Name = "3-024_DnsCacheAsCsv"
         $Title = "DNS Cache (as Csv file)"
         $FileName = "$Name.csv"
-        Show-Message("Running ``$Name`` command") -Header -DarkGray
+        Show-Message("[INFO] Running ``$Name`` command") -Header -DarkGray
 
 
         try
         {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
 
@@ -301,13 +300,13 @@ Active Connections, Associated Processes and DLLs
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>"
 
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -323,7 +322,7 @@ Active Connections, Associated Processes and DLLs
 
 
     # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $EndingHtml
+    Add-Content -Path $FilePath -Value $HtmlFooter
 }
 
 

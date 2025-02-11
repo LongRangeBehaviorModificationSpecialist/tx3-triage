@@ -54,6 +54,7 @@ function Save-OutputToSingleHtmlFile {
         [object]$Data,
         [Parameter(Mandatory, Position = 2)]
         [string]$OutputHtmlFilePath,
+        [string]$Title,
         [switch]$FromPipe,
         [switch]$FromString
     )
@@ -64,14 +65,15 @@ function Save-OutputToSingleHtmlFile {
 
         if ($FromPipe)
         {
-            $Data | ConvertTo-Html -As List -Fragment | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
+            $Data | ConvertTo-Html -As List -Fragment -PreContent "<h3>$Title</h3>" | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
         }
         if ($FromString)
         {
+            Add-Content -Path $OutputHtmlFilePath -Value "<h3>$Title</h3>"
             Add-Content -Path $OutputHtmlFilePath -Value "<pre>`n<p>`n$Data`n</p>`n</pre>" -NoNewline
         }
 
-        Add-Content -Path $OutputHtmlFilePath -Value $EndingHtml
+        Add-Content -Path $OutputHtmlFilePath -Value $HtmlFooter
     }
 }
 
@@ -125,11 +127,8 @@ function Invoke-ShowErrorMessage {
 
     param
     (
-        [Parameter(Mandatory, Position = 0)]
         [string]$ScriptName,
-        [Parameter(Mandatory, Position = 1)]
         [int]$LineNumber,
-        [Parameter(Mandatory, Position = 2)]
         [string]$Message
     )
 
@@ -139,20 +138,15 @@ function Invoke-ShowErrorMessage {
 }
 
 
-Import-Module -Name .\html\vars.psm1 -Global -Force
-
-Import-Module -Name .\html\HtmlReportStaticPages.psm1 -Global -Force
+Import-Module -Name .\html\HtmlSnippets.psm1 -Global -Force
 
 
 function Invoke-SaveOutputMessage {
 
     param
     (
-        [Parameter(Mandatory, Position = 0)]
         [string]$FunctionName,
-        [Parameter(Mandatory, Position = 1)]
         [int]$LineNumber,
-        [Parameter(Mandatory, Position = 2)]
         [string]$Name,
         [string]$FileName,
         [switch]$Start,
@@ -184,7 +178,7 @@ function Invoke-NoDataFoundMessage {
     $msg = "No data found for ``$($Name)``"
     Show-Message("[WARNING] $msg") -Yellow
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
-    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>&ensp&ensp [No data found]</span></button>`n"
+    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>[No data found]</span></button>`n"
 }
 
 
@@ -192,7 +186,6 @@ function Show-FinishedHtmlMessage {
 
     param
     (
-        [Parameter(Mandatory, Position = 0)]
         [string]$Name
     )
 
@@ -238,11 +231,9 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Agency Name Entered: $Agency")
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Case Number Entered: $CaseNumber")
 
-    Show-Message("Module file '.\html\vars.psm1' was imported successfully") -NoTime -Blue
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\html\vars.psm1`` was imported successfully")
 
-    Show-Message("Module file '.\html\HtmlReportStaticPages.psm1' was imported successfully") -NoTime -Blue
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\html\HtmlReportStaticPages.psm1`` was imported successfully")
+    Show-Message("Module file: '.\html\HtmlSnippets.psm1' was imported successfully") -NoTime -Blue
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\html\HtmlSnippets.psm1`` was imported successfully")
 
 
     $HtmlModulesDirectory = "html\htmlModules"
@@ -311,9 +302,15 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$NavReportFile`` file was created")
 
 
+    # Set and write the `main.html` file to be displayed in the `TriageReport.html` page
+    $MainReportFile = New-Item -Path "$StaticFolder\main.html" -ItemType File
+    Write-MainHtmlPage -FilePath $MainReportFile
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$MainReportFile`` file was created")
+
+
     # Set and write the `front.html` file to be displayed in the `TriageReport.html` page
     $FrontReportFile = New-Item -Path "$StaticFolder\front.html" -ItemType File
-    Write-HtmlFrontPage -FilePath $FrontReportFile -User $User -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6
+    Write-HtmlFrontPage -FilePath $FrontReportFile -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$FrontReportFile`` file was created")
 
 
@@ -340,7 +337,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -353,7 +350,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -366,7 +363,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -379,7 +376,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -392,7 +389,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -405,7 +402,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -418,7 +415,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -431,7 +428,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
 
     }
@@ -445,7 +442,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
 
     }
@@ -459,7 +456,7 @@ function Export-HtmlReport {
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -469,20 +466,20 @@ function Export-HtmlReport {
     {
         try
         {
-            Invoke-DeviceOutput
+            # Invoke-DeviceOutput
             Invoke-UserOutput
-            Invoke-NetworkOutput
-            Invoke-ProcessOutput
-            Invoke-SystemOutput
-            Invoke-PrefetchOutput
-            Invoke-EventLogOutput
-            Invoke-FirewallOutput
-            Invoke-BitLockerOutput
+            # Invoke-NetworkOutput
+            # Invoke-ProcessOutput
+            # Invoke-SystemOutput
+            # Invoke-PrefetchOutput
+            # Invoke-EventLogOutput
+            # Invoke-FirewallOutput
+            # Invoke-BitLockerOutput
             # Invoke-KeywordSearch
         }
         catch
         {
-            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
         }
     }
 
