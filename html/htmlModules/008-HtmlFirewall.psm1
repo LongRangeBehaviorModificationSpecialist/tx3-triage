@@ -16,13 +16,13 @@ function Export-FirewallHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
         [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -30,14 +30,12 @@ function Export-FirewallHtmlPage {
     # 8-000
     function Get-FirewallData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $FirewallPropertyArray.GetEnumerator())
-        {
+        foreach ($item in $FirewallPropertyArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $Command = $item.value[1]
@@ -47,33 +45,27 @@ function Export-FirewallHtmlPage {
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0)
-                {
+
+                if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
 
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    if ($Type -eq "Pipe")
-                    {
-                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
-                    if ($Type -eq "String")
-                    {
-                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -85,6 +77,8 @@ function Export-FirewallHtmlPage {
     # ----------------------------------
     Get-FirewallData -FilePath $FilePath -PagesFolder $PagesFolder
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

@@ -2,13 +2,13 @@ function Export-PrefetchHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
         [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -16,8 +16,7 @@ function Export-PrefetchHtmlPage {
     #6-001
     function Get-DetailedPrefetchData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
@@ -28,27 +27,20 @@ function Export-PrefetchHtmlPage {
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try
-        {
+        try {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime | Out-String
-            if ($Data.Count -eq 0)
-            {
+            if ($Data.Count -eq 0) {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
-            else
-            {
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            else {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -59,6 +51,8 @@ function Export-PrefetchHtmlPage {
     # ----------------------------------
     Get-DetailedPrefetchData -FilePath $FilePath -PagesFolder $PagesFolder
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

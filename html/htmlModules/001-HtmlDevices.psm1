@@ -69,67 +69,56 @@ function Export-DeviceHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
         [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
-    $FilesFolder = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files"
+    $FilesFolder = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\results\files"
 
 
     # 1-000
     function Get-DeviceData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $DevicePropertyArray.GetEnumerator())
-        {
+        foreach ($item in $DevicePropertyArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $Command = $item.value[1]
             $Type = $item.value[2]
 
-
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0)
-                {
+                if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    if ($Type -eq "Pipe")
-                    {
-                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
-                    if ($Type -eq "String")
-                    {
-                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
                 }
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -139,8 +128,7 @@ function Export-DeviceHtmlPage {
     #! 1-022 (Keep as seperate function)
     function Get-PnpEnumDevices {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
@@ -158,17 +146,14 @@ function Export-DeviceHtmlPage {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
             else {
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -178,8 +163,7 @@ function Export-DeviceHtmlPage {
     # 1-023
     function Get-TimeZoneInfo {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
@@ -191,38 +175,31 @@ function Export-DeviceHtmlPage {
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
         $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation"
 
-        try
-        {
+        try {
             Show-Message("[INFO] Searching for key [$RegKey]") -Blue
-            if (-not (Test-Path -Path $RegKey))
-            {
-                Show-Message("[WARNING] Registry Key [$RegKey] does not exist") -Yellow
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist") -WarningMessage
+            if (-not (Test-Path -Path $RegKey)) {
+                $dneMsg = "Registry Key [$RegKey] does not exist"
+                Show-Message("[WARNING] $dneMsg") -Yellow
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $dneMsg") -WarningMessage
             }
-            else
-            {
+            else {
                 $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Out-String
 
-                if (-not $Data)
-                {
-                    Show-Message("[INFO] The registry key [$RegKey] exists, but contains no data") -Yellow
-                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] The registry key [$RegKey] exists, but contains no data")
+                if (-not $Data) {
+                    $msg = "The registry key [$RegKey] exists, but contains no data"
+                    Show-Message("[INFO] $msg") -Yellow
+                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -231,8 +208,7 @@ function Export-DeviceHtmlPage {
     #! 1-024 (Keep as seperate function)
     function Get-AutoRunsData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
@@ -243,32 +219,26 @@ function Export-DeviceHtmlPage {
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try
-        {
-            $TempCsvFile = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files\1-022_AutoRuns-TEMP.csv"
+        try {
+            $TempCsvFile = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\results\files\1-024_AutoRuns-TEMP.csv"
             Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
             $Data = Import-Csv -Path $TempCsvFile
-            if (-not $Data)
-            {
+            if (-not $Data) {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
-            else
-            {
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                # Remove the temp csv file
-                Remove-Item -Path $TempCsvFile -Force
-
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            else {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+        }
+        finally {
+            # Remove the temp csv file
+            Remove-Item -Path $TempCsvFile -Force
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -277,8 +247,7 @@ function Export-DeviceHtmlPage {
     #! 1-025 (Keep as seperate function)
     function Get-OpenWindowTitles {
 
-        param
-        (
+        param  (
             [string]$FilePath,
             [string]$PagesFolder
         )
@@ -289,27 +258,20 @@ function Export-DeviceHtmlPage {
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try
-        {
+        try {
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle | Out-String
-            if ($Data.Count -eq 0)
-            {
+            if ($Data.Count -eq 0) {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
-            else
-            {
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            else {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -318,8 +280,7 @@ function Export-DeviceHtmlPage {
     #! 1-026 (Keep as seperate function)
     function Get-FullSystemInfo {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
@@ -331,26 +292,18 @@ function Export-DeviceHtmlPage {
         $tempFile = "$FilesFolder\$Name-TEMP.txt"
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try
-        {
-            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
+        try {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
             Start-Process -FilePath "msinfo32.exe" -ArgumentList "/report $tempFile" -NoNewWindow -Wait
-
             $Data = Get-Content -Path $tempFile -Raw
-
-            Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+            Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
-        finally
-        {
+        finally {
             # Remove the temporary text file
             Remove-Item -Path $tempFile -Force
         }
@@ -368,6 +321,8 @@ function Export-DeviceHtmlPage {
     Get-OpenWindowTitles -FilePath $FilePath -PagesFolder $PagesFolder
     # Get-FullSystemInfo -FilePath $FilePath -PagesFolder $PagesFolder
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

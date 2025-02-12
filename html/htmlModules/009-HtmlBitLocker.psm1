@@ -2,13 +2,13 @@ function Export-BitLockerHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
         [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -16,8 +16,7 @@ function Export-BitLockerHtmlPage {
     # 9-001
     function Search-BitlockerVolumes {
 
-        param
-        (
+        param (
             [string]$FilePath
         )
 
@@ -27,27 +26,20 @@ function Export-BitLockerHtmlPage {
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try
-        {
+        try {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint | Out-String
-            if (-not $Data)
-            {
+            if (-not $Data) {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
-            else
-            {
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            else {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -55,8 +47,7 @@ function Export-BitLockerHtmlPage {
     # 9-002
     function Get-BitlockerRecoveryKeys {
 
-        param
-        (
+        param (
             [string]$FilePath
         )
 
@@ -66,53 +57,44 @@ function Export-BitLockerHtmlPage {
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-        try
-        {
+        try {
             $Info = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
-            if (-not $Info)
-            {
+
+            if (-not $Info) {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
             }
-            else
-            {
-                Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
+            else {
+                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
                 $Data = @()
                 # Iterate through each drive
-                foreach ($Vol in $Info)
-                {
+                foreach ($Vol in $Info) {
                     $DriveLetter = $Vol.MountPoint
                     $ProtectionStatus = $Vol.ProtectionStatus
                     $LockStatus = $Vol.LockStatus
                     $RecoveryKey = $Vol.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword" }
 
                     # Write output based on the protection status of each drive
-                    if ($ProtectionStatus -eq "On" -and $Null -ne $RecoveryKey)
-                    {
+                    if ($ProtectionStatus -eq "On" -and $Null -ne $RecoveryKey) {
                         $Message = "[-] Drive $DriveLetter Recovery Key -> $($RecoveryKey.RecoveryPassword)`n`n"
                         $Data += $Message
                     }
-                    elseif ($ProtectionStatus -eq "Unknown" -and $LockStatus -eq "Locked")
-                    {
+                    elseif ($ProtectionStatus -eq "Unknown" -and $LockStatus -eq "Locked") {
                         $Message = "[-] Drive $DriveLetter This drive is mounted on the system, but IT IS NOT decrypted`n`n"
                         $Data += $Message
                     }
-                    else
-                    {
+                    else {
                         $Message = "[-] Drive $DriveLetter Does not have a recovery key or is not protected by BitLocker`n`n"
                         $Data += $Message
                     }
                 }
             }
 
-            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-            Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+            Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -124,6 +106,8 @@ function Export-BitLockerHtmlPage {
     Search-BitlockerVolumes -FilePath $FilePath -PagesFolder $PagesFolder
     Get-BitlockerRecoveryKeys -FilePath $FilePath -PagesFolder $PagesFolder
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

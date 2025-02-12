@@ -50,31 +50,28 @@ function Export-EventLogHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
-        [string]$PagesFolder
+        [string]$PagesFolder,
+        [string]$FilesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
-
-    $FilesFolder = "$(Split-Path -Path (Split-Path -Path $FilePath -Parent) -Parent)\files"
 
 
     #7-000A
     function Get-EventLogData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder,
             [int]$MaxRecords = 50
         )
 
-        foreach ($item in $EventLogArray.GetEnumerator())
-        {
+        foreach ($item in $EventLogArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $LogName = $item.value[1]
@@ -85,35 +82,29 @@ function Export-EventLogHtmlPage {
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 Show-Message("Searching for $LogName Log (Event ID: $EventID)") -DarkGray
                 $Command = "Get-WinEvent -Max $MaxRecords -FilterHashtable @{ Logname = '$($LogName)'; ID = $($EventID) } | Select-Object -Property $($Properties) | Out-String"
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0)
-                {
-                    Show-Message("[INFO] The LogFile $LogName exists, but contains no Events that match the EventID of $EventID") -Yellow
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)&ensp;&ensp;<span class='bold_red'>The LogFile $LogName exists, but contains no Events that match the EventID of $EventID</span></button>`n"
+                if ($Data.Count -eq 0) {
+                    $msg = "The LogFile $LogName exists, but contains no Events that match the EventID of $EventID"
+                    Show-Message("[INFO] $msg") -Yellow
+                    Write-HtmlLogEntry("$msg")
+                    Add-Content -Path $FilePath -Value "<button class='no_info_btn'>`n<div class='no_info_text'>$($msg)</div>`n</button>`n"
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
-            catch [System.Exception]
-            {
+            catch [System.Exception] {
                 Show-Message("$NoMatchingEventsMsg") -Yellow
                 Write-HtmlLogEntry("$NoMatchingEventsMsg") -WarningMessage
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -123,14 +114,12 @@ function Export-EventLogHtmlPage {
     # 7-000B
     function Get-OtherEventLogData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $OtherEventLogPropertyArray.GetEnumerator())
-        {
+        foreach ($item in $OtherEventLogPropertyArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $Command = $item.value[1]
@@ -140,33 +129,25 @@ function Export-EventLogHtmlPage {
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0)
-                {
+                if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    if ($Type -eq "Pipe")
-                    {
-                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
-                    if ($Type -eq "String")
-                    {
-                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -176,8 +157,7 @@ function Export-EventLogHtmlPage {
     #! 7-026 (Csv Output)
     function Get-SecurityEventsLast30DaysCsv {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [int]$DaysBack = 30
         )
@@ -187,19 +167,14 @@ function Export-EventLogHtmlPage {
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
-        try
-        {
-            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
+        try {
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
             Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-
-            Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='../files/$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-            Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
-        catch
-        {
-            Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage -Name $Name
     }
@@ -212,6 +187,8 @@ function Export-EventLogHtmlPage {
     Get-OtherEventLogData -FilePath $FilePath -PagesFolder $PagesFolder
     Get-SecurityEventsLast30DaysCsv -FilePath $FilePath
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

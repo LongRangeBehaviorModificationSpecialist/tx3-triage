@@ -151,13 +151,13 @@ function Export-SystemHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
         [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -165,14 +165,12 @@ function Export-SystemHtmlPage {
     # 5-000A
     function Get-SelectRegistryValues {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $RegistryKeysArray.GetEnumerator())
-        {
+        foreach ($item in $RegistryKeysArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $RegKey = $item.value[1]
@@ -182,41 +180,31 @@ function Export-SystemHtmlPage {
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 Show-Message("[INFO] Searching for key [$RegKey]") -DarkGray
-                if (-not (Test-Path -Path $RegKey))
-                {
+                if (-not (Test-Path -Path $RegKey)) {
                     Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
                     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'><span class='bold_red'>Registry Key [$RegKey] does not exist on the examined machine</span></button>`n"
+                    Add-Content-Path $FilePath -Value "<button class='no_info_btn'>`n<div class='no_info_btn_text'>$($Title)&ensp;Registry Key [$RegKey] does not exist on the examined machine</div>`n</button>"
                 }
-                else
-                {
+                else {
                     $Data = Invoke-Expression -Command $Command | Out-String
-                    if (-not $Data)
-                    {
-                        Show-Message("[INFO] The registry key [$RegKey] exists, but contains no data") -Yellow
-                        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] The registry key [$RegKey] exists, but contains no data")
-
-                        Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'><span class='bold_red'>The registry key [$RegKey] exists, but contains no data</span></button>`n"
+                    if (-not $Data) {
+                        $msg = "The registry key [$RegKey] exists, but contains no data"
+                        Show-Message("[INFO] $msg") -Yellow
+                        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
+                        Add-Content-Path $FilePath -Value "<button class='no_info_btn'>`n<div class='no_info_btn_text'>$($Title)&ensp;$($msg)</div>`n</button>`n"
                     }
-                    else
-                    {
-                        Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                        Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
-
-                        Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
-
+                    else {
+                        Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                        Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                        Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                     }
                 }
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -225,14 +213,12 @@ function Export-SystemHtmlPage {
     # 5-000B
     function Get-SystemData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $SystemPropertiesArray.GetEnumerator())
-        {
+        foreach ($item in $SystemPropertiesArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $Command = $item.value[1]
@@ -242,33 +228,25 @@ function Export-SystemHtmlPage {
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0)
-                {
+                if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    if ($Type -eq "Pipe")
-                    {
-                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
-                    if ($Type -eq "String")
-                    {
-                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -281,6 +259,8 @@ function Export-SystemHtmlPage {
     Get-SelectRegistryValues -FilePath $FilePath -PagesFolder $PagesFolder
     Get-SystemData -FilePath $FilePath -PagesFolder $PagesFolder
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

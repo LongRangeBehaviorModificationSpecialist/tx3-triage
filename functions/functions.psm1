@@ -1,5 +1,5 @@
 # Date Last Updated
-[string]$Dlu = "2025-02-11"
+[string]$Dlu = "2025-02-12"
 
 
 # [datetime]$StartTime = (Get-Date).ToUniversalTime()
@@ -47,8 +47,7 @@ function Write-LogEntry {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [Parameter(Mandatory = $True)]
         [string]$Message,
         [string]$LogFile = $LogFile,
@@ -61,13 +60,11 @@ function Write-LogEntry {
 
     $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    if (-not $Message)
-    {
+    if (-not $Message) {
         throw "The message parameter cannot be empty."
     }
 
-    $MsgLevel = switch ($True)
-    {
+    $MsgLevel = switch ($True) {
         $DebugMessage { " [DEBUG] "; break }
         $WarningMessage { " [WARNING] "; break }
         $ErrorMessage { " [ERROR] "; break }
@@ -88,8 +85,7 @@ function Write-LogEntry {
 
 function Show-Message {
 
-    param
-    (
+    param (
         [Parameter(Mandatory)]
         [string]$Message,
         [switch]$Header,
@@ -125,8 +121,7 @@ function Show-Message {
     $FormattedMessage = "$HeaderText$DisplayTimeStamp $Message"
 
     # Display the message with the appropriate color
-    switch ($Color)
-    {
+    switch ($Color) {
         "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
         "DarkGray" { Write-Host $FormattedMessage -ForegroundColor DarkGray }
         "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
@@ -134,7 +129,6 @@ function Show-Message {
         "Red" { Write-Host $FormattedMessage -ForegroundColor DarkRed }
         "White" { Write-Host $FormattedMessage -ForegroundColor White }
         "Yellow" { Write-Host $FormattedMessage -ForegroundColor DarkYellow }
-
         "BlueOnGray" { Write-Host $FormattedMessage -ForegroundColor Blue -BackgroundColor Gray }
         "YellowOnRed" { Write-Host $FormattedMessage -ForegroundColor DarkYellow -BackgroundColor DarkRed }
     }
@@ -143,29 +137,27 @@ function Show-Message {
 
 function Show-FinishMessage {
 
-    param
-    (
+    param (
         [Parameter(Mandatory, Position = 0)]
         [string]$FunctionName,
         [Parameter(Mandatory, Position = 1)]
         [timespan]$ExecutionTime
     )
 
-        Show-Message("``$($FunctionName)`` function finished in $($ExecutionTime.TotalSeconds) seconds`n") -Blue
+        Show-Message("'$($FunctionName)' function finished in $($ExecutionTime.TotalSeconds) seconds`n") -Blue
 }
 
 
 function Write-LogFinishedMessage {
 
-    param
-    (
+    param (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$FunctionName,
         [Parameter(Mandatory = $True, Position = 1)]
         [timespan]$ExecutionTime
     )
 
-    Write-LogEntry("Function ``$FunctionName`` finished in $($ExecutionTime.TotalSeconds) seconds`n")
+    Write-LogEntry("Function '$FunctionName' finished in $($ExecutionTime.TotalSeconds) seconds`n")
 }
 
 
@@ -185,10 +177,9 @@ function Set-CaseFolders {
         "Logs"
     )
 
-    foreach ($Folder in $Folders)
-    {
+    foreach ($Folder in $Folders) {
         New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
-        Write-Host "Created ``$($Folder)`` Folder" -ForegroundColor Green
+        Write-Host "Created '$($Folder)' Folder" -ForegroundColor Green
     }
 
 
@@ -213,16 +204,14 @@ function Get-LineNum {
 
 function Save-Output {
 
-    param
-    (
+    param (
         [Parameter(Mandatory, Position = 0)]
         [object]$Data,
         [Parameter(Mandatory, Position = 1)]
         [string]$File
     )
 
-    process
-    {
+    process {
         $Data | Out-File -FilePath $File -Encoding UTF8
     }
 }
@@ -230,16 +219,14 @@ function Save-Output {
 
 function Save-OutputAppend {
 
-    param
-    (
+    param (
         [Parameter(Mandatory ,Position = 0)]
         [object]$Data,
         [Parameter(Mandatory, Position = 1)]
         [string]$File
     )
 
-    process
-    {
+    process {
         $Data | Out-File -Append -FilePath $File -Encoding UTF8
     }
 }
@@ -247,16 +234,14 @@ function Save-OutputAppend {
 
 function Save-OutputAsCsv {
 
-    param
-    (
+    param (
         [Parameter(Mandatory, Position = 0)]
         [object]$Data,
         [Parameter(Mandatory, Position = 1)]
         [string]$File
     )
 
-    process
-    {
+    process {
         $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
     }
 }
@@ -264,57 +249,51 @@ function Save-OutputAsCsv {
 
 function Show-OutputSavedToFile {
 
-    param
-    (
+    param (
         [Parameter(Mandatory, Position = 0)]
         [string]$File,
         [switch]$NoTime
     )
 
-    if ($NoTime)
-    {
-        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -NoTime -Green
+    if ($NoTime) {
+        Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -NoTime -Green
     }
-    else
-    {
-        Show-Message("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``") -Green
+    else {
+        Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -Green
     }
 }
 
 
 function Write-LogOutputAppended {
 
-    param
-    (
+    param (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$File
     )
 
-    Write-LogEntry("Output appended to -> ``$([System.IO.Path]::GetFileName($File))``")
+    Write-LogEntry("Output appended to -> '$([System.IO.Path]::GetFileName($File))'")
 }
 
 
 function Write-LogOutputSaved {
 
-    param
-    (
+    param (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$File
     )
 
-    Write-LogEntry("Output saved to -> ``$([System.IO.Path]::GetFileName($File))``")
+    Write-LogEntry("Output saved to -> '$([System.IO.Path]::GetFileName($File))'")
 }
 
 
 function Write-NoDataFound {
 
-    param
-    (
+    param (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]$FunctionName
     )
 
-    $NoDataMsg = "No data found for ``$($FunctionName)`` function"
+    $NoDataMsg = "No data found for '$($FunctionName)' function"
     Show-Message("$NoDataMsg") -Yellow
     Write-LogEntry("$NoDataMsg")
 }

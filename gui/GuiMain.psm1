@@ -17,13 +17,13 @@ function Get-Gui {
 
 
     # Define label and text boxes for source and destination directories
-    $LabelUserName = New-Object System.Windows.Forms.Label
-    $LabelUserName.Text = "User Name:"
-    $LabelUserName.Font = New-Object System.Drawing.Font("Arial", 12)  # , [System.Drawing.FontStyle]::Bold
-    $LabelUserName.ForeColor = [System.Drawing.Color]::Black
-    $LabelUserName.Width = 120
-    $LabelUserName.Location = New-Object System.Drawing.Point(10, 20)
-    $Form.Controls.Add($LabelUserName)
+    $lblUserName = New-Object System.Windows.Forms.Label
+    $lblUserName.Text = "User Name:"
+    $lblUserName.Font = New-Object System.Drawing.Font("Arial", 11)  # , [System.Drawing.FontStyle]::Bold
+    $lblUserName.ForeColor = [System.Drawing.Color]::Black
+    $lblUserName.Width = 120
+    $lblUserName.Location = New-Object System.Drawing.Point(10, 20)
+    $Form.Controls.Add($lblUserName)
 
 
     $TextBoxUserName = New-Object System.Windows.Forms.TextBox
@@ -34,70 +34,87 @@ function Get-Gui {
     $Form.Controls.Add($TextBoxUserName)
 
 
-    $LabelAgency = New-Object System.Windows.Forms.Label
-    $LabelAgency.Text = "Agency:"
-    $LabelAgency.Font = New-Object System.Drawing.Font("Arial", 12)
-    $LabelUserName.ForeColor = [System.Drawing.Color]::Black
-    $LabelAgency.Width = 120
-    $LabelAgency.Location = New-Object System.Drawing.Point(10, 55)
-    $Form.Controls.Add($LabelAgency)
+    $lblAgency = New-Object System.Windows.Forms.Label
+    $lblAgency.Text = "Agency:"
+    $lblAgency.Font = New-Object System.Drawing.Font("Arial", 11)
+    $lblAgency.ForeColor = [System.Drawing.Color]::Black
+    $lblAgency.Width = 120
+    $lblAgency.Location = New-Object System.Drawing.Point(10, 55)
+    $Form.Controls.Add($lblAgency)
 
 
     $TextBoxAgency = New-Object System.Windows.Forms.TextBox
-    $TextBoxAgency.Width = 250
     $TextBoxAgency.Font = New-Object System.Drawing.Font("Arial", 11)
+    $TextBoxAgency.Width = 250
     $TextBoxAgency.Location = New-Object System.Drawing.Point(130, 55)
     $Form.Controls.Add($TextBoxAgency)
 
 
-    $LabelCaseNumber = New-Object Windows.Forms.Label
-    $LabelCaseNumber.Text = "Case Number:"
-    $LabelCaseNumber.Font = New-Object System.Drawing.Font("Arial", 12)
-    $LabelUserName.ForeColor = [System.Drawing.Color]::Black
-    $LabelCaseNumber.Width = 120
-    $LabelCaseNumber.Location = New-Object Drawing.Point(10, 90)
-    $Form.Controls.Add($LabelCaseNumber)
+    $lblCaseNumber = New-Object System.Windows.Forms.Label
+    $lblCaseNumber.Text = "Case Number:"
+    $lblCaseNumber.Font = New-Object System.Drawing.Font("Arial", 11)
+    $lblCaseNumber.ForeColor = [System.Drawing.Color]::Black
+    $lblCaseNumber.Width = 120
+    $lblCaseNumber.Location = New-Object Drawing.Point(10, 90)
+    $Form.Controls.Add($lblCaseNumber)
 
 
-    $TextBoxCaseNumber = New-Object Windows.Forms.TextBox
-    $TextBoxCaseNumber.Width = 250
+    $TextBoxCaseNumber = New-Object System.Windows.Forms.TextBox
     $TextBoxCaseNumber.Font = New-Object System.Drawing.Font("Arial", 11)
+    $TextBoxCaseNumber.Width = 250
     $TextBoxCaseNumber.Location = New-Object Drawing.Point(130, 90)
     $Form.Controls.Add($TextBoxCaseNumber)
 
 
+    $HashCheckBox = New-Object System.Windows.Forms.CheckBox
+    $HashCheckBox.Text = "Hash Html Results Files?"
+    $HashCheckBox.Font = New-Object System.Drawing.Font("Arial", 10)
+    $HashCheckBox.Width = 250
+    $HashCheckBox.Location = New-Object Drawing.Point(130, 120)
+    $Form.Controls.Add($HashCheckBox)
+
+
     # Define a button for initiating the html report
-    $ButtonHtmlReport = New-Object Windows.Forms.Button
-    $ButtonHtmlReport.Text = "Html Output"
-    $ButtonHtmlReport.Font = New-Object System.Drawing.Font("Arial", 11)
-    $ButtonHtmlReport.Width = 150
-    $ButtonHtmlReport.Height = 50
-    $ButtonHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $ButtonHtmlReport.Location = New-Object Drawing.Point(10, 130)
-    $ButtonHtmlReport.Add_Click({
+    $btnHtmlReport = New-Object System.Windows.Forms.Button
+    $btnHtmlReport.Text = "Html Output"
+    $btnHtmlReport.Font = New-Object System.Drawing.Font("Arial", 11)
+    $btnHtmlReport.Width = 150
+    $btnHtmlReport.Height = 50
+    $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
+    $btnHtmlReport.Location = New-Object Drawing.Point(10, 160)
+    $btnHtmlReport.Add_Click({
 
         $User = $TextBoxUserName.Text
         $Agency = $TextBoxAgency.Text
         $CaseNumber = $TextBoxCaseNumber.Text
 
-            Export-HtmlReport -CaseFolderName $CaseFolderName -ComputerName $ComputerName -Date $Date -Time $Time -Ipv4 $Ipv4 -Ipv6 $Ipv6 -User $User -Agency $Agency -CaseNumber $CaseNumber
 
-            $Form.Close()
+
+        if ($HashCheckBox.Checked) {
+            write-host "Hash box was checked in the GUI" -ForegroundColor Yellow
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -GetHtmlFileHashes $HashCheckBox.Checked
+        }
+        else {
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6
+        }
+
+
+        $Form.Close()
 
     })
     # Add the button
-    $Form.Controls.Add($ButtonHtmlReport)
+    $Form.Controls.Add($btnHtmlReport)
 
 
     # Define a button for initiating the files report
-    $ButtonFilesOutput = New-Object Windows.Forms.Button
-    $ButtonFilesOutput.Text = "Files Output"
-    $ButtonFilesOutput.Font = New-Object System.Drawing.Font("Arial", 11)
-    $ButtonFilesOutput.Width = 150
-    $ButtonFilesOutput.Height = 50
-    $ButtonFilesOutput.Padding = New-Object System.Windows.Forms.Padding(10)
-    $ButtonFilesOutput.Location = New-Object Drawing.Point(180, 130)
-    $ButtonFilesOutput.Add_Click({
+    $btnFilesOutput = New-Object Windows.Forms.Button
+    $btnFilesOutput.Text = "Files Output"
+    $btnFilesOutput.Font = New-Object System.Drawing.Font("Arial", 11)
+    $btnFilesOutput.Width = 150
+    $btnFilesOutput.Height = 50
+    $btnFilesOutput.Padding = New-Object System.Windows.Forms.Padding(10)
+    $btnFilesOutput.Location = New-Object Drawing.Point(180, 160)
+    $btnFilesOutput.Add_Click({
 
         $User = $TextBoxUserName.Text
         $Agency = $TextBoxAgency.Text
@@ -109,10 +126,11 @@ function Get-Gui {
 
     })
     # Add the button
-    $Form.Controls.Add($ButtonFilesOutput)
+    $Form.Controls.Add($btnFilesOutput)
 
     # Display the form
     [void]$Form.ShowDialog()
+
 }
 
 

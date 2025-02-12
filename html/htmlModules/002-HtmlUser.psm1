@@ -15,9 +15,9 @@ $UserPropertyArray = [ordered]@{
     "2-005_Win32_LogonSession"              = ("Win32_LogonSession",
                                               "Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property * | Out-String",
                                               "String")
-    "2-006_Win_Event_Security_4624_or_4648" = ("Security Events (4624 or 4648)",
-                                              "Get-WinEvent -LogName 'Security' -FilterXPath '*[System[EventID=4624 or EventID=4648]]' | Out-String",
-                                              "String")
+    # "2-006_Win_Event_Security_4624_or_4648" = ("Security Events (4624 or 4648)",
+    #                                           "Get-WinEvent -LogName 'Security' -FilterXPath '*[System[EventID=4624 or EventID=4648]]' | Out-String",
+    #                                           "String")
 }
 
 
@@ -25,13 +25,13 @@ function Export-UserHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
+    param (
         [string]$FilePath,
         [string]$PagesFolder
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
+    Add-content -Path $FilePath -Value "<div class='itemTable'>`n"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -39,14 +39,12 @@ function Export-UserHtmlPage {
     # 2-000
     function Get-UserData {
 
-        param
-        (
+        param (
             [string]$FilePath,
             [string]$PagesFolder
         )
 
-        foreach ($item in $UserPropertyArray.GetEnumerator())
-        {
+        foreach ($item in $UserPropertyArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
             $Command = $item.value[1]
@@ -56,33 +54,25 @@ function Export-UserHtmlPage {
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
 
-            try
-            {
+            try {
                 $Data = Invoke-Expression -Command $Command
-                if ($Data.Count -eq 0)
-                {
+                if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
                 }
-                else
-                {
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -Start
-
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
-
-                    if ($Type -eq "Pipe")
-                    {
-                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                else {
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    if ($Type -eq "Pipe") {
+                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
-                    if ($Type -eq "String")
-                    {
-                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
+                    if ($Type -eq "String") {
+                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
-            catch
-            {
-                Invoke-ShowErrorMessage -ScriptName $($MyInvocation.ScriptName) -LineNumber $(Get-LineNum) -Message $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage -Name $Name
         }
@@ -94,6 +84,8 @@ function Export-UserHtmlPage {
     # ----------------------------------
     Get-UserData -FilePath $FilePath -PagesFolder $PagesFolder
 
+
+    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter
