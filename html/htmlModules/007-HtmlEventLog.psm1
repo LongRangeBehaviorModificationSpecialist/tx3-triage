@@ -4,12 +4,14 @@ $EventLogArray = [ordered]@{
     "7-002_SystemLogEventID1014"         = ("System Log Event ID 1014", "System", 1014, "TimeCreated, ID, Message")
     "7-003_ApplicationLogEventID1102"    = ("Application LogEvent ID 1102", "Application", 1102, "TimeCreated, ID, Message")
     "7-004_SecurityLogEventID4616"       = ("Security Log Event ID 4616", "Security", 4616, "TimeCreated, ID, Message")
-    "7-005_SecurityLogEventID4624"       = ("Security Log Event ID 4624", "Security", 4624, "TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName")
+    "7-005_SecurityLogEventID4624"       = ("Security Log Event ID 4624", "Security", 4624,
+                                           "TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName")
     "7-006_SecurityLogEventID4625"       = ("Security Log Event ID 4625", "Security", 4625, "TimeCreated, ID, Message")
     "7-007_SecurityLogEventID4648"       = ("Security Log Event ID 4648", "Security", 4648, "TimeCreated, ID, Message")
     "7-008_SecurityLogEventID4656"       = ("Security Log Event ID 4656", "Security", 4656, "TimeCreated, ID, Message")
     "7-009_SecurityLogEventID4663"       = ("Security Log Event ID 4663", "Security", 4663, "TimeCreated, ID, Message")
-    "7-010_SecurityLogEventID4672"       = ("Security Log Event ID 4672", "Security", 4672, "TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName")
+    "7-010_SecurityLogEventID4672"       = ("Security Log Event ID 4672", "Security", 4672,
+                                           "TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName")
     "7-011_SecurityLogEventID4673"       = ("Security Log Event ID 4673", "Security", 4673, "TimeCreated, ID, Message")
     "7-012_SecurityLogEventID4674"       = ("Security Log Event ID 4674", "Security", 4674, "TimeCreated, ID, Message")
     "7-013_SecurityLogEventID4688"       = ("Security Log Event ID 4688", "Security", 4688, "TimeCreated, ID, Message")
@@ -17,19 +19,31 @@ $EventLogArray = [ordered]@{
     "7-015_SystemLogEventID7036"         = ("System Log Event ID 7036", "System", 7036, "TimeCreated, ID, Message")
     "7-016_SystemLogEventID7045"         = ("System Log Event ID 7045", "System", 7045, "TimeCreated, ID, Message")
     "7-017_SystemLogEventID64001"        = ("System Log Event ID 64001", "System", 64001, "TimeCreated, ID, Message")
-    "7-018_PSOperationalLogEventID4104"  = ("PS Operational LogEvent ID 4104", "Microsoft-Windows-PowerShell/Operational", 4104, "TimeCreated, ID, Message")
-    "7-019_DiagnosticLogEventID1006"     = ("Diagnostic Log Event ID 1006", "Microsoft-Windows-Partition/Diagnostic", 1006, "TimeCreated, ID, Message")
+    "7-018_PSOperationalLogEventID4104"  = ("PS Operational LogEvent ID 4104",
+                                           "Microsoft-Windows-PowerShell/Operational", 4104, "TimeCreated, ID, Message")
+    "7-019_DiagnosticLogEventID1006"     = ("Diagnostic Log Event ID 1006",
+                                           "Microsoft-Windows-Partition/Diagnostic", 1006, "TimeCreated, ID, Message")
 }
 
 
 $OtherEventLogPropertyArray = [ordered]@{
 
-    "7-020_BasicListOfEventLogs"     = ("Basic List Of Event Logs", "Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
-    "7-021_EventLogEnabledList"      = ("Event Log Enabled List", "Get-WinEvent -ListLog * | Where-Object -Property IsEnabled -eq 'True' | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending", "Pipe")
-    "7-022_SecurityEventLogCounts"   = ("Security Event Log Counts", "Get-EventLog -LogName Security | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending", "Pipe")
-    "7-023_SecurityEventsLast30Days" = ("Security Events Last 30 Days", "Get-EventLog -LogName Security -After $((Get-Date).AddDays(-[int]30))", "Pipe")
-    "7-024_AppInventoryEvents"       = ("App Inventory Events", "Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending", "Pipe")
-    "7-025_TerminalServiceEvents"    = ("Terminal Service Events", "Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending", "Pipe")
+    "7-020_BasicListOfEventLogs"     = ("Basic List Of Event Logs",
+                                       "Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount | Out-String",
+                                       "String")
+    "7-021_EventLogEnabledList"      = ("Event Log Enabled List",
+                                       "Get-WinEvent -ListLog * | Where-Object -Property IsEnabled -eq 'True' | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending | Out-String", "String")
+    "7-022_SecurityEventLogCounts"   = ("Security Event Log Counts",
+                                       "Get-EventLog -LogName Security | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending | Out-String",
+                                       "String")
+    "7-023_SecurityEventsLast30Days" = ("Security Events Last 30 Days",
+                                       "Get-EventLog -LogName Security -After $((Get-Date).AddDays(-[int]30)) | Out-String", "String")
+    "7-024_AppInventoryEvents"       = ("App Inventory Events",
+                                       "Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending | Out-String",
+                                       "String")
+    "7-025_TerminalServiceEvents"    = ("Terminal Service Events",
+                                       "Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending | Out-String",
+                                       "String")
 }
 
 function Export-EventLogHtmlPage {
@@ -74,12 +88,12 @@ function Export-EventLogHtmlPage {
             try
             {
                 Show-Message("Searching for $LogName Log (Event ID: $EventID)") -DarkGray
-                $Command = "Get-WinEvent -Max $MaxRecords -FilterHashtable @{ Logname = '$($LogName)'; ID = $($EventID) } | Select-Object -Property $($Properties)"
+                $Command = "Get-WinEvent -Max $MaxRecords -FilterHashtable @{ Logname = '$($LogName)'; ID = $($EventID) } | Select-Object -Property $($Properties) | Out-String"
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0)
                 {
                     Show-Message("[INFO] The LogFile $LogName exists, but contains no Events that match the EventID of $EventID") -Yellow
-                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>The LogFile $LogName exists, but contains no Events that match the EventID of $EventID</span></button>`n"
+                    Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)&ensp;&ensp;<span class='bold_red'>The LogFile $LogName exists, but contains no Events that match the EventID of $EventID</span></button>`n"
                 }
                 else
                 {
@@ -87,7 +101,7 @@ function Export-EventLogHtmlPage {
 
                     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                    Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                    Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
                     Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
@@ -141,11 +155,11 @@ function Export-EventLogHtmlPage {
 
                     if ($Type -eq "Pipe")
                     {
-                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
                     }
                     if ($Type -eq "String")
                     {
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
+                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
                     }
                     Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }

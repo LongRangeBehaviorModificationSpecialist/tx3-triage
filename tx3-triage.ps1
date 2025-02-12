@@ -2,7 +2,7 @@
 
 <#
 
-.\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -gui
+.\tx3-triage.ps1  -gui
 
 .\tx3-triage.ps1 -User "Mike Spon" -Agency VSP -CaseNumber 99-99999 -html
 
@@ -97,8 +97,7 @@ foreach ($file in (Get-ChildItem -Path $ModulesDirectory -Filter *.psm1 -Force))
 }
 
 
-function Get-ParameterValues
-{
+function Get-ParameterValues {
 
     [CmdletBinding()]
 
@@ -801,7 +800,7 @@ Hashing result files...
 if ($Gui)
 {
     $GuiModule = ".\gui\GuiMain.psm1"
-    Import-Module -Name $GuiModule -Force
+    Import-Module -Name $GuiModule -Force -Global
     Show-Message("Module file: '$($GuiModule)' was imported successfully") -NoTime -Blue
 
     Get-Gui
@@ -810,7 +809,7 @@ if ($Gui)
 
 if ($Html)
 {
-    Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
+    Export-HtmlReport -CaseFolderName $CaseFolderName -ComputerName $ComputerName -Date $Date -Time $Time -Ipv4 $Ipv4 -Ipv6 $Ipv6 -User $User -Agency $Agency -CaseNumber $CaseNumber
 }
 
 

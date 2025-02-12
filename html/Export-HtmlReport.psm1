@@ -1,58 +1,14 @@
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
-function Save-OutputToHtmlFile {
-
-    [CmdletBinding()]
-
-    param
-    (
-        [Parameter(Mandatory, Position = 0)]
-        [string]$Name,
-        [Parameter(Mandatory, Position = 1)]
-        [object]$Data,
-        [Parameter(Mandatory, Position = 2)]
-        [string]$OutputFilePath,
-        [switch]$FromPipe,
-        [switch]$FromString
-    )
-
-    process {
-
-        $PreContent = "
-<button type='button' class='collapsible'>$($Name)</button>
-<div class='content'>
-<pre>
-<p>"
-
-        $PostContent = "
-</p>
-</pre>
-</div>"
-
-        if ($FromPipe)
-        {
-            $Data | ConvertTo-Html -As List -Fragment -Precontent $PreContent -PostContent $PostContent | Out-File -Append $OutputFilePath -Encoding UTF8
-        }
-        if ($FromString)
-        {
-            Add-Content -Path $OutputFilePath -Value "$PreContent $Data $PostContent" -NoNewline
-        }
-    }
-}
-
-
 function Save-OutputToSingleHtmlFile {
 
     [CmdletBinding()]
 
     param
     (
-        [Parameter(Mandatory, Position = 0)]
         [string]$Name,
-        [Parameter(Mandatory, Position = 1)]
         [object]$Data,
-        [Parameter(Mandatory, Position = 2)]
         [string]$OutputHtmlFilePath,
         [string]$Title,
         [switch]$FromPipe,
@@ -155,11 +111,11 @@ function Invoke-SaveOutputMessage {
 
     if ($Start)
     {
-        $msg = "Saving output from ``$($Name)``"
+        $msg = "Saving output from '$($Name)'"
     }
     if ($Finish)
     {
-        $msg = "Output from ``$($Name)`` saved to ``$FileName``"
+        $msg = "Output from '$($Name)' saved to '$FileName'"
     }
     Show-Message("[INFO] $msg") -Blue
     Write-HtmlLogEntry("[$($FunctionName), Ln: $LineNumber] $msg")
@@ -175,7 +131,7 @@ function Invoke-NoDataFoundMessage {
         [string]$Title
     )
 
-    $msg = "No data found for ``$($Name)``"
+    $msg = "No data found for '$($Name)'"
     Show-Message("[WARNING] $msg") -Yellow
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>[No data found]</span></button>`n"
@@ -189,7 +145,7 @@ function Show-FinishedHtmlMessage {
         [string]$Name
     )
 
-    Show-Message("[INFO] ``$Name`` done.") -Blue
+    Show-Message("[INFO] '$Name' done.") -Blue
 }
 
 
@@ -199,24 +155,15 @@ function Export-HtmlReport {
 
     param
     (
-        [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-        [Parameter(Position = 1)]
         [string]$ComputerName,
-        [Parameter(Position = 2)]
         [string]$Date,
-        [Parameter(Position = 3)]
         [string]$Time,
-        [Parameter(Position = 4)]
         [string]$Ipv4,
-        [Parameter(Position = 5)]
         [string]$Ipv6,
-        [Parameter(Position = 6)]
         [string]$User,
-        [Parameter(Position = 7)]
         [string]$Agency,
-        [Parameter(Position = 8)]
         [string]$CaseNumber
     )
 
@@ -233,7 +180,7 @@ function Export-HtmlReport {
 
 
     Show-Message("Module file: '.\html\HtmlSnippets.psm1' was imported successfully") -NoTime -Blue
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\html\HtmlSnippets.psm1`` was imported successfully")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\html\HtmlSnippets.psm1' was imported successfully")
 
 
     $HtmlModulesDirectory = "html\htmlModules"
@@ -243,37 +190,40 @@ function Export-HtmlReport {
     {
         Import-Module -Name $file.FullName -Force -Global
         Show-Message("Module file: '.\$($file.Name)' was imported successfully") -NoTime -Blue
-        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file ``.\$($file.Name)`` was imported successfully")
+        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully")
     }
 
     Show-Message("[INFO] tx3-triage script execution began") -Header -Yellow
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Trige exam began")
 
 
-    # $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
-
     $Cwd = Get-Location
 
 
     # Create the `Resources` folder in the case folder
     $ResourcesFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Resources" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$ResourcesFolder`` directory was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ResourcesFolder' directory was created")
+
 
     # Create the folders that need to be made in the `Resources` parent folder
     $CssFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "css" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$CssFolder`` directory was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$CssFolder' directory was created")
+
 
     $PagesFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "webpages" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$PagesFolder`` directory was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$PagesFolder' directory was created")
+
 
     $StaticFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "static" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$StaticFolder`` directory was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$StaticFolder' directory was created")
+
 
     $FilesFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "files" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$FilesFolder`` directory was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$FilesFolder' directory was created")
+
 
     $ImgFolder = Join-Path -Path $ResourcesFolder -ChildPath "images"
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$ImgFolder`` directory was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ImgFolder' directory was created")
 
 
     # Copy the necessary folders to the new case directory
@@ -284,7 +234,7 @@ function Export-HtmlReport {
 
     # Create and write the encoded text to the `allstyle.css` file
     $AllStyleCssFile = Join-Path -Path $CssFolder -ChildPath "allstyle.css"
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$AllStyleCssFile`` file was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$AllStyleCssFile' file was created")
     $AllStyleCssDecodedText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AllStyleCssEncodedText))
     Add-Content -Path $AllStyleCssFile -Value $AllStyleCssDecodedText
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Decoded text was written to '$(Split-Path -Path $AllStyleCssFile -Leaf)'")
@@ -292,32 +242,14 @@ function Export-HtmlReport {
 
     # Set and write the `TriageReport.html` homepage
     $HtmlReportFile = New-Item -Path "$CaseFolderName\main.html" -ItemType File
-    Write-MainHtmlPage -FilePath $HtmlReportFile
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$HtmlReportFile`` file was created")
-
-
-    # Set and write the `nav.html` file to be displayed in the `TriageReport.html` page
-    $NavReportFile = New-Item -Path "$StaticFolder\nav.html" -ItemType File
-    Write-HtmlNavPage -FilePath $NavReportFile
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$NavReportFile`` file was created")
-
-
-    # Set and write the `main.html` file to be displayed in the `TriageReport.html` page
-    $MainReportFile = New-Item -Path "$StaticFolder\main.html" -ItemType File
-    Write-MainHtmlPage -FilePath $MainReportFile -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$MainReportFile`` file was created")
-
-
-    # Set and write the `front.html` file to be displayed in the `TriageReport.html` page
-    $FrontReportFile = New-Item -Path "$StaticFolder\front.html" -ItemType File
-    Write-HtmlFrontPage -FilePath $FrontReportFile -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$FrontReportFile`` file was created")
+    Write-MainHtmlPage $HtmlReportFile $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$HtmlReportFile' file was created")
 
 
     # Set and write the `readme.html` file
     $ReadMeFile = New-Item -Path "$StaticFolder\readme.html" -ItemType File
     Write-HtmlReadMePage -FilePath $ReadMeFile
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$ReadMeFile`` file was created")
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ReadMeFile' file was created")
 
 
     # Create `keywords.txt` file to use to search file names
@@ -332,7 +264,7 @@ function Export-HtmlReport {
         try
         {
             $DeviceHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "001_DeviceInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -345,7 +277,7 @@ function Export-HtmlReport {
         try
         {
             $UserHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "002_UserInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-UserHtmlPage -FilePath $UserHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -358,7 +290,7 @@ function Export-HtmlReport {
         try
         {
             $NetworkHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "003_NetworkInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-NetworkHtmlPage -FilePath $NetworkHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -371,7 +303,7 @@ function Export-HtmlReport {
         try
         {
             $ProcessHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "004_ProcessInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-ProcessHtmlPage -FilePath $ProcessHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -384,7 +316,7 @@ function Export-HtmlReport {
         try
         {
             $SystemHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "005_SystemInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-SystemHtmlPage -FilePath $SystemHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -397,7 +329,7 @@ function Export-HtmlReport {
         try
         {
             $PrefetchHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "006_PrefetchInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-PrefetchHtmlPage -FilePath $PrefetchHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -410,7 +342,7 @@ function Export-HtmlReport {
         try
         {
             $EventLogHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "007_EventLogInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-EventLogHtmlPage -FilePath $EventLogHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -423,7 +355,7 @@ function Export-HtmlReport {
         try
         {
             $FirewallHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "008_FirewallInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-FirewallHtmlPage -FilePath $FirewallHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -437,7 +369,7 @@ function Export-HtmlReport {
         try
         {
             $BitLockerHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "009_BitLockerInfo.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-BitLockerHtmlPage -FilePath $BitLockerHtmlOutputFile -PagesFolder $PagesFolder
         }
         catch
@@ -451,7 +383,7 @@ function Export-HtmlReport {
         try
         {
             $FilesHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "010_FileKeywordMatches.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] ``$($MyInvocation.MyCommand.Name)`` function was run")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-FilesHtmlPage -FilePath $FilesHtmlOutputFile -PagesFolder $PagesFolder -KeywordFile $KeywordListFile
         }
         catch
@@ -462,18 +394,17 @@ function Export-HtmlReport {
 
 
     # Run the functions
-    function Invoke-AllFunctions
-    {
+    function Invoke-AllFunctions {
         try
         {
-            # Invoke-DeviceOutput
-            # Invoke-UserOutput
-            # Invoke-NetworkOutput
-            # Invoke-ProcessOutput
-            # Invoke-SystemOutput
+            Invoke-DeviceOutput
+            Invoke-UserOutput
+            Invoke-NetworkOutput
+            Invoke-ProcessOutput
+            Invoke-SystemOutput
             Invoke-PrefetchOutput
-            # Invoke-EventLogOutput
-            # Invoke-FirewallOutput
+            Invoke-EventLogOutput
+            Invoke-FirewallOutput
             Invoke-BitLockerOutput
             # Invoke-KeywordSearch
         }
@@ -504,4 +435,4 @@ function Export-HtmlReport {
 }
 
 
-Export-ModuleMember -Function Export-HtmlReport, Save-OutputToHtmlFile, Save-OutputToSingleHtmlFile, Invoke-SaveOutputMessage, Invoke-NoDataFoundMessage, Show-FinishedHtmlMessage, Write-HtmlLogEntry, Invoke-ShowErrorMessage -Variable *
+Export-ModuleMember -Function Export-HtmlReport, Save-OutputToSingleHtmlFile, Invoke-SaveOutputMessage, Invoke-NoDataFoundMessage, Show-FinishedHtmlMessage, Write-HtmlLogEntry, Invoke-ShowErrorMessage -Variable *

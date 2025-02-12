@@ -1,5 +1,5 @@
 # Date Last Updated
-[string]$Dlu = "2025-02-08"
+[string]$Dlu = "2025-02-11"
 
 
 # [datetime]$StartTime = (Get-Date).ToUniversalTime()
@@ -22,7 +22,6 @@ $Cwd = Get-Location
 
 
 $CaseFolderName = New-Item -ItemType Directory -Path $($Cwd) -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
-# $CaseFolderName = New-Item -ItemType Directory -Path "$([Environment]::GetFolderPath('Desktop'))\tempTest" -Name "$($RunDate)_$($Ipv4)_$($ComputerName)"
 
 
 # Error messages to use in the various functions

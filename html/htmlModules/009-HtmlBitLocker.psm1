@@ -21,7 +21,7 @@ function Export-BitLockerHtmlPage {
             [string]$FilePath
         )
 
-        $Name = "9-001BitLockerVolumes"
+        $Name = "9-001_BitLockerVolumes"
         $Title = "BitLocker Volumes"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray

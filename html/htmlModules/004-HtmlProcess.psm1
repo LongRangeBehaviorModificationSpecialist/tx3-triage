@@ -1,8 +1,14 @@
 $ProcessesPropertyArray = [ordered]@{
 
-    "4-001_RunningProcessesAll"  = ("Win32_Process", "Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName | Out-String", "String")
-    "4-002 SvcHostsAndProcesses" = ("Svc Hosts & Processes", "Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq 'svchost.exe' | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path | Out-String", "String")
-    "4-003_DriverQuery"          = ("DriverQuery", "driverquery | Out-String", "String")
+    "4-001_RunningProcessesAll"  = ("Win32_Process",
+                                   "Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName | Out-String",
+                                   "String")
+    "4-002 SvcHostsAndProcesses" = ("Svc Hosts & Processes",
+                                   "Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq 'svchost.exe' | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path | Out-String",
+                                   "String")
+    "4-003_DriverQuery"          = ("DriverQuery",
+                                   "driverquery | Out-String",
+                                   "String")
 }
 
 
@@ -58,11 +64,11 @@ function Export-ProcessHtmlPage {
 
                     if ($Type -eq "Pipe")
                     {
-                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
                     }
                     if ($Type -eq "String")
                     {
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
+                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
                     }
                     Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }

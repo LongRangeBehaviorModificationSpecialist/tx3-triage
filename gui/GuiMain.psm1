@@ -66,29 +66,6 @@ function Get-Gui {
     $Form.Controls.Add($TextBoxCaseNumber)
 
 
-    # # Radio button group
-    # $groupBox = New-Object System.Windows.Forms.GroupBox
-    # $groupBox.Text = "Select an Output Format"
-    # $groupBox.Font = New-Object System.Drawing.Font("Arial", 11)
-    # $groupBox.Location = New-Object System.Drawing.Point(10, 125)
-    # $groupBox.Size = New-Object System.Drawing.Size(370, 65)
-    # $form.Controls.Add($groupBox)
-
-
-    # $htmlButton = New-Object System.Windows.Forms.RadioButton
-    # $htmlButton.Text = "Html Output"
-    # $htmlButton.Width = 185
-    # $htmlButton.Location = New-Object System.Drawing.Point(10, 25)
-    # $groupBox.Controls.Add($htmlButton)
-
-
-    # $filesButton = New-Object System.Windows.Forms.RadioButton
-    # $filesButton.Text = "Files Output"
-    # $filesButton.Width = 185
-    # $filesButton.Location = New-Object System.Drawing.Point(195, 25)
-    # $groupBox.Controls.Add($filesButton)
-
-
     # Define a button for initiating the html report
     $ButtonHtmlReport = New-Object Windows.Forms.Button
     $ButtonHtmlReport.Text = "Html Output"
@@ -103,8 +80,9 @@ function Get-Gui {
         $Agency = $TextBoxAgency.Text
         $CaseNumber = $TextBoxCaseNumber.Text
 
-            Export-HtmlReport $CaseFolderName $ComputerName $Date $Time $Ipv4 $Ipv6 $User $Agency $CaseNumber
-        $Form.Close()
+            Export-HtmlReport -CaseFolderName $CaseFolderName -ComputerName $ComputerName -Date $Date -Time $Time -Ipv4 $Ipv4 -Ipv6 $Ipv6 -User $User -Agency $Agency -CaseNumber $CaseNumber
+
+            $Form.Close()
 
     })
     # Add the button
@@ -126,6 +104,7 @@ function Get-Gui {
         $CaseNumber = $TextBoxCaseNumber.Text
 
         Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
+
         $Form.Close()
 
     })

@@ -1,37 +1,67 @@
 $DevicePropertyArray = [ordered]@{
 
-    "1-001_ComputerDetails"          = ("Computer Details", "Get-ComputerDetails", "Pipe")
-    "1-002_TPMDetails"               = ("TPM Details", "Get-TPMDetails", "Pipe")
-    "1-003_PSInfo"                   = ("PS Info", ".\bin\PsInfo.exe -accepteula -s -h -d | Out-String", "String")
-    "1-004_PSDrive"                  = ("PS Drive Info", "Get-PSDrive -PSProvider FileSystem |
-                                       Select-Object -Property *", "Pipe")
-    "1-005_Win32LogicalDisk"         = ("Win32_LogicalDisk", "Get-CimInstance -ClassName Win32_LogicalDisk |
-                                       Select-Object -Property *", "Pipe")
-    "1-006_ComputerInfo"             = ("ComputerInfo", "Get-ComputerInfo", "Pipe")
-    "1-007_SystemInfo"               = ("systeminfo", "systeminfo /FO CSV | ConvertFrom-Csv | Select-Object *", "Pipe")
-    "1-008_Win32ComputerSystem"      = ("Win32_ComputerSystem", "Get-CimInstance -ClassName Win32_ComputerSystem |
-                                       Select-Object -Property *", "Pipe")
-    "1-009_Win32OperatingSystem"     = ("Win32_OperatingSystem", "Get-CimInstance -ClassName Win32_OperatingSystem |
-                                       Select-Object -Property *", "Pipe")
-    "1-010 Win32PhysicalMemory"      = ("Win32_PhysicalMemory", "Get-CimInstance -ClassName Win32_PhysicalMemory |
-                                       Select-Object -Property *", "Pipe")
-    "1-011_EnvVars"                  = ("EnvVars", "Get-ChildItem -Path env:", "Pipe")
-    "1-012_DiskInfo"                 = ("Disk Info", "Get-Disk | Select-Object -Property * | Sort-Object DiskNumber", "Pipe")
-    "1-013_Partitions"               = ("Partitions", "Get-Partition | Select-Object -Property * |
-                                       Sort-Object -Property DiskNumber, PartitionNumber", "Pipe")
-    "1-014_Win32DiskPartitions"      = ("Win32_DiskPartitions", "Get-CimInstance -ClassName Win32_DiskPartition |
-                                       Sort-Object -Property Name", "Pipe")
-    "1-015_Win32StartupCommand"      = ("Win32_StartupCommand", "Get-CimInstance -ClassName Win32_StartupCommand |
-                                       Select-Object -Property *", "Pipe")
-    "1-016_SoftwareLicensingService" = ("Software Licensing Service", "Get-WmiObject -ClassName SoftwareLicensingService",
-                                       "Pipe")
-    "1-017_Win32Bios"                = ("Win32_Bios", "Get-WmiObject -ClassName Win32_Bios | Select-Object -Property *",
-                                       "Pipe")
-    "1-018_PnpDevice"                = ("PnP Devices", "Get-PnpDevice", "Pipe")
-    "1-019_Win32PnPEntity"           = ("Win32_PnPEntity", "Get-CimInstance Win32_PnPEntity | Select-Object -Property *",
-                                       "Pipe")
-    "1-020_Win32Product"             = ("Win32_Product", "Get-WmiObject Win32_Product", "Pipe")
-    "1-021_DiskAllocation"           = ("FSUtil Volume", "fsutil volume allocationReport C:", "String")
+    "1-001_ComputerDetails"          = ("Computer Details",
+                                       "Get-ComputerDetails | Out-String",
+                                       "String")
+    "1-002_TPMDetails"               = ("TPM Details",
+                                       "Get-TPMDetails | Out-String",
+                                       "String")
+    "1-003_PSInfo"                   = ("PS Info",
+                                       ".\bin\PsInfo.exe -accepteula -s -h -d | Out-String",
+                                       "String")
+    "1-004_PSDrive"                  = ("PS Drive Info",
+                                       "Get-PSDrive -PSProvider FileSystem | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-005_Win32LogicalDisk"         = ("Win32_LogicalDisk",
+                                       "Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-006_ComputerInfo"             = ("ComputerInfo",
+                                       "Get-ComputerInfo | Out-String",
+                                       "String")
+    "1-007_SystemInfo"               = ("systeminfo",
+                                       "systeminfo /FO CSV | ConvertFrom-Csv | Select-Object * | Out-String",
+                                       "String")
+    "1-008_Win32ComputerSystem"      = ("Win32_ComputerSystem",
+                                       "Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-009_Win32OperatingSystem"     = ("Win32_OperatingSystem",
+                                       "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-010 Win32PhysicalMemory"      = ("Win32_PhysicalMemory",
+                                       "Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-011_EnvVars"                  = ("EnvVars",
+                                       "Get-ChildItem -Path env: | Out-String",
+                                       "String")
+    "1-012_DiskInfo"                 = ("Disk Info",
+                                       "Get-Disk | Select-Object -Property * | Sort-Object DiskNumber | Out-String",
+                                       "String")
+    "1-013_Partitions"               = ("Partitions",
+                                       "Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber | Out-String",
+                                       "String")
+    "1-014_Win32DiskPartitions"      = ("Win32_DiskPartitions",
+                                       "Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name | Out-String",
+                                       "String")
+    "1-015_Win32StartupCommand"      = ("Win32_StartupCommand",
+                                       "Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-016_SoftwareLicensingService" = ("Software Licensing Service",
+                                       "Get-WmiObject -ClassName SoftwareLicensingService | Out-String",
+                                       "String")
+    "1-017_Win32Bios"                = ("Win32_Bios",
+                                       "Get-WmiObject -ClassName Win32_Bios | Select-Object -Property * | Out-String", "String")
+    "1-018_PnpDevice"                = ("PnP Devices",
+                                       "Get-PnpDevice | Out-String",
+                                       "String")
+    "1-019_Win32PnPEntity"           = ("Win32_PnPEntity",
+                                       "Get-CimInstance Win32_PnPEntity | Select-Object -Property * | Out-String",
+                                       "String")
+    "1-020_Win32Product"             = ("Win32_Product",
+                                       "Get-WmiObject Win32_Product | Out-String",
+                                       "String")
+    "1-021_DiskAllocation"           = ("FSUtil Volume",
+                                       "fsutil volume allocationReport C: | Out-String",
+                                       "String")
 }
 
 
@@ -88,11 +118,11 @@ function Export-DeviceHtmlPage {
 
                     if ($Type -eq "Pipe")
                     {
-                        Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                        Save-OutputToSingleHtmlFile -FromPipe -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
                     }
                     if ($Type -eq "String")
                     {
-                        Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
+                        Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
                     }
                 }
                 Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
@@ -132,7 +162,7 @@ function Export-DeviceHtmlPage {
 
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
+                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
                 Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
@@ -171,7 +201,7 @@ function Export-DeviceHtmlPage {
             }
             else
             {
-                $Data = Get-ItemProperty $RegKey | Select-Object -Property *
+                $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Out-String
 
                 if (-not $Data)
                 {
@@ -184,7 +214,7 @@ function Export-DeviceHtmlPage {
 
                     Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                    Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                    Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
                     Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
@@ -228,7 +258,7 @@ function Export-DeviceHtmlPage {
 
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
                 # Remove the temp csv file
                 Remove-Item -Path $TempCsvFile -Force
@@ -261,7 +291,7 @@ function Export-DeviceHtmlPage {
 
         try
         {
-            $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle
+            $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle | Out-String
             if ($Data.Count -eq 0)
             {
                 Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
@@ -272,7 +302,7 @@ function Export-DeviceHtmlPage {
 
                 Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
-                Save-OutputToSingleHtmlFile -FromPipe $Name $Data $OutputHtmlFilePath -Title $Title
+                Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
                 Invoke-SaveOutputMessage -FunctionName $FunctionName -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
@@ -309,7 +339,7 @@ function Export-DeviceHtmlPage {
 
             $Data = Get-Content -Path $tempFile -Raw
 
-            Save-OutputToSingleHtmlFile -FromString $Name $Data $OutputHtmlFilePath -Title $Title
+            Save-OutputToSingleHtmlFile -FromString -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title
 
             Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<a href='.\$FileName'><button type='button' class='collapsible'>$($FileName)</button></a>`n"
 
