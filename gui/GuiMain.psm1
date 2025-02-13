@@ -66,12 +66,28 @@ function Get-Gui {
     $Form.Controls.Add($TextBoxCaseNumber)
 
 
+    $EddCheckBox = New-Object System.Windows.Forms.CheckBox
+    $EddCheckBox.Text = "Run Encrypted Disk Detector"
+    $EddCheckBox.Font = New-Object System.Drawing.Font("Arial", 10)
+    $EddCheckBox.Width = 250
+    $EddCheckBox.Location = New-Object Drawing.Point(130, 120)
+    $Form.Controls.Add($EddCheckBox)
+
+
     $HashCheckBox = New-Object System.Windows.Forms.CheckBox
-    $HashCheckBox.Text = "Hash Html Results Files?"
+    $HashCheckBox.Text = "Hash Html Results Files"
     $HashCheckBox.Font = New-Object System.Drawing.Font("Arial", 10)
     $HashCheckBox.Width = 250
-    $HashCheckBox.Location = New-Object Drawing.Point(130, 120)
+    $HashCheckBox.Location = New-Object Drawing.Point(130, 150)
     $Form.Controls.Add($HashCheckBox)
+
+
+    $ArchiveCheckBox = New-Object System.Windows.Forms.CheckBox
+    $ArchiveCheckBox.Text = "Create Case Archive"
+    $ArchiveCheckBox.Font = New-Object System.Drawing.Font("Arial", 10)
+    $ArchiveCheckBox.Width = 250
+    $ArchiveCheckBox.Location = New-Object Drawing.Point(130, 180)
+    $Form.Controls.Add($ArchiveCheckBox)
 
 
     # Define a button for initiating the html report
@@ -81,25 +97,14 @@ function Get-Gui {
     $btnHtmlReport.Width = 150
     $btnHtmlReport.Height = 50
     $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object Drawing.Point(10, 160)
+    $btnHtmlReport.Location = New-Object Drawing.Point(10, 220)
     $btnHtmlReport.Add_Click({
 
         $User = $TextBoxUserName.Text
         $Agency = $TextBoxAgency.Text
         $CaseNumber = $TextBoxCaseNumber.Text
 
-
-
-        if ($HashCheckBox.Checked) {
-            write-host "Hash box was checked in the GUI" -ForegroundColor Yellow
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -GetHtmlFileHashes $HashCheckBox.Checked
-        }
-        else {
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6
-        }
-
-
-        $Form.Close()
+        Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Edd $EddCheckBox.Checked -GetHtmlFileHashes $HashCheckBox.Checked -MakeArchive $ArchiveCheckBox.Checked
 
     })
     # Add the button
@@ -113,7 +118,7 @@ function Get-Gui {
     $btnFilesOutput.Width = 150
     $btnFilesOutput.Height = 50
     $btnFilesOutput.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnFilesOutput.Location = New-Object Drawing.Point(180, 160)
+    $btnFilesOutput.Location = New-Object Drawing.Point(180, 220)
     $btnFilesOutput.Add_Click({
 
         $User = $TextBoxUserName.Text
@@ -121,8 +126,6 @@ function Get-Gui {
         $CaseNumber = $TextBoxCaseNumber.Text
 
         Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
-
-        $Form.Close()
 
     })
     # Add the button

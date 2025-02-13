@@ -21,7 +21,7 @@ function Get-HtmlFileHashes {
     try {
         # Show & log $beginMessage message
         $BeginMessage = "Hashing .html report files for computer: $ComputerName"
-        Show-Message("$BeginMessage")
+        Show-Message("$BeginMessage") -Header -DarkGray
         Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
         # Make new directory to store the prefetch files
@@ -85,7 +85,7 @@ function Get-HtmlFileHashes {
         Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
     }
     catch {
-        Invoke-ShowErrorMessage $($MyInvocation.ScriptName) $(Get-LineNum) $($PSItem.Exception.Message)
+        Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
     }
 }
 

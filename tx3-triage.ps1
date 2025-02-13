@@ -746,7 +746,7 @@ Hashing result files...
     # Show a popup message when script is complete
     (New-Object -ComObject Wscript.Shell).popup("The Script has finished running", 0, "Done", 0x1) | Out-Null
 
-}
+}  # End `Get-TriageData` function block
 
 
 if ($Gui) {
