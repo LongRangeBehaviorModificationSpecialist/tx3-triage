@@ -13,7 +13,7 @@ function Invoke-HtmlEncryptedDiskDetector {
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
+    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -50,7 +50,7 @@ function Invoke-HtmlEncryptedDiskDetector {
 
         Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
 
-        Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
+        Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
 
         # Add the closing text to the .html file
         Add-Content -Path $FilePath -Value $HtmlFooter

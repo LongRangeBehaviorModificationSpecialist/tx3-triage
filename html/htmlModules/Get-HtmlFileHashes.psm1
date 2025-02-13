@@ -24,7 +24,7 @@ function Get-HtmlFileHashes {
         Show-Message("$BeginMessage") -Header -DarkGray
         Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
-        # Make new directory to store the prefetch files
+        # Make new directory to store the hash results file
         $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
 
         if (-not (Test-Path $HashResultsFolder)) {
@@ -32,7 +32,7 @@ function Get-HtmlFileHashes {
         }
 
         # Show & log $CreateDirMsg message
-        $CreateDirMsg = "Created '$($HashResultsFolder.Name)' folder in the case directory`n"
+        $CreateDirMsg = "Creating '$($HashResultsFolder.Name)' folder in the case directory`n"
         Show-Message("$CreateDirMsg") -Green -Header
         Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
 

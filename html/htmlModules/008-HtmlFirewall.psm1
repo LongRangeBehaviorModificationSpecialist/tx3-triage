@@ -22,7 +22,7 @@ function Export-FirewallHtmlPage {
     )
 
     Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
+    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -53,7 +53,7 @@ function Export-FirewallHtmlPage {
                 }
                 else {
                     Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
 
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
@@ -67,7 +67,7 @@ function Export-FirewallHtmlPage {
             catch {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage -Name $Name
+            Show-FinishedHtmlMessage $Name
         }
     }
 
@@ -78,7 +78,7 @@ function Export-FirewallHtmlPage {
     Get-FirewallData -FilePath $FilePath -PagesFolder $PagesFolder
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
+    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

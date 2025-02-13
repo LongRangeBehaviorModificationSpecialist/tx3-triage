@@ -86,7 +86,7 @@ function Invoke-ShowErrorMessage {
         [string]$Message
     )
 
-        $ErrorMessage = "In Module: $ScriptName, Ln: $LineNumber, MESSAGE: $Message"
+        $ErrorMessage = "In Module: $ScriptName (Ln: $LineNumber), MESSAGE: $Message"
         Show-Message("[ERROR] $ErrorMessage") -Red
         Write-HtmlLogEntry("$ErrorMessage") -ErrorMessage
 }
@@ -139,6 +139,7 @@ function Invoke-NoDataFoundMessage {
 function Show-FinishedHtmlMessage {
 
     param (
+        [Parameter(Mandatory = $True, Position = 0)]
         [string]$Name
     )
 
@@ -268,18 +269,18 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Compiling the tx3-triage report in .html format")
 
 
-    function Invoke-DeviceOutput {
+    function Invoke-DeviceHtmlOutput {
         try {
             $DeviceHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "001_DeviceInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile -PagesFolder $PagesFolder
+            Export-DeviceHtmlPage -FilePath $DeviceHtmlOutputFile -PagesFolder $PagesFolder -FilesFolder $FilesFolder
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
-    function Invoke-UserOutput {
+    function Invoke-UserHtmlOutput {
         try {
             $UserHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "002_UserInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -290,7 +291,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-NetworkOutput {
+    function Invoke-NetworkHtmlOutput {
         try {
             $NetworkHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "003_NetworkInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -301,7 +302,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-ProcessOutput {
+    function Invoke-ProcessHtmlOutput {
         try {
             $ProcessHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "004_ProcessInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -312,7 +313,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-SystemOutput {
+    function Invoke-SystemHtmlOutput {
         try {
             $SystemHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "005_SystemInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -323,7 +324,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-PrefetchOutput {
+    function Invoke-PrefetchHtmlOutput {
         try {
             $PrefetchHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "006_PrefetchInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -334,7 +335,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-EventLogOutput {
+    function Invoke-EventLogHtmlOutput {
         try {
             $EventLogHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "007_EventLogInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -345,7 +346,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-FirewallOutput {
+    function Invoke-FirewallHtmlOutput {
         try {
             $FirewallHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "008_FirewallInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -356,7 +357,7 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-BitLockerOutput {
+    function Invoke-BitLockerHtmlOutput {
         try {
             $BitLockerHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "009_BitLockerInfo.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
@@ -382,15 +383,15 @@ function Export-HtmlReport {
     # Run the functions
     function Invoke-AllFunctions {
         try {
-            # Invoke-DeviceOutput
-            # Invoke-UserOutput
-            # Invoke-NetworkOutput
-            # Invoke-ProcessOutput
-            # Invoke-SystemOutput
-            # Invoke-PrefetchOutput
-            # Invoke-EventLogOutput
-            # Invoke-FirewallOutput
-            Invoke-BitLockerOutput
+            Invoke-DeviceHtmlOutput
+            Invoke-UserHtmlOutput
+            Invoke-NetworkHtmlOutput
+            Invoke-ProcessHtmlOutput
+            Invoke-SystemHtmlOutput
+            Invoke-PrefetchHtmlOutput
+            Invoke-EventLogHtmlOutput
+            Invoke-FirewallHtmlOutput
+            Invoke-BitLockerHtmlOutput
             # Invoke-KeywordSearch
         }
         catch {
@@ -401,7 +402,7 @@ function Export-HtmlReport {
 
     if ($Edd) {
         try {
-            $EddHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "Other_Options.html"
+            $EddHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "Other_Data.html"
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Invoke-HtmlEncryptedDiskDetector -FilePath $EddHtmlOutputFile -FilesFolder $FilesFolder -PagesFolder $PagesFolder
         }
@@ -424,8 +425,9 @@ function Export-HtmlReport {
     }
 
 
-    Show-Message("tx3-triage script has completed successfully. . .") -Header -Green
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] tx3-triage script has completed successfully")
+    $FinishedMsg = "tx3-triage script has completed. . ."
+    Show-Message("[INFO] $FinishedMsg") -Header -Green
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FinishedMsg")
 
 
     $HtmlEndTime = (Get-Date).ToUniversalTime()

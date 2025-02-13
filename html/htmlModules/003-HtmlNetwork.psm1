@@ -1,67 +1,3 @@
-$NetworkPropertyArray = [ordered]@{
-
-    "3-001_Win32_Network_Adapter_Config" = ("Win32 Network Adapter Configuration",
-                                           "Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = 'IpAddress'; E = { $_.IpAddress -join '; ' } }, @{ N = 'DefaultIPgateway'; E = { $_.DefaultIPgateway -join '; ' } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Out-String",
-                                           "String")
-    "3-002_Estab_Network_Connections"    = ("Established NetTCPConnection",
-                                           "Get-NetTCPConnection -State Established | Format-List | Out-String",
-                                           "String")
-    "3-003_Netstat_Connections_Basic"    = ("netstat (Basic)",
-                                           "netstat -nao | Out-String",
-                                           "String")
-    "3-004_Net_TCP_Connections_Txt"      = ("Net TCP Connection (as Txt)",
-                                           "Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, AppliedSetting, Status, CreationTime | Sort-Object LocalAddress -Descending | Out-String",
-                                           "String")
-    "3-005_Network_Adapter"              = ("Net Adapter",
-                                           "Get-NetAdapter | Select-Object -Property * | Out-String",
-                                           "String")
-    "3-006_NetIP_Configuration"          = ("Net IP Configuration",
-                                           "Get-NetIPConfiguration | Select-Object -Property * | Out-String",
-                                           "String")
-    "3-007_route_PRINT"                  = ("route Info",
-                                           "route PRINT | Out-String",
-                                           "String")
-    "3-008_ipconfig_all"                 = ("ipconfig /all",
-                                           "ipconfig /all | Out-String",
-                                           "String")
-    "3-009_Dns_Cache_Txt"                = ("ipconfig /displaydns",
-                                           "ipconfig /displaydns | Out-String",
-                                           "String")
-    "3-010_NetNeighbor"                  = ("Net Neighbor",
-                                           "Get-NetNeighbor | Select-Object -Property * | Sort-Object -Property IPAddress | Out-String",
-                                           "String")
-    "3-011_NetIP_Address"                = ("Net IP Address",
-                                           "Get-NetIPAddress | Sort-Object -Property IPAddress | Out-String",
-                                           "String")
-    "3-012_Hosts_File"                   = ("hosts File",
-                                           "Get-Content `"$Env:windir\system32\drivers\etc\hosts`" -Raw",
-                                           "String")
-    "3-013_Networks_File"                = ("networks File",
-                                           "Get-Content `"$Env:windir\system32\drivers\etc\networks`" -Raw",
-                                           "String")
-    "3-014_Protocol_File"                = ("protocol File",
-                                           "Get-Content `"$Env:windir\system32\drivers\etc\protocol`" -Raw",
-                                           "String")
-    "3-015_Services_File"                = ("services File",
-                                           "Get-Content `"$Env:windir\system32\drivers\etc\services`" -Raw",
-                                           "String")
-    "3-016_Smb_Share"                    = ("SmbShare",
-                                           "Get-SmbShare | Out-String",
-                                           "String")
-    "3-017_NetIP_Interface"              = ("Net IP Interface",
-                                           "Get-NetIPInterface | Select-Object -Property * | Out-String",
-                                           "String")
-    "3-018_NetRoute_All"                 = ("Net Route",
-                                           "Get-NetRoute | Select-Object -Property * | Out-String",
-                                           "String")
-    "3-019_Ip_Info"                      = ("IP Address",
-                                           "powershell -nop irm ipinfo.io | Out-String",
-                                           "String")
-    "3-020_Ip_Info_Cont"                 = ("IP Address (2)",
-                                           "nslookup myip.opendns.com resolver1.opendns.com",
-                                           "String")
-}
-
 
 function Export-NetworkHtmlPage {
 
@@ -73,8 +9,10 @@ function Export-NetworkHtmlPage {
         [string]$FilesFolder
     )
 
+    $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003-NetworkDataArray.psd1"
+
     Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='itemTable'>"  # Add this to display the results in a flexbox
+    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -104,7 +42,7 @@ function Export-NetworkHtmlPage {
                 }
                 else {
                     Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
@@ -117,11 +55,11 @@ function Export-NetworkHtmlPage {
             catch {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage -Name $Name
+            Show-FinishedHtmlMessage $Name
         }
     }
 
-    #! 3-021 (Html Output)
+    #! 3-022 (Html Output)
     function Get-NetstatDetailed {
 
         param (
@@ -230,14 +168,14 @@ Active Connections, Associated Processes and DLLs
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage -Name $Name
+        Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-022 (Csv Output)
+    #! 3-023 (Csv Output)
     function Get-NetTcpConnectionsAsCsv {
 
         $Name = "3-022_NetTcpConnectionsAsCsv"
-        $Title = "Net TCP Connections (as Csv)"
+        $Title = "Net TCP Connections (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -250,10 +188,10 @@ Active Connections, Associated Processes and DLLs
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage -Name $Name
+        Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-023 (Keep function seperate)
+    #! 3-024 (Keep function seperate)
     function Get-WifiPasswords {
 
         param (
@@ -275,7 +213,7 @@ Active Connections, Associated Processes and DLLs
             }
             else {
                 Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
+                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
                 Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                 Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
             }
@@ -283,14 +221,14 @@ Active Connections, Associated Processes and DLLs
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage -Name $Name
+        Show-FinishedHtmlMessage $Name
     }
 
-    #! 3-024 (Csv Output)
+    #! 3-025 (Csv Output)
     function Get-DnsCacheDataAsCsv {
 
         $Name = "3-024_DnsCacheAsCsv"
-        $Title = "DNS Cache (as Csv file)"
+        $Title = "DNS Cache (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -298,12 +236,12 @@ Active Connections, Associated Processes and DLLs
             Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
             Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
             Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) -Name $Name $FileName -Finish
+            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage -Name $Name
+        Show-FinishedHtmlMessage $Name
     }
 
 
@@ -317,7 +255,7 @@ Active Connections, Associated Processes and DLLs
     Get-DnsCacheDataAsCsv  # No need to pass variables to this function
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `itemTable` div
+    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
 
     # Add the closing text to the .html file
     Add-Content -Path $FilePath -Value $HtmlFooter

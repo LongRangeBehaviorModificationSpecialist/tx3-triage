@@ -14,6 +14,7 @@ function Get-Gui {
     $Form.Text = "tx3-triage"
     $Form.Size = New-Object System.Drawing.Size(410, 400)  # width x height
     $Form.StartPosition = "CenterScreen"
+    $Form.FormBorderStyle = "Sizable"
 
 
     # Define label and text boxes for source and destination directories
