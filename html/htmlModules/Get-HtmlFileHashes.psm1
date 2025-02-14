@@ -16,13 +16,13 @@ function Get-HtmlFileHashes {
         [string]$HashResultsFolderName = "HashResults"
     )
 
-    $FileHashFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
+    $FunctionName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     try {
         # Show & log $beginMessage message
         $BeginMessage = "Hashing .html report files for computer: $ComputerName"
-        Show-Message("$BeginMessage") -Header -DarkGray
-        Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+        Show-Message("[INFO] $BeginMessage") -Header -DarkGray
+        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $BeginMessage")
 
         # Make new directory to store the hash results file
         $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
@@ -33,8 +33,8 @@ function Get-HtmlFileHashes {
 
         # Show & log $CreateDirMsg message
         $CreateDirMsg = "Creating '$($HashResultsFolder.Name)' folder in the case directory`n"
-        Show-Message("$CreateDirMsg") -Green -Header
-        Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
+        Show-Message("[INFO] $CreateDirMsg") -Green -Header
+        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
         # Add the filename and filetype to the end
         $HashOutputFilePath = Join-Path -Path $HashResultsFolder -ChildPath "$((Get-Item -Path $CaseFolderName).Name)_HashValues.csv"
@@ -72,8 +72,8 @@ function Get-HtmlFileHashes {
             $HashValueMsg = "[SHA256]: $($FileHash)`n"
             Show-Message("$HashMsgFileName") -Blue
             Show-Message("$HashValueMsg") -Blue
-            Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashMsgFileName")
-            Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $HashValueMsg`n")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $HashMsgFileName")
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $HashValueMsg`n")
         }
 
         # Export the results to the CSV file
@@ -82,7 +82,7 @@ function Get-HtmlFileHashes {
         # Show & log $FileMsg message
         $FileMsg = "Hash values saved to -> '$HashOutputFileName'`n"
         Show-Message("$FileMsg") -Blue
-        Write-HtmlLogEntry("[$($FileHashFuncName), Ln: $(Get-LineNum)] $FileMsg")
+        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FileMsg")
     }
     catch {
         Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)

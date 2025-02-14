@@ -19,9 +19,9 @@ $HtmlHeader = "<!DOCTYPE html>
           rel='stylesheet'
         />
 
-        <link rel='stylesheet' type='text/css' href='..\..\css\allstyle.css' />
+        <link rel='stylesheet' type='text/css' href='..\..\Resources\css\allstyle.css' />
 
-        <link rel='shortcut icon' type='img/png' href='..\..\images\page_icon.png' />
+        <link rel='shortcut icon' type='img/png' href='..\..\Resources\images\page_icon.png' />
 
         <script>
             window.console = window.console || function (t) { };
@@ -227,7 +227,6 @@ function Write-HtmlFrontPage {
     )
 
     [datetime]$ReportGenTime = Get-Date -UFormat "%A %B %d, %Y %H:%M:%S %Z"
-    # (Get-Date).ToString("dddd MM-dd-yyyy HH:mm:ss K")
 
     $FrontReportPage = "<!DOCTYPE html>
 
@@ -512,7 +511,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\001_DeviceInfo.html' target='_blank'>
+                        <a href='results\webpages\001_DeviceInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Device Information</div>
                             </button>
@@ -520,7 +519,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\002_UserInfo.html' target='_blank'>
+                        <a href='results\webpages\002_UserInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>User Data</div>
                             </button>
@@ -528,7 +527,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\003_NetworkInfo.html' target='_blank'>
+                        <a href='results\webpages\003_NetworkInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Network Information</div>
                             </button>
@@ -538,7 +537,7 @@ function Write-MainHtmlPage {
 
                 <tr>
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\004_ProcessInfo.html' target='_blank'>
+                        <a href='results\webpages\004_ProcessInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Processes Information</div>
                             </button>
@@ -546,7 +545,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\005_SystemInfo.html' target='_blank'>
+                        <a href='results\webpages\005_SystemInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>System Information</div>
                             </button>
@@ -554,7 +553,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\006_PrefetchInfo.html' target='_blank'>
+                        <a href='results\webpages\006_PrefetchInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Prefetch File Data</div>
                             </button>
@@ -562,7 +561,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\007_EventLogInfo.html' target='_blank'>
+                        <a href='results\webpages\007_EventLogInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Event Log Data</div>
                             </button>
@@ -572,7 +571,7 @@ function Write-MainHtmlPage {
 
                 <tr>
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\008_FirewallInfo.html' target='_blank'>
+                        <a href='results\webpages\008_FirewallInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Firewall Data Settings</div>
                             </button>
@@ -580,7 +579,7 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\009_BitLockerInfo.html' target='_blank'>
+                        <a href='results\webpages\009_BitLockerInfo.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>BitLocker Data</div>
                             </button>
@@ -588,12 +587,21 @@ function Write-MainHtmlPage {
                     </td>
 
                     <td class='menuItem'>
-                        <a href='Resources\results\webpages\Other_Data.html' target='_blank'>
+                        <a href='results\webpages\010_FileKeywordMatches.html' target='_blank'>
+                            <button class='btn btn-primary'>
+                                <div class='btnText'>Keywork File Matches</div>
+                            </button>
+                        </a>
+                    </td>
+
+                    <td class='menuItem'>
+                        <a href='results\webpages\011_OtherData.html' target='_blank'>
                             <button class='btn btn-primary'>
                                 <div class='btnText'>Other Data</div>
                             </button>
                         </a>
                     </td>
+
                 </tr>
             </table>
         </div>

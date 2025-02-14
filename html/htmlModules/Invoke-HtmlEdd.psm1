@@ -52,8 +52,8 @@ function Invoke-HtmlEncryptedDiskDetector {
 
         Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
 
-        # Add the closing text to the .html file
-        Add-Content -Path $FilePath -Value $HtmlFooter
+        # # Add the closing text to the .html file
+        # Add-Content -Path $FilePath -Value $HtmlFooter
     }
     catch {
         Invoke-ShowErrorMessage $($FunctionName) $(Get-LineNum) $($PSItem.Exception.Message)

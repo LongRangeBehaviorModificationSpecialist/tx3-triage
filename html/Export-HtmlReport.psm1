@@ -168,6 +168,7 @@ function Export-HtmlReport {
         [Parameter(Mandatory = $True, Position = 6)]
         [string]$Ipv6,
         [bool]$Edd,
+        [bool]$GetNTUserDat,
         [bool]$GetHtmlFileHashes,
         [bool]$MakeArchive
     )
@@ -209,31 +210,26 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ResourcesFolder' directory was created")
 
 
-    # Create the folders that need to be made in the `Resources` parent folder
-    $CssFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "css" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$CssFolder' directory was created")
-
-
-    $ImgFolder = Join-Path -Path $ResourcesFolder -ChildPath "images"
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ImgFolder' directory was created")
-
-
-    $StaticFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "static" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$StaticFolder' directory was created")
-
-
     # Create the `results` folders that need to be made in the `Resources`
-    $ResultsFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "results" -Force
+    $ResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "results" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ResultsFolder' directory was created")
-
 
     $PagesFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "webpages" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$PagesFolder' directory was created")
 
-
     $FilesFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "files" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$FilesFolder' directory was created")
 
+
+    # Create the folders that need to be made in the `Resources` parent folder
+    $CssFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "css" -Force
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$CssFolder' directory was created")
+
+    $ImgFolder = Join-Path -Path $ResourcesFolder -ChildPath "images"
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ImgFolder' directory was created")
+
+    $StaticFolder = New-Item -ItemType Directory -Path $ResourcesFolder -Name "static" -Force
+    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$StaticFolder' directory was created")
 
     # Copy the necessary folders to the new case directory
     $MasterImgFolder = Join-Path -Path $Cwd -ChildPath "html\Resources\images"
@@ -379,45 +375,55 @@ function Export-HtmlReport {
         }
     }
 
+    function Invoke-AddOtherData {
+        try {
+            $OtherDataOutputFile = Join-Path -Path $PagesFolder -ChildPath "011_OtherData.html"
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+            Add-OtherData -FilePath $OtherDataOutputFile -ComputerName $ComputerName -FilesFolder $FilesFolder -PagesFolder $PagesFolder -Edd $Edd -GetNTUserDat $GetNTUserDat
+        }
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+        }
+    }
 
     # Run the functions
     function Invoke-AllFunctions {
         try {
             Invoke-DeviceHtmlOutput
             Invoke-UserHtmlOutput
-            Invoke-NetworkHtmlOutput
-            Invoke-ProcessHtmlOutput
-            Invoke-SystemHtmlOutput
-            Invoke-PrefetchHtmlOutput
-            Invoke-EventLogHtmlOutput
-            Invoke-FirewallHtmlOutput
+            # Invoke-NetworkHtmlOutput
+            # Invoke-ProcessHtmlOutput
+            # Invoke-SystemHtmlOutput
+            # Invoke-PrefetchHtmlOutput
+            # Invoke-EventLogHtmlOutput
+            # Invoke-FirewallHtmlOutput
             Invoke-BitLockerHtmlOutput
             # Invoke-KeywordSearch
+            Invoke-AddOtherData
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
-
-
-    if ($Edd) {
-        try {
-            $EddHtmlOutputFile = Join-Path -Path $PagesFolder -ChildPath "Other_Data.html"
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Invoke-HtmlEncryptedDiskDetector -FilePath $EddHtmlOutputFile -FilesFolder $FilesFolder -PagesFolder $PagesFolder
-        }
-        catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
-        }
-    }
-
 
     Invoke-AllFunctions
 
 
-    if ($GetHtmlFileHashes) {
-        Get-HtmlFileHashes $ResultsFolder $ComputerName
+    function Invoke-GetHtmlFileHashes {
+        if ($GetHtmlFileHashes) {
+            try {
+                Get-HtmlFileHashes $ResultsFolder $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user")
+        }
     }
+
+    Invoke-GetHtmlFileHashes
 
 
     if ($MakeArchive) {
