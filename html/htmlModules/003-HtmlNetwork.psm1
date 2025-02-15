@@ -4,26 +4,14 @@ function Export-NetworkHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder,
-        [string]$FilesFolder
+        [string]$NetworkHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
 
     $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003-NetworkDataArray.psd1"
 
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
-
     # 3-000
     function Get-NetworkData {
-
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
 
         foreach ($item in $NetworkPropertyArray.GetEnumerator()) {
             $Name = $item.Key
@@ -33,23 +21,22 @@ function Export-NetworkHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$NetworkHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0) {
-                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                    Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch {
@@ -59,21 +46,44 @@ function Export-NetworkHtmlPage {
         }
     }
 
+    #! 3-021 (Keep function seperate)
+    function Get-Win32NetwortAdapterConfig {
+
+        $Name = "3-021_Win32NetwortAdapterConfig"
+        $Title = "Win32 Network Adapter Configuration"
+        $FileName = "$Name.html"
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        $OutputHtmlFilePath = New-Item -Path "$NetworkHtmlOutputFolder\$FileName" -ItemType File -Force
+
+        try {
+            $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = 'IpAddress'; E = { $_.IpAddress -join '; ' } }, @{ N = 'DefaultIPgateway'; E = { $_.DefaultIPgateway -join '; ' } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Out-String
+
+            if ($Data.Count -eq 0) {
+                Invoke-NoDataFoundMessage -Name $Name
+            }
+            else {
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+            }
+        }
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+        }
+        Show-FinishedHtmlMessage $Name
+    }
+
     #! 3-022 (Html Output)
     function Get-NetstatDetailed {
 
-        param (
-            [string]$FilePath
-        )
-
-        $Name = "3-021_NetstatConnectionsDetailed"
+        $Name = "3-022_NetstatConnectionsDetailed"
         $Title = "Detailed Netstat Connections"
         $FileName = "$Name.html"
-        $TempFile = "$FilesFolder\$Name-TEMP.html"
+        $TempFile = "$NetworkHtmlOutputFolder\$Name-TEMP.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
             [datetime]$DateTime = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
             $Head = "
@@ -157,13 +167,12 @@ Active Connections, Associated Processes and DLLs
             (Get-Content $TempFile) | ForEach-Object {
                 $_ -replace "&lt;p&gt;", "" `
                     -replace "&lt;/p&gt;", "<br />"
-            } | Set-Content -Path "$FilesFolder\$FileName" -Force
+            } | Set-Content -Path "$NetworkHtmlOutputFolder\$FileName" -Force
 
             # Delete the temp .html file
             Remove-Item -Path $TempFile -Force
 
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -174,16 +183,15 @@ Active Connections, Associated Processes and DLLs
     #! 3-023 (Csv Output)
     function Get-NetTcpConnectionsAsCsv {
 
-        $Name = "3-022_NetTcpConnectionsAsCsv"
+        $Name = "3-023_NetTcpConnectionsAsCsv"
         $Title = "Net TCP Connections (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-            Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$NetworkHtmlOutputFolder\$FileName" -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -194,28 +202,22 @@ Active Connections, Associated Processes and DLLs
     #! 3-024 (Keep function seperate)
     function Get-WifiPasswords {
 
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
-
-        $Name = "3-023_WifiPasswords"
+        $Name = "3-024_WifiPasswords"
         $Title = "Wifi Passwords"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$NetworkHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } } | Out-String
 
             if ($Data.Count -eq 0) {
-                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                 Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch {
@@ -227,16 +229,15 @@ Active Connections, Associated Processes and DLLs
     #! 3-025 (Csv Output)
     function Get-DnsCacheDataAsCsv {
 
-        $Name = "3-024_DnsCacheAsCsv"
+        $Name = "3-025_DnsCacheAsCsv"
         $Title = "DNS Cache (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-            Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$NetworkHtmlOutputFolder\$FileName" -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -244,21 +245,37 @@ Active Connections, Associated Processes and DLLs
         Show-FinishedHtmlMessage $Name
     }
 
+    function Write-NetworkSectionToMain {
+
+        $NetworkSectionHeader = "
+        <h4 class='section_header'>Network Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $NetworkSectionHeader
+
+        $FileList = Get-ChildItem -Path $NetworkHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\003\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-NetworkData -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-NetstatDetailed -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-NetTcpConnectionsAsCsv  # No need to pass variables to this function
-    Get-WifiPasswords -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-DnsCacheDataAsCsv  # No need to pass variables to this function
+    Get-NetworkData
+    Get-Win32NetwortAdapterConfig
+    Get-NetstatDetailed
+    Get-NetTcpConnectionsAsCsv
+    Get-WifiPasswords
+    Get-DnsCacheDataAsCsv
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-NetworkSectionToMain
 }
 
 

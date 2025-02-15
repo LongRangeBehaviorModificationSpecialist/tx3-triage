@@ -26,24 +26,12 @@ function Export-ProcessHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder,
-        [string]$FilesFolder
+        [string]$ProcessHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
-
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
 
     # 4-000
     function Get-ProcessesData {
-
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
 
         foreach ($item in $ProcessesPropertyArray.GetEnumerator()) {
             $Name = $item.Key
@@ -53,23 +41,22 @@ function Export-ProcessHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$ProcessHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0) {
-                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                    Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch {
@@ -83,15 +70,13 @@ function Export-ProcessHtmlPage {
     function Get-RunningProcessesAsCsv {
 
         $Name = "4-004_RunningProcessesAsCsv"
-        $Title = "Running Processes (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-            Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$ProcessHtmlOutputFolder\$FileName" -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -103,12 +88,11 @@ function Export-ProcessHtmlPage {
     function Get-UniqueProcessHashAsCsv {
 
         $Name = "4-005_UniqueProcessHashesAsCsv"
-        $Title = "Unique Processes Hashes (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
             $Data = @()
             foreach ($P in (Get-WmiObject Win32_Process | Select-Object Name, ExecutablePath, CommandLine, ParentProcessId, ProcessId)) {
@@ -124,9 +108,8 @@ function Export-ProcessHtmlPage {
                     $Data += $ProcessObj
                 }
             }
-            ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$FilesFolder\$FileName" -Encoding UTF8
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$ProcessHtmlOutputFolder\$FileName" -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -138,15 +121,13 @@ function Export-ProcessHtmlPage {
     function Get-RunningServicesAsCsv {
 
         $Name = "4-006_RunningServicesAsCsv"
-        $Title = "Running Services (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-            Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$ProcessHtmlOutputFolder\$FileName" -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -154,20 +135,35 @@ function Export-ProcessHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
+    function Write-ProcessSectionToMain {
+
+        $ProcessSectionHeader = "
+        <h4 class='section_header'>Process Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $ProcessSectionHeader
+
+        $FileList = Get-ChildItem -Path $ProcessHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\004\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-ProcessesData -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-RunningProcessesAsCsv  # No need to pass variables to this function
-    Get-UniqueProcessHashAsCsv  # No need to pass variables to this function
-    Get-RunningServicesAsCsv  # No need to pass variables to this function
+    Get-ProcessesData
+    Get-RunningProcessesAsCsv
+    Get-UniqueProcessHashAsCsv
+    Get-RunningServicesAsCsv
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-ProcessSectionToMain
 }
 
 

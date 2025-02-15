@@ -106,7 +106,7 @@ function Get-Gui {
     $btnHtmlReport.Width = 150
     $btnHtmlReport.Height = 50
     $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object Drawing.Point(10, 250)  # (x, y) position -- Down 40 from last checkbox
+    $btnHtmlReport.Location = New-Object Drawing.Point(130, 250)  # (x, y) position -- Down 40 from last checkbox
     $btnHtmlReport.Add_Click({
 
         $User = $TextBoxUserName.Text
@@ -120,25 +120,25 @@ function Get-Gui {
     $Form.Controls.Add($btnHtmlReport)
 
 
-    # Define a button for initiating the files report
-    $btnFilesOutput = New-Object Windows.Forms.Button
-    $btnFilesOutput.Text = "Files Output"
-    $btnFilesOutput.Font = New-Object System.Drawing.Font("Arial", 11)
-    $btnFilesOutput.Width = 150
-    $btnFilesOutput.Height = 50
-    $btnFilesOutput.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnFilesOutput.Location = New-Object Drawing.Point(180, 250)  # (x, y) position
-    $btnFilesOutput.Add_Click({
+    # # Define a button for initiating the files report
+    # $btnFilesOutput = New-Object Windows.Forms.Button
+    # $btnFilesOutput.Text = "Files Output"
+    # $btnFilesOutput.Font = New-Object System.Drawing.Font("Arial", 11)
+    # $btnFilesOutput.Width = 150
+    # $btnFilesOutput.Height = 50
+    # $btnFilesOutput.Padding = New-Object System.Windows.Forms.Padding(10)
+    # $btnFilesOutput.Location = New-Object Drawing.Point(180, 250)  # (x, y) position
+    # $btnFilesOutput.Add_Click({
 
-        $User = $TextBoxUserName.Text
-        $Agency = $TextBoxAgency.Text
-        $CaseNumber = $TextBoxCaseNumber.Text
+    #     $User = $TextBoxUserName.Text
+    #     $Agency = $TextBoxAgency.Text
+    #     $CaseNumber = $TextBoxCaseNumber.Text
 
-        Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
+    #     Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
 
-    })
-    # Add the button
-    $Form.Controls.Add($btnFilesOutput)
+    # })
+    # # Add the button
+    # $Form.Controls.Add($btnFilesOutput)
 
     # Display the form
     [void]$Form.ShowDialog()

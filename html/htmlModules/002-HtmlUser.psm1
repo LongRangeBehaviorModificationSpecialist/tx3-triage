@@ -26,23 +26,12 @@ function Export-UserHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder
+        [string]$UserHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
-
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>`n"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
 
     # 2-000
     function Get-UserData {
-
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
 
         foreach ($item in $UserPropertyArray.GetEnumerator()) {
             $Name = $item.Key
@@ -52,23 +41,22 @@ function Export-UserHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$UserHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0) {
-                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                    Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch {
@@ -78,17 +66,32 @@ function Export-UserHtmlPage {
         }
     }
 
+    function Write-UserSectionToMain {
+
+        $UserSectionHeader = "
+        <h4 class='section_header'>User Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $UserSectionHeader
+
+        $FileList = Get-ChildItem -Path $UserHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\002\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-UserData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-UserData
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-UserSectionToMain
 }
 
 

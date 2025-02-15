@@ -9,29 +9,16 @@ function Export-SystemHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder
+        [string]$SystemHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
 
     # Import the hashtables from the data files
     $RegistryDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005-RegistryDataArray.psd1"
     $SystemDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005-SystemDataArray.psd1"
 
-
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
-
     # 5-000A
     function Get-SelectRegistryValues {
-
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
 
         foreach ($item in $RegistryDataArray.GetEnumerator()) {
             $Name = $item.Key
@@ -41,28 +28,25 @@ function Export-SystemHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$SystemHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 Show-Message("[INFO] Searching for key [$RegKey]") -DarkGray
                 if (-not (Test-Path -Path $RegKey)) {
                     Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
-                    # Add-Content -Path $FilePath -Value "<button class='no_info_btn'>`n<div class='no_info_btn_text'>$($Title)&ensp;Registry Key [$RegKey] does not exist on the examined machine</div>`n</button>"
+                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
                 }
                 else {
                     $Data = Invoke-Expression -Command $Command | Out-String
                     if (-not $Data) {
                         $msg = "The registry key [$RegKey] exists, but contains no data"
                         Show-Message("[INFO] $msg") -Yellow
-                        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
-                        # Add-Content -Path $FilePath -Value "<button class='no_info_btn'>`n<div class='no_info_btn_text'>$($Title)&ensp;$($msg)</div>`n</button>`n"
+                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
                     }
                     else {
-                        Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                        Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                        Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                     }
                 }
             }
@@ -76,11 +60,6 @@ function Export-SystemHtmlPage {
     # 5-000B
     function Get-SystemData {
 
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
-
         foreach ($item in $SystemDataArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
@@ -89,23 +68,22 @@ function Export-SystemHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$SystemHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0) {
-                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                    Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch {
@@ -115,18 +93,33 @@ function Export-SystemHtmlPage {
         }
     }
 
+    function Write-SystemSectionToMain {
+
+        $SystemSectionHeader = "
+        <h4 class='section_header'>System Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $SystemSectionHeader
+
+        $FileList = Get-ChildItem -Path $SystemHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\005\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-SelectRegistryValues -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-SystemData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-SelectRegistryValues
+    Get-SystemData
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-SystemSectionToMain
 }
 
 

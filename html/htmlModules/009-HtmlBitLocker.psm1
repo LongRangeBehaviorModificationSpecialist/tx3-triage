@@ -3,39 +3,28 @@ function Export-BitLockerHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder
+        [string]$BitLockerHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
-
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
 
     # 9-001
     function Search-BitlockerVolumes {
-
-        param (
-            [string]$FilePath
-        )
 
         $Name = "9-001_BitLockerVolumes"
         $Title = "BitLocker Volumes"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$BitLockerHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint | Out-String
             if (-not $Data) {
-                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                 Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch {
@@ -47,24 +36,20 @@ function Export-BitLockerHtmlPage {
     # 9-002
     function Get-BitlockerRecoveryKeys {
 
-        param (
-            [string]$FilePath
-        )
-
         $Name = "9-002_BitLockerRecoveryKeys"
         $Title = "BitLocker Recovery Keys"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$BitLockerHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Info = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
 
             if (-not $Info) {
-                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                 $Data = @()
                 # Iterate through each drive
                 foreach ($Vol in $Info) {
@@ -88,10 +73,8 @@ function Export-BitLockerHtmlPage {
                     }
                 }
             }
-
-            Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
             Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -99,18 +82,33 @@ function Export-BitLockerHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
+    function Write-BitLockerSectionToMain {
+
+        $BitLockerSectionHeader = "
+        <h4 class='section_header'>Firewall Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $BitLockerSectionHeader
+
+        $FileList = Get-ChildItem -Path $BitLockerHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\009\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Search-BitlockerVolumes -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-BitlockerRecoveryKeys -FilePath $FilePath -PagesFolder $PagesFolder
+    Search-BitlockerVolumes
+    Get-BitlockerRecoveryKeys
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-BitLockerSectionToMain
 }
 
 

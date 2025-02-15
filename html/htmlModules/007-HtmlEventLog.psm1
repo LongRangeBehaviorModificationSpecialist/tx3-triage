@@ -3,27 +3,18 @@ function Export-EventLogHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder,
-        [string]$FilesFolder
+        [string]$EventLogHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
 
     # Import the hashtables from the data files
     $EventLogArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007-EventLogArray.psd1"
     $OtherEventLogPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007-EventLogOtherArray.psd1"
 
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
-
     #7-000A
     function Get-EventLogData {
 
         param (
-            [string]$FilePath,
-            [string]$PagesFolder,
             [int]$MaxRecords = 50
         )
 
@@ -36,7 +27,7 @@ function Export-EventLogHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$EventLogHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 Show-Message("Searching for $LogName Log (Event ID: $EventID)") -DarkGray
@@ -46,13 +37,11 @@ function Export-EventLogHtmlPage {
                     $msg = "The LogFile $LogName exists, but contains no Events that match the EventID of $EventID"
                     Show-Message("[INFO] $msg") -Yellow
                     Write-HtmlLogEntry("$msg")
-                    Add-Content -Path $FilePath -Value "<button class='no_info_btn'>`n<div class='no_info_text'>$($msg)</div>`n</button>`n"
                 }
                 else {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                     Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch [System.Exception] {
@@ -70,11 +59,6 @@ function Export-EventLogHtmlPage {
     # 7-000B
     function Get-OtherEventLogData {
 
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
-
         foreach ($item in $OtherEventLogPropertyArray.GetEnumerator()) {
             $Name = $item.Key
             $Title = $item.value[0]
@@ -83,23 +67,22 @@ function Export-EventLogHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$EventLogHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
                 if ($Data.Count -eq 0) {
-                    Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                    Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                    Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
             catch {
@@ -114,20 +97,17 @@ function Export-EventLogHtmlPage {
     function Get-SecurityEventsLast30DaysCsv {
 
         param (
-            [string]$FilePath,
             [int]$DaysBack = 30
         )
 
         $Name = "7-025_SecurityEventsLast30DaysAsCsv"
-        $Title = "Security Events Last 30 Days (as Csv)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-            Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$FilesFolder\$FileName" -Encoding UTF8
-            Add-Content -Path $FilePath -Value "<a href='..\files\$FileName' target='_blank'>`n<button class='file_btn'>`n<div class='file_btn_text'>$($Title)</div>`n</button>`n</a>"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$EventLogHtmlOutputFolder\$FileName" -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -136,18 +116,34 @@ function Export-EventLogHtmlPage {
     }
 
 
+    function Write-EventLogSectionToMain {
+
+        $EventLogSectionHeader = "
+        <h4 class='section_header'>Event Log Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $EventLogSectionHeader
+
+        $FileList = Get-ChildItem -Path $EventLogHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\007\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
+
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-EventLogData -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-OtherEventLogData -FilePath $FilePath -PagesFolder $PagesFolder
-    Get-SecurityEventsLast30DaysCsv -FilePath $FilePath
+    Get-EventLogData
+    Get-OtherEventLogData
+    Get-SecurityEventsLast30DaysCsv
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-EventLogSectionToMain
 }
 
 

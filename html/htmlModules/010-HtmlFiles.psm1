@@ -2,34 +2,22 @@ function Export-FilesHtmlPage {
 
     [CmdletBinding()]
 
-    param
-    (
-        [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FilePath,
-        [string]$PagesFolder,
+    param (
+        [string]$KeywordsHtmlOutputFolder,
+        [string]$HtmlReportFile,
         [string]$KeywordFile
     )
-
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
 
     # 10-001
     function Search-FilesByKeywords {
 
-        param
-        (
-            [string]$FilePath,
-            [string]$KeywordFile,
-            [string]$PagesFolder,
+        param (
             [string]$SearchDirectory = "D:\"
         )
 
         $Name = "10-001_KeywordFileSearch"
         $FileName = "$Name.html"
-        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$KeywordsHtmlOutputFolder\$FileName" -ItemType File -Force
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
@@ -51,8 +39,7 @@ function Export-FilesHtmlPage {
                 Write-Error "No valid keywords found in file: $KeywordFile"
             }
 
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-            Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
             Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>"
 
             # Stream through files and search for matches
@@ -72,7 +59,7 @@ function Export-FilesHtmlPage {
             }
 
             Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n$HtmlFooter"
-            Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -80,17 +67,32 @@ function Export-FilesHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
+    function Write-KeywordsSectionToMain {
+
+        $KeywordsSectionHeader = "
+        <h4 class='section_header'>Firewall Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $KeywordsSectionHeader
+
+        $FileList = Get-ChildItem -Path $KeywordsHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\010\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Search-FilesByKeywords -FilePath $FilePath -PagesFolder $PagesFolder -KeywordFile $KeywordFile
+    Search-FilesByKeywords
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-KeywordsSectionToMain
 }
 
 

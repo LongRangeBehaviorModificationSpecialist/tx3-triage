@@ -3,40 +3,28 @@ function Export-PrefetchHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$FilePath,
-        [string]$PagesFolder
+        [string]$PrefetchHtmlOutputFolder,
+        [string]$HtmlReportFile
     )
-
-    Add-Content -Path $FilePath -Value $HtmlHeader
-    Add-content -Path $FilePath -Value "<div class='item_table'>"  # Add this to display the results in a flexbox
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
 
     #6-001
     function Get-DetailedPrefetchData {
-
-        param (
-            [string]$FilePath,
-            [string]$PagesFolder
-        )
 
         $Name = "6-001_DetailedPrefetchFileData"
         $FileName = "$Name.html"
         $Title = "Prefetch File Data (Detailed)"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$PagesFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$PrefetchHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime | Out-String
             if ($Data.Count -eq 0) {
-                Invoke-NoDataFoundMessage -Name $Name -FilePath $FilePath -Title $Title
+                Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -Start
-                Add-Content -Path $FilePath -Value "<a href='.\$FileName' target='_blank'>`n<button class='item_btn'>`n<div class='item_btn_text'>$($Title)</div>`n</button>`n</a>`n"
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                 Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                Invoke-SaveOutputMessage $FunctionName $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
         catch {
@@ -45,17 +33,32 @@ function Export-PrefetchHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
+    function Write-PrefetchSectionToMain {
+
+        $PrefetchSectionHeader = "
+        <h4 class='section_header'>Prefetch Information Section</h4>
+        <div class='number_list'>"
+
+        Add-Content -Path $HtmlReportFile -Value $PrefetchSectionHeader
+
+        $FileList = Get-ChildItem -Path $PrefetchHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "<a href='results\webpages\006\$File' target='_blank'>$File</a>"
+            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+        }
+
+        Add-Content -Path $HtmlReportFile -Value "</div>"
+    }
+
 
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-DetailedPrefetchData -FilePath $FilePath -PagesFolder $PagesFolder
+    Get-DetailedPrefetchData
 
 
-    Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
-
-    # Add the closing text to the .html file
-    Add-Content -Path $FilePath -Value $HtmlFooter
+    Write-PrefetchSectionToMain
 }
 
 

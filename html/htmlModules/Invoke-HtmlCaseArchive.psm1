@@ -3,10 +3,6 @@ $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 function Invoke-HtmlCaseArchive {
 
-    [CmdletBinding()]
-
-    $FunctionName = $MyInvocation.MyCommand.Name
-
     try {
         # Show beginning message
         Show-Message("[INFO] Creating Case Archive file -> '$($CaseFolderName.Name).zip'") -Header -Green
@@ -16,7 +12,7 @@ function Invoke-HtmlCaseArchive {
         Show-Message("[INFO] Case Archive file -> '$($CaseFolderName.Name).zip' created successfully") -Green
     }
     catch {
-        Invoke-ShowErrorMessage $($FunctionName) $(Get-LineNum) $($PSItem.Exception.Message)
+        Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
     }
 }
 
