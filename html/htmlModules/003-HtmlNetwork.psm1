@@ -25,17 +25,21 @@ function Export-NetworkHtmlPage {
 
             try {
                 $Data = Invoke-Expression -Command $Command
+
                 if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
                     Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
+
                     }
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
+
                     Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
@@ -77,7 +81,6 @@ function Export-NetworkHtmlPage {
     function Get-NetstatDetailed {
 
         $Name = "3-022_NetstatConnectionsDetailed"
-        $Title = "Detailed Netstat Connections"
         $FileName = "$Name.html"
         $TempFile = "$NetworkHtmlOutputFolder\$Name-TEMP.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
@@ -184,7 +187,6 @@ Active Connections, Associated Processes and DLLs
     function Get-NetTcpConnectionsAsCsv {
 
         $Name = "3-023_NetTcpConnectionsAsCsv"
-        $Title = "Net TCP Connections (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -230,7 +232,6 @@ Active Connections, Associated Processes and DLLs
     function Get-DnsCacheDataAsCsv {
 
         $Name = "3-025_DnsCacheAsCsv"
-        $Title = "DNS Cache (Csv file)"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -256,7 +257,7 @@ Active Connections, Associated Processes and DLLs
         $FileList = Get-ChildItem -Path $NetworkHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\003\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\003\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

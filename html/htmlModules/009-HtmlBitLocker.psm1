@@ -18,12 +18,15 @@ function Export-BitLockerHtmlPage {
 
         try {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint | Out-String
+
             if (-not $Data) {
                 Invoke-NoDataFoundMessage -Name $Name
             }
             else {
                 Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+
                 Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+
                 Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
         }
@@ -50,7 +53,9 @@ function Export-BitLockerHtmlPage {
             }
             else {
                 Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+
                 $Data = @()
+
                 # Iterate through each drive
                 foreach ($Vol in $Info) {
                     $DriveLetter = $Vol.MountPoint
@@ -93,7 +98,7 @@ function Export-BitLockerHtmlPage {
         $FileList = Get-ChildItem -Path $BitLockerHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\009\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\009\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

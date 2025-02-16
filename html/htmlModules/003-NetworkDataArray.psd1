@@ -57,7 +57,7 @@
     "3-019_Ip_Info_Cont"                 = ("IP Address (2)",
                                            "nslookup myip.opendns.com resolver1.opendns.com",
                                            "String")
-    "3-020_NetstatAndExeName"            = ("Netstat & Exe Name",
+    "3-020_Netstat_And_Exe_Name"         = ("Netstat & Exe Name",
                                            "netstat -nabo | Out-String",
                                            "String")
 }

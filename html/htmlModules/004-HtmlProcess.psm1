@@ -69,7 +69,7 @@ function Export-ProcessHtmlPage {
     #! 4-007 (Csv Output)
     function Get-RunningProcessesAsCsv {
 
-        $Name = "4-004_RunningProcessesAsCsv"
+        $Name = "4-007_RunningProcessesAsCsv"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -87,7 +87,7 @@ function Export-ProcessHtmlPage {
     #! 4-008 (Csv Output)
     function Get-UniqueProcessHashAsCsv {
 
-        $Name = "4-005_UniqueProcessHashesAsCsv"
+        $Name = "4-008_UniqueProcessHashesAsCsv"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -120,7 +120,7 @@ function Export-ProcessHtmlPage {
     #! 4-009 (Csv Output)
     function Get-RunningServicesAsCsv {
 
-        $Name = "4-006_RunningServicesAsCsv"
+        $Name = "4-009_RunningServicesAsCsv"
         $FileName = "$Name.csv"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
@@ -146,7 +146,7 @@ function Export-ProcessHtmlPage {
         $FileList = Get-ChildItem -Path $ProcessHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\004\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\004\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

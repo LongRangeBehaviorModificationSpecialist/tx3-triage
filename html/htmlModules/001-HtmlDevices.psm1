@@ -5,8 +5,7 @@ function Export-DeviceHtmlPage {
 
     param (
         [string]$DeviceHtmlOutputFolder,
-        [string]$HtmlReportFile,
-        [string]$FilesFolder
+        [string]$HtmlReportFile
     )
 
     # Import the hashtables from the data files
@@ -52,11 +51,6 @@ function Export-DeviceHtmlPage {
     #! 1-022 (Keep as seperate function)
     function Get-PnpEnumDevices {
 
-        # param (
-        #     [string]$DeviceHtmlOutputFolder,
-        #     [string]$PagesFolder
-        # )
-
         $Name = "1-022_PnpEnumDevices"
         $Title = "PnP Enum Devices"
         $FileName = "$Name.html"
@@ -79,7 +73,6 @@ function Export-DeviceHtmlPage {
         }
         Show-FinishedHtmlMessage $Name
     }
-
 
 
     # 1-023
@@ -131,7 +124,7 @@ function Export-DeviceHtmlPage {
         $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
-            $TempCsvFile = "$FilesFolder\1-024_AutoRuns-TEMP.csv"
+            $TempCsvFile = "$DeviceHtmlOutputFolder\1-024_AutoRuns-TEMP.csv"
             Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
             $Data = Import-Csv -Path $TempCsvFile
             if (-not $Data) {
@@ -156,11 +149,6 @@ function Export-DeviceHtmlPage {
 
     #! 1-025 (Keep as seperate function)
     function Get-OpenWindowTitles {
-
-        # param  (
-        #     [string]$DeviceHtmlOutputFolder,
-        #     [string]$PagesFolder
-        # )
 
         $Name = "1-025_OpenWindowTitles"
         $Title = "Open Window Titles"
@@ -193,7 +181,7 @@ function Export-DeviceHtmlPage {
         $Title = "Full System Info"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $tempFile = "$FilesFolder\$Name-TEMP.txt"
+        $tempFile = "$DeviceHtmlOutputFolder\$Name-TEMP.txt"
         $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
@@ -224,7 +212,7 @@ function Export-DeviceHtmlPage {
         $FileList = Get-ChildItem -Path $DeviceHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\001\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\001\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

@@ -40,6 +40,7 @@ function Export-FilesHtmlPage {
             }
 
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+
             Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>"
 
             # Stream through files and search for matches
@@ -59,6 +60,7 @@ function Export-FilesHtmlPage {
             }
 
             Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n$HtmlFooter"
+
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -70,7 +72,7 @@ function Export-FilesHtmlPage {
     function Write-KeywordsSectionToMain {
 
         $KeywordsSectionHeader = "
-        <h4 class='section_header'>Firewall Information Section</h4>
+        <h4 class='section_header'>Keywords Search Results</h4>
         <div class='number_list'>"
 
         Add-Content -Path $HtmlReportFile -Value $KeywordsSectionHeader
@@ -78,7 +80,7 @@ function Export-FilesHtmlPage {
         $FileList = Get-ChildItem -Path $KeywordsHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\010\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\010\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

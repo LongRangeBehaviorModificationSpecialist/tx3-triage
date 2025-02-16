@@ -114,7 +114,7 @@ function Invoke-SaveOutputMessage {
         $msg = "Saving output from '$($Name)'"
     }
     if ($Finish) {
-        $msg = "Output from '$($Name)' saved to '$FileName'"
+        $msg = "Output saved to '$FileName'"
     }
     Show-Message("[INFO] $msg") -Blue
     Write-HtmlLogEntry("[$($FunctionName), Ln: $LineNumber] $msg")
@@ -130,7 +130,6 @@ function Invoke-NoDataFoundMessage {
     $msg = "No data found for '$($Name)'"
     Show-Message("[WARNING] $msg") -Yellow
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $msg")
-    # Add-Content -Path $FilePath -Value "<p class='btn_label'>$($Title)</p>`n<button type='button' class='collapsible'>$($FileName)<span class='bold_red'>[No data found]</span></button>`n"
 }
 
 
@@ -167,6 +166,7 @@ function Export-HtmlReport {
         [string]$Ipv6,
         [bool]$Edd,
         [bool]$GetNTUserDat,
+        [bool]$ListFiles,
         [bool]$GetHtmlFileHashes,
         [bool]$MakeArchive
     )
@@ -211,12 +211,6 @@ function Export-HtmlReport {
     # Create the `results` folders that need to be made in the `Resources`
     $ResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "results" -Force
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$ResultsFolder' directory was created")
-
-    $PagesFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "webpages" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$PagesFolder' directory was created")
-
-    $FilesFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "files" -Force
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$FilesFolder' directory was created")
 
 
     # Create the folders that need to be made in the `Resources` parent folder
@@ -263,11 +257,22 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Compiling the tx3-triage report in .html format")
 
 
+    function Invoke-Edd {
+        if ($Edd) {
+            $EddHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Edd" -Force
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+            Invoke-HtmlEncryptedDiskDetector -EddHtmlOutputFolder $EddHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+        }
+    }
+
+    Invoke-Edd
+
+
     function Invoke-DeviceHtmlOutput {
         try {
-            $DeviceHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "001" -Force
+            $DeviceHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "001" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Export-DeviceHtmlPage -DeviceHtmlOutputFolder $DeviceHtmlOutputFolder -FilesFolder $FilesFolder -HtmlReportFile $HtmlReportFile
+            Export-DeviceHtmlPage -DeviceHtmlOutputFolder $DeviceHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -276,7 +281,7 @@ function Export-HtmlReport {
 
     function Invoke-UserHtmlOutput {
         try {
-            $UserHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "002" -Force
+            $UserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "002" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-UserHtmlPage -UserHtmlOutputFolder $UserHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -287,7 +292,7 @@ function Export-HtmlReport {
 
     function Invoke-NetworkHtmlOutput {
         try {
-            $NetworkHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "003" -Force
+            $NetworkHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "003" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-NetworkHtmlPage -NetworkHtmlOutputFolder $NetworkHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -298,7 +303,7 @@ function Export-HtmlReport {
 
     function Invoke-ProcessHtmlOutput {
         try {
-            $ProcessHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "004" -Force
+            $ProcessHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "004" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-ProcessHtmlPage -ProcessHtmlOutputFolder $ProcessHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -309,9 +314,9 @@ function Export-HtmlReport {
 
     function Invoke-SystemHtmlOutput {
         try {
-            $SystemHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "005" -Force
+            $SystemHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "005" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Export-SystemHtmlPage -FilePath $SystemHtmlOutputFolder -HtmlReportFile $HtmlReportFile
+            Export-SystemHtmlPage -SystemHtmlOutputFolder $SystemHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -320,7 +325,7 @@ function Export-HtmlReport {
 
     function Invoke-PrefetchHtmlOutput {
         try {
-            $PrefetchHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "006" -Force
+            $PrefetchHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "006" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-PrefetchHtmlPage -PrefetchHtmlOutputFolder $PrefetchHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -331,7 +336,7 @@ function Export-HtmlReport {
 
     function Invoke-EventLogHtmlOutput {
         try {
-            $EventLogHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "007" -Force
+            $EventLogHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "007" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-EventLogHtmlPage -EventLogHtmlOutputFolder $EventLogHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -342,7 +347,7 @@ function Export-HtmlReport {
 
     function Invoke-FirewallHtmlOutput {
         try {
-            $FirewallHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "008" -Force
+            $FirewallHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "008" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-FirewallHtmlPage -FirewallHtmlOutputFolder $FirewallHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -353,7 +358,7 @@ function Export-HtmlReport {
 
     function Invoke-BitLockerHtmlOutput {
         try {
-            $BitLockerHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "009" -Force
+            $BitLockerHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "009" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-BitLockerHtmlPage -BitLockerHtmlOutputFolder $BitLockerHtmlOutputFolder -HtmlReportFile $HtmlReportFile
         }
@@ -364,20 +369,9 @@ function Export-HtmlReport {
 
     function Invoke-KeywordSearch {
         try {
-            $KeywordsHtmlOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "010" -Force
+            $KeywordsHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "010" -Force
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
             Export-FilesHtmlPage -KeywordsHtmlOutputFolder $KeywordsHtmlOutputFolder -KeywordFile $KeywordListFile -HtmlReportFile $HtmlReportFile
-        }
-        catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
-        }
-    }
-
-    function Invoke-AddOtherData {
-        try {
-            $OtherDataOutputFolder = New-Item -ItemType Directory -Path $PagesFolder -Name "011" -Force
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Add-OtherData -OtherDataOutputFolder $OtherDataOutputFolder -ComputerName $ComputerName -FilesFolder $FilesFolder -PagesFolder $PagesFolder -Edd $Edd -GetNTUserDat $GetNTUserDat
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -389,15 +383,14 @@ function Export-HtmlReport {
         try {
             Invoke-DeviceHtmlOutput
             Invoke-UserHtmlOutput
-            # Invoke-NetworkHtmlOutput
-            # Invoke-ProcessHtmlOutput
-            # Invoke-SystemHtmlOutput
-            # Invoke-PrefetchHtmlOutput
-            # Invoke-EventLogHtmlOutput
-            # Invoke-FirewallHtmlOutput
-            # Invoke-BitLockerHtmlOutput
+            Invoke-NetworkHtmlOutput
+            Invoke-ProcessHtmlOutput
+            Invoke-SystemHtmlOutput
+            Invoke-PrefetchHtmlOutput
+            Invoke-EventLogHtmlOutput
+            Invoke-FirewallHtmlOutput
+            Invoke-BitLockerHtmlOutput
             # Invoke-KeywordSearch
-            # Invoke-AddOtherData
 
             #! Write the closing html text to the main file
             Write-MainHtmlPage2End -FilePath $HtmlReportFile
@@ -408,6 +401,17 @@ function Export-HtmlReport {
     }
 
     Invoke-AllFunctions
+
+
+    function Invoke-NTUser {
+        if ($GetNTUserDat) {
+            $NTUserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "NTUser" -Force
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+            Invoke-HtmlNTUserDatFiles -NTUserHtmlOutputFolder $NTUserHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+        }
+    }
+
+    Invoke-NTUser
 
 
     function Invoke-GetHtmlFileHashes {

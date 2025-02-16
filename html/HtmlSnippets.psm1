@@ -19,9 +19,9 @@ $HtmlHeader = "<!DOCTYPE html>
           rel='stylesheet'
         />
 
-        <link rel='stylesheet' type='text/css' href='..\..\..\Resources\css\allstyle.css' />
+        <link rel='stylesheet' type='text/css' href='..\..\Resources\css\allstyle.css' />
 
-        <link rel='shortcut icon' type='img/png' href='..\..\..\Resources\images\page_icon.png' />
+        <link rel='shortcut icon' type='img/png' href='..\..\Resources\images\page_icon.png' />
 
         <script>
             window.console = window.console || function (t) { };

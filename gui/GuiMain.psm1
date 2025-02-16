@@ -71,7 +71,7 @@ function Get-Gui {
     $cbEdd.Text = "Run Encrypted Disk Detector"
     $cbEdd.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbEdd.Width = 250
-    $cbEdd.Location = New-Object Drawing.Point(130, 120)  # (x, y) position
+    $cbEdd.Location = New-Object Drawing.Point(130, 130)  # (x, y) position
     $Form.Controls.Add($cbEdd)
 
 
@@ -79,15 +79,23 @@ function Get-Gui {
     $cbNTUserDat.Text = "Copy NTUSER.DAT files"
     $cbNTUserDat.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbNTUserDat.Width = 250
-    $cbNTUserDat.Location = New-Object Drawing.Point(130, 150)  # (x, y) position
+    $cbNTUserDat.Location = New-Object Drawing.Point(130, 160)  # (x, y) position
     $Form.Controls.Add($cbNTUserDat)
+
+
+    $cbListFiles = New-Object System.Windows.Forms.CheckBox
+    $cbListFiles.Text = "List ALL Files"
+    $cbListFiles.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbListFiles.Width = 250
+    $cbListFiles.Location = New-Object Drawing.Point(130, 190)  # (x, y) position
+    $Form.Controls.Add($cbListFiles)
 
 
     $cbHashFiles = New-Object System.Windows.Forms.CheckBox
     $cbHashFiles.Text = "Hash Html Results Files"
     $cbHashFiles.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbHashFiles.Width = 250
-    $cbHashFiles.Location = New-Object Drawing.Point(130, 180)  # (x, y) position
+    $cbHashFiles.Location = New-Object Drawing.Point(130, 220)  # (x, y) position
     $Form.Controls.Add($cbHashFiles)
 
 
@@ -95,7 +103,7 @@ function Get-Gui {
     $cbArchive.Text = "Create Case Archive"
     $cbArchive.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbArchive.Width = 250
-    $cbArchive.Location = New-Object Drawing.Point(130, 210)  # (x, y) position
+    $cbArchive.Location = New-Object Drawing.Point(130, 250)  # (x, y) position
     $Form.Controls.Add($cbArchive)
 
 
@@ -106,14 +114,14 @@ function Get-Gui {
     $btnHtmlReport.Width = 150
     $btnHtmlReport.Height = 50
     $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object Drawing.Point(130, 250)  # (x, y) position -- Down 40 from last checkbox
+    $btnHtmlReport.Location = New-Object Drawing.Point(130, 290)  # (x, y) position -- Down 40 from last checkbox
     $btnHtmlReport.Add_Click({
 
         $User = $TextBoxUserName.Text
         $Agency = $TextBoxAgency.Text
         $CaseNumber = $TextBoxCaseNumber.Text
 
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Edd $cbEdd.Checked -GetNTUserDat $cbNTUserDat.Checked -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Edd $cbEdd.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
     })
     # Add the button

@@ -31,8 +31,11 @@ function Export-EventLogHtmlPage {
 
             try {
                 Show-Message("Searching for $LogName Log (Event ID: $EventID)") -DarkGray
+
                 $Command = "Get-WinEvent -Max $MaxRecords -FilterHashtable @{ Logname = '$($LogName)'; ID = $($EventID) } | Select-Object -Property $($Properties) | Format-List | Out-String"
+
                 $Data = Invoke-Expression -Command $Command
+
                 if ($Data.Count -eq 0) {
                     $msg = "The LogFile $LogName exists, but contains no Events that match the EventID of $EventID"
                     Show-Message("[INFO] $msg") -Yellow
@@ -71,17 +74,21 @@ function Export-EventLogHtmlPage {
 
             try {
                 $Data = Invoke-Expression -Command $Command
+
                 if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
                     Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+
                     if ($Type -eq "Pipe") {
                         Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
                     }
+
                     if ($Type -eq "String") {
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                     }
+
                     Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
                 }
             }
@@ -106,7 +113,9 @@ function Export-EventLogHtmlPage {
 
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+
             Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$EventLogHtmlOutputFolder\$FileName" -Encoding UTF8
+
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -127,7 +136,7 @@ function Export-EventLogHtmlPage {
         $FileList = Get-ChildItem -Path $EventLogHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\007\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\007\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

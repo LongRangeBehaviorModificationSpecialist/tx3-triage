@@ -45,6 +45,7 @@ function Export-UserHtmlPage {
 
             try {
                 $Data = Invoke-Expression -Command $Command
+
                 if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
@@ -77,7 +78,7 @@ function Export-UserHtmlPage {
         $FileList = Get-ChildItem -Path $UserHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\002\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\002\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 

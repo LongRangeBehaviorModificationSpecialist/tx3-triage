@@ -18,6 +18,7 @@ function Export-PrefetchHtmlPage {
 
         try {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime | Out-String
+
             if ($Data.Count -eq 0) {
                 Invoke-NoDataFoundMessage -Name $Name
             }
@@ -44,7 +45,7 @@ function Export-PrefetchHtmlPage {
         $FileList = Get-ChildItem -Path $PrefetchHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\webpages\006\$File' target='_blank'>$File</a>"
+            $FileNameEntry = "<a href='results\006\$File' target='_blank'>$File</a>"
             Add-Content -Path $HtmlReportFile -Value $FileNameEntry
         }
 
