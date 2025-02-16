@@ -89,11 +89,13 @@ function Export-BitLockerHtmlPage {
 
     function Write-BitLockerSectionToMain {
 
-        $BitLockerSectionHeader = "
-        <h4 class='section_header'>Firewall Information Section</h4>
+        $SectionName = "BitLocker Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='bitlocker'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $BitLockerSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $BitLockerHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 

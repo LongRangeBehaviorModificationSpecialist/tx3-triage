@@ -61,7 +61,7 @@ function Invoke-HtmlEncryptedDiskDetector {
         $SectionName = "Encrypted Device Detector Results"
 
         $EddSectionHeader = "
-        <h4 class='section_header'>$($SectionName)</h4>
+        <h4 class='section_header' id='edd'>$($SectionName)</h4>
         <div class='number_list'>"
 
         Add-Content -Path $HtmlReportFile -Value $EddSectionHeader

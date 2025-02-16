@@ -36,11 +36,13 @@ function Export-PrefetchHtmlPage {
 
     function Write-PrefetchSectionToMain {
 
-        $PrefetchSectionHeader = "
-        <h4 class='section_header'>Prefetch Information Section</h4>
+        $SectionName = "Prefetch Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='prefetch'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $PrefetchSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $PrefetchHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 

@@ -63,11 +63,13 @@ function Export-FirewallHtmlPage {
 
     function Write-FirewallSectionToMain {
 
-        $FirewallSectionHeader = "
-        <h4 class='section_header'>Firewall Information Section</h4>
+        $SectionName = "Firewall Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='firewall'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $FirewallSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $FirewallHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 

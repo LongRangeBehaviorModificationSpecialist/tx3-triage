@@ -94,11 +94,13 @@ function Export-SystemHtmlPage {
 
     function Write-SystemSectionToMain {
 
-        $SystemSectionHeader = "
-        <h4 class='section_header'>System Information Section</h4>
+        $SectionName = "System Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='system'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SystemSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $SystemHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 

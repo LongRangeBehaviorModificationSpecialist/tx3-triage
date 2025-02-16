@@ -30,7 +30,7 @@ function Export-EventLogHtmlPage {
             $OutputHtmlFilePath = New-Item -Path "$EventLogHtmlOutputFolder\$FileName" -ItemType File -Force
 
             try {
-                Show-Message("Searching for $LogName Log (Event ID: $EventID)") -DarkGray
+                Show-Message("[INFO] Searching for $LogName Log (Event ID: $EventID)") -DarkGray
 
                 $Command = "Get-WinEvent -Max $MaxRecords -FilterHashtable @{ Logname = '$($LogName)'; ID = $($EventID) } | Select-Object -Property $($Properties) | Format-List | Out-String"
 
@@ -127,17 +127,25 @@ function Export-EventLogHtmlPage {
 
     function Write-EventLogSectionToMain {
 
-        $EventLogSectionHeader = "
-        <h4 class='section_header'>Event Log Information Section</h4>
+        $SectionName = "Event Log Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='events'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $EventLogSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $EventLogHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\007\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
+                $FileNameEntry = "<a class='file_link' href='results\007\$File' target='_blank'>$File</a>"
+                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            }
+            else {
+                $FileNameEntry = "<a href='results\007\$File' target='_blank'>$File</a>"
+                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            }
         }
 
         Add-Content -Path $HtmlReportFile -Value "</div>"

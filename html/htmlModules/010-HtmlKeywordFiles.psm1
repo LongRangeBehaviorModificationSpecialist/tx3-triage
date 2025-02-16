@@ -1,62 +1,58 @@
-function Export-FilesHtmlPage {
+function Export-HtmlKeywordSearchPage {
 
     [CmdletBinding()]
 
     param (
         [string]$KeywordsHtmlOutputFolder,
         [string]$HtmlReportFile,
-        [string]$KeywordFile
+        [string]$KeywordListFile,
+        # List of drives to be included or excluded depending on the switch value that is entered
+        [string[]]$KeyWordsDriveList
     )
 
     # 10-001
     function Search-FilesByKeywords {
 
-        param (
-            [string]$SearchDirectory = "D:\"
-        )
-
         $Name = "10-001_KeywordFileSearch"
         $FileName = "$Name.html"
+        $KeywordDriveArray = ($KeyWordsDriveList -split "\s*,\s*")  # Split on commas with optional surrounding spaces
         $OutputHtmlFilePath = New-Item -Path "$KeywordsHtmlOutputFolder\$FileName" -ItemType File -Force
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
             # Ensure the keyword file exists
-            if (-Not (Test-Path $KeywordFile)) {
-                Write-Error "Keyword file not found: $KeywordFile"
+            if (-Not (Test-Path $KeywordListFile)) {
+                Write-Error "Keyword file not found: $KeywordListFile"
             }
 
-            # Ensure the directory to be searched exists
-            if (-Not (Test-Path $SearchDirectory -PathType Container)) {
-                Write-Error "Search directory not found: $SearchDirectory"
-            }
-
-            Show-Message("Keyword file identified as '$keywordFile'") -Green
+            Show-Message("Keyword file identified as '$KeywordListFile'") -Green
             # Read keywords from the file, removing empty lines and trimming whitespace
-            $keywords = Get-Content -Path $KeywordFile
+            $Keywords = Get-Content -Path $KeywordListFile
 
-            if (-Not $keywords) {
-                Write-Error "No valid keywords found in file: $KeywordFile"
+            if (-Not $Keywords) {
+                Write-Error "No valid keywords found in file: $KeywordListFile"
             }
 
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
             Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>"
 
-            # Stream through files and search for matches
-            $Data = @()
-            Get-ChildItem -Path $SearchDirectory -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
-                foreach ($string in $keywords) {
-                    if ($_.FullName -like "*$string*") {
-                        if ($Data -notcontains $_.FullName) {
-                            $Data += $_.FullName
+            foreach ($DriveName in $KeywordDriveArray) {
+                # Stream through files and search for matches
+                $Data = @()
+                Get-ChildItem -Path "$($DriveName):" -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+                    foreach ($String in $Keywords) {
+                        if ($_.FullName -like "*$String*") {
+                            if ($Data -notcontains $_.FullName) {
+                                $Data += $_.FullName
+                            }
                         }
                     }
                 }
-            }
 
-            foreach ($file in $Data ) {
-                Add-Content -Path $OutputHtmlFilePath -Value "<tr><td>$($file)</td></tr>"
+                foreach ($File in $Data) {
+                    Add-Content -Path $OutputHtmlFilePath -Value "<tr><td>$($File)</td></tr>"
+                }
             }
 
             Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n$HtmlFooter"
@@ -71,11 +67,13 @@ function Export-FilesHtmlPage {
 
     function Write-KeywordsSectionToMain {
 
-        $KeywordsSectionHeader = "
-        <h4 class='section_header'>Keywords Search Results</h4>
+        $SectionName = "Keywords Search Results"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='keywords'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $KeywordsSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $KeywordsHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -98,4 +96,4 @@ function Export-FilesHtmlPage {
 }
 
 
-Export-ModuleMember -Function Export-FilesHtmlPage
+Export-ModuleMember -Function Export-HtmlKeywordSearchPage

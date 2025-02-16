@@ -75,13 +75,13 @@ function Export-DeviceHtmlPage {
     }
 
 
-    # 1-023
+    #! 1-023 (Keep as seperate function)
     function Get-TimeZoneInfo {
 
         $Name = "1-023_TimeZoneInfo"
         $Title = "Time Zone Info"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running ``$Name``") -Header -DarkGray
+        Show-Message("[INFO] Running '$Name'") -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
         $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation"
 
@@ -201,13 +201,16 @@ function Export-DeviceHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
+
     function Write-DeviceSectionToMain {
 
-        $DeviceSectionHeader = "
-        <h4 class='section_header'>Device Information Section</h4>
+        $SectionName = "Device Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='device'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $DeviceSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $DeviceHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 

@@ -28,7 +28,7 @@ function Get-AllFilesList {
         $ExecutionTime = Measure-Command {
             # Show & log BeginMessage message
             $BeginMessage = "Collecting list of all files from computer: $($ComputerName)"
-            Show-Message("$BeginMessage")
+            Show-Message("[INFO] $BeginMessage")
             Write-LogEntry("[$($AllDrivesFuncName), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Make new directory to store the scan results
@@ -43,7 +43,7 @@ function Get-AllFilesList {
                 $FileListingSaveFile = "$FilesListsFolder\$RunDate`_$ComputerName`_Files_$DriveName.csv"
 
                 $ScanMessage = "Scanning files on the $($DriveName):\ drive"
-                Show-Message("$ScanMessage") -Magenta
+                Show-Message("[INFO] $ScanMessage") -Magenta
                 Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $ScanMessage")
 
                 # Scan and save file details
@@ -63,7 +63,7 @@ function Get-AllFilesList {
 
                 # Show & log $DoneMessage message
                 $DoneMessage = "Completed scanning of $($DriveName):\ drive"
-                Show-Message("$DoneMessage") -Green
+                Show-Message("$DoneMessage") -Blue
                 Write-LogEntry("[$AllDrivesFuncName, Ln: $(Get-LineNum)] $DoneMessage")
 
                 # Show & log $FileTitle message

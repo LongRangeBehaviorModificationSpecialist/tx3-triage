@@ -137,17 +137,28 @@ function Export-ProcessHtmlPage {
 
     function Write-ProcessSectionToMain {
 
-        $ProcessSectionHeader = "
-        <h4 class='section_header'>Process Information Section</h4>
+
+        # [System.IO.Path]::GetExtension($my_file)
+
+        $SectionName = "Process Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='processes'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $ProcessSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $ProcessHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\004\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
+                $FileNameEntry = "<a class='file_link' href='results\004\$File' target='_blank'>$File</a>"
+                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            }
+            else {
+                $FileNameEntry = "<a href='results\004\$File' target='_blank'>$File</a>"
+                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            }
         }
 
         Add-Content -Path $HtmlReportFile -Value "</div>"

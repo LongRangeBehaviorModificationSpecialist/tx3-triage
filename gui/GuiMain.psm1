@@ -12,7 +12,7 @@ function Get-Gui {
 
     # Add title to the form window
     $Form.Text = "tx3-triage"
-    $Form.Size = New-Object System.Drawing.Size(410, 400)  # width x height
+    $Form.Size = New-Object System.Drawing.Size(410, 490)  # width x height
     $Form.StartPosition = "CenterScreen"
     $Form.FormBorderStyle = "Sizable"
 
@@ -27,12 +27,12 @@ function Get-Gui {
     $Form.Controls.Add($lblUserName)
 
 
-    $TextBoxUserName = New-Object System.Windows.Forms.TextBox
-    $TextBoxUserName.Width = 250
-    $TextBoxUserName.BorderStyle = FixedSingle
-    $TextBoxUserName.Font = New-Object System.Drawing.Font("Arial", 11)
-    $TextBoxUserName.Location = New-Object System.Drawing.Point(130, 20)  # (x, y) position
-    $Form.Controls.Add($TextBoxUserName)
+    $tbUserName = New-Object System.Windows.Forms.TextBox
+    $tbUserName.Width = 250
+    $tbUserName.BorderStyle = FixedSingle
+    $tbUserName.Font = New-Object System.Drawing.Font("Arial", 11)
+    $tbUserName.Location = New-Object System.Drawing.Point(130, 20)  # (x, y) position
+    $Form.Controls.Add($tbUserName)
 
 
     $lblAgency = New-Object System.Windows.Forms.Label
@@ -44,11 +44,11 @@ function Get-Gui {
     $Form.Controls.Add($lblAgency)
 
 
-    $TextBoxAgency = New-Object System.Windows.Forms.TextBox
-    $TextBoxAgency.Font = New-Object System.Drawing.Font("Arial", 11)
-    $TextBoxAgency.Width = 250
-    $TextBoxAgency.Location = New-Object System.Drawing.Point(130, 55)  # (x, y) position
-    $Form.Controls.Add($TextBoxAgency)
+    $tbAgency = New-Object System.Windows.Forms.TextBox
+    $tbAgency.Font = New-Object System.Drawing.Font("Arial", 11)
+    $tbAgency.Width = 250
+    $tbAgency.Location = New-Object System.Drawing.Point(130, 55)  # (x, y) position
+    $Form.Controls.Add($tbAgency)
 
 
     $lblCaseNumber = New-Object System.Windows.Forms.Label
@@ -60,18 +60,18 @@ function Get-Gui {
     $Form.Controls.Add($lblCaseNumber)
 
 
-    $TextBoxCaseNumber = New-Object System.Windows.Forms.TextBox
-    $TextBoxCaseNumber.Font = New-Object System.Drawing.Font("Arial", 11)
-    $TextBoxCaseNumber.Width = 250
-    $TextBoxCaseNumber.Location = New-Object Drawing.Point(130, 90)  # (x, y) position
-    $Form.Controls.Add($TextBoxCaseNumber)
+    $tbCaseNumber = New-Object System.Windows.Forms.TextBox
+    $tbCaseNumber.Font = New-Object System.Drawing.Font("Arial", 11)
+    $tbCaseNumber.Width = 250
+    $tbCaseNumber.Location = New-Object Drawing.Point(130, 90)  # (x, y) position
+    $Form.Controls.Add($tbCaseNumber)
 
 
     $cbEdd = New-Object System.Windows.Forms.CheckBox
     $cbEdd.Text = "Run Encrypted Disk Detector"
     $cbEdd.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbEdd.Width = 250
-    $cbEdd.Location = New-Object Drawing.Point(130, 130)  # (x, y) position
+    $cbEdd.Location = New-Object Drawing.Point(130, 120)  # (x, y) position
     $Form.Controls.Add($cbEdd)
 
 
@@ -79,7 +79,7 @@ function Get-Gui {
     $cbNTUserDat.Text = "Copy NTUSER.DAT files"
     $cbNTUserDat.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbNTUserDat.Width = 250
-    $cbNTUserDat.Location = New-Object Drawing.Point(130, 160)  # (x, y) position
+    $cbNTUserDat.Location = New-Object Drawing.Point(130, 150)  # (x, y) position
     $Form.Controls.Add($cbNTUserDat)
 
 
@@ -87,15 +87,37 @@ function Get-Gui {
     $cbListFiles.Text = "List ALL Files"
     $cbListFiles.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbListFiles.Width = 250
-    $cbListFiles.Location = New-Object Drawing.Point(130, 190)  # (x, y) position
+    $cbListFiles.Location = New-Object Drawing.Point(130, 180)  # (x, y) position
     $Form.Controls.Add($cbListFiles)
+
+
+    $tbDrivesList = New-Object System.Windows.Forms.TextBox
+    $tbDrivesList.Font = New-Object System.Drawing.Font("Arial", 11)
+    $tbDrivesList.Width = 250
+    $tbDrivesList.Location = New-Object Drawing.Point(130, 205)  # (x, y) position
+    $Form.Controls.Add($tbDrivesList)
+
+
+    $cbKeyWordSearch = New-Object System.Windows.Forms.CheckBox
+    $cbKeyWordSearch.Text = "Search Files by Keyword(s)"
+    $cbKeyWordSearch.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbKeyWordSearch.Width = 250
+    $cbKeyWordSearch.Location = New-Object Drawing.Point(130, 235)  # (x, y) position
+    $Form.Controls.Add($cbKeyWordSearch)
+
+
+    $tbKeyWordsDrivesList = New-Object System.Windows.Forms.TextBox
+    $tbKeyWordsDrivesList.Font = New-Object System.Drawing.Font("Arial", 11)
+    $tbKeyWordsDrivesList.Width = 250
+    $tbKeyWordsDrivesList.Location = New-Object Drawing.Point(130, 260)  # (x, y) position
+    $Form.Controls.Add($tbKeyWordsDrivesList)
 
 
     $cbHashFiles = New-Object System.Windows.Forms.CheckBox
     $cbHashFiles.Text = "Hash Html Results Files"
     $cbHashFiles.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbHashFiles.Width = 250
-    $cbHashFiles.Location = New-Object Drawing.Point(130, 220)  # (x, y) position
+    $cbHashFiles.Location = New-Object Drawing.Point(130, 290)  # (x, y) position
     $Form.Controls.Add($cbHashFiles)
 
 
@@ -103,7 +125,7 @@ function Get-Gui {
     $cbArchive.Text = "Create Case Archive"
     $cbArchive.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbArchive.Width = 250
-    $cbArchive.Location = New-Object Drawing.Point(130, 250)  # (x, y) position
+    $cbArchive.Location = New-Object Drawing.Point(130, 320)  # (x, y) position
     $Form.Controls.Add($cbArchive)
 
 
@@ -114,14 +136,19 @@ function Get-Gui {
     $btnHtmlReport.Width = 150
     $btnHtmlReport.Height = 50
     $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object Drawing.Point(130, 290)  # (x, y) position -- Down 40 from last checkbox
+    $btnHtmlReport.Location = New-Object Drawing.Point(130, 370)  # (x, y) position -> Down 40 from last checkbox
     $btnHtmlReport.Add_Click({
 
-        $User = $TextBoxUserName.Text
-        $Agency = $TextBoxAgency.Text
-        $CaseNumber = $TextBoxCaseNumber.Text
+        $User = $tbUserName.Text
+        $Agency = $tbAgency.Text
+        $CaseNumber = $tbCaseNumber.Text
+        $DriveList = $tbDrivesList.Text
+        $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Edd $cbEdd.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Edd $cbEdd.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+
+        $Form.Close()
+        return
 
     })
     # Add the button
@@ -138,9 +165,9 @@ function Get-Gui {
     # $btnFilesOutput.Location = New-Object Drawing.Point(180, 250)  # (x, y) position
     # $btnFilesOutput.Add_Click({
 
-    #     $User = $TextBoxUserName.Text
-    #     $Agency = $TextBoxAgency.Text
-    #     $CaseNumber = $TextBoxCaseNumber.Text
+    #     $User = $tbUserName.Text
+    #     $Agency = $tbAgency.Text
+    #     $CaseNumber = $tbCaseNumber.Text
 
     #     Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
 
@@ -150,7 +177,6 @@ function Get-Gui {
 
     # Display the form
     [void]$Form.ShowDialog()
-
 }
 
 

@@ -15,9 +15,9 @@ $UserPropertyArray = [ordered]@{
     "2-005_Win32_LogonSession"              = ("Win32_LogonSession",
                                               "Get-CimInstance -ClassName Win32_LogonSession | Select-Object -Property * | Out-String",
                                               "String")
-    # "2-006_Win_Event_Security_4624_or_4648" = ("Security Events (4624 or 4648)",
-    #                                           "Get-WinEvent -LogName 'Security' -FilterXPath '*[System[EventID=4624 or EventID=4648]]' | Out-String",
-    #                                           "String")
+    "2-006_Win_Event_Security_4624_or_4648" = ("Security Events (4624 or 4648)",
+                                              "Get-WinEvent -LogName 'Security' -FilterXPath '*[System[EventID=4624 or EventID=4648]]' | Out-String",
+                                              "String")
 }
 
 
@@ -67,13 +67,16 @@ function Export-UserHtmlPage {
         }
     }
 
+
     function Write-UserSectionToMain {
 
-        $UserSectionHeader = "
-        <h4 class='section_header'>User Information Section</h4>
+        $SectionName = "User Information Section"
+
+        $SectionHeader = "
+        <h4 class='section_header' id='user'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $UserSectionHeader
+        Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $UserHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 

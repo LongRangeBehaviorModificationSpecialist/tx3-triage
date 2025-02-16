@@ -33,7 +33,7 @@ function Get-HtmlFileHashes {
 
         # Show & log $CreateDirMsg message
         $CreateDirMsg = "Creating '$($HashResultsFolder.Name)' folder in the case directory`n"
-        Show-Message("[INFO] $CreateDirMsg") -Green -Header
+        Show-Message("[INFO] $CreateDirMsg") -Blue -Header
         Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
         # Add the filename and filetype to the end
@@ -69,7 +69,7 @@ function Get-HtmlFileHashes {
 
             # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
             $HashMsgFileName = "Completed hashing file: '$($_.Name)'"
-            $HashValueMsg = "[SHA256]: $($FileHash)`n"
+            $HashValueMsg = "[SHA256] -> $($FileHash)`n"
             Show-Message("$HashMsgFileName") -Blue
             Show-Message("$HashValueMsg") -Blue
             Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $HashMsgFileName")

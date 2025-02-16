@@ -114,7 +114,7 @@ function Invoke-SaveOutputMessage {
         $msg = "Saving output from '$($Name)'"
     }
     if ($Finish) {
-        $msg = "Output saved to '$FileName'"
+        $msg = "Output saved to -> '$FileName'"
     }
     Show-Message("[INFO] $msg") -Blue
     Write-HtmlLogEntry("[$($FunctionName), Ln: $LineNumber] $msg")
@@ -151,24 +151,42 @@ function Export-HtmlReport {
     param (
         [Parameter(Mandatory = $True, Position = 0)]
         [ValidateScript({ Test-Path $_ })]
-        [string]$CaseFolderName,
+        [string]
+        $CaseFolderName,
         [Parameter(Mandatory = $True, Position = 1)]
-        [string]$User,
+        [string]
+        $User,
         [Parameter(Mandatory = $True, Position = 2)]
-        [string]$Agency,
+        [string]
+        $Agency,
         [Parameter(Mandatory = $True, Position = 3)]
-        [string]$CaseNumber,
+        [string]
+        $CaseNumber,
         [Parameter(Mandatory = $True, Position = 4)]
-        [string]$ComputerName,
+        [string]
+        $ComputerName,
         [Parameter(Mandatory = $True, Position = 5)]
-        [string]$Ipv4,
+        [string]
+        $Ipv4,
         [Parameter(Mandatory = $True, Position = 6)]
-        [string]$Ipv6,
-        [bool]$Edd,
-        [bool]$GetNTUserDat,
-        [bool]$ListFiles,
-        [bool]$GetHtmlFileHashes,
-        [bool]$MakeArchive
+        [string]
+        $Ipv6,
+        [bool]
+        $Edd,
+        [bool]
+        $GetNTUserDat,
+        [bool]
+        $ListFiles,
+        [string]
+        $DriveList,
+        [bool]
+        $KeyWordSearch,
+        [string]
+        $KeyWordsDriveList,
+        [bool]
+        $GetHtmlFileHashes,
+        [bool]
+        $MakeArchive
     )
 
 
@@ -239,7 +257,7 @@ function Export-HtmlReport {
 
     # Set and write the `TriageReport.html` homepage
     $HtmlReportFile = Join-Path -Path $CaseFolderName -ChildPath "main.html"
-    Write-MainHtmlPage2 $HtmlReportFile $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6
+    Write-MainHtmlPage $HtmlReportFile $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$HtmlReportFile' file was created")
 
 
@@ -250,7 +268,7 @@ function Export-HtmlReport {
 
 
     # Create `keywords.txt` file to use to search file names
-    $KeywordListFile = "$(Split-Path -Path $PSScriptRoot -Parent)\static\HPFileSearchNames.txt"
+    $KeywordListFile = "$(Split-Path -Path $PSScriptRoot -Parent)\static\HPFileSearchNames2.txt"
 
 
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
@@ -279,6 +297,7 @@ function Export-HtmlReport {
         }
     }
 
+
     function Invoke-UserHtmlOutput {
         try {
             $UserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "002" -Force
@@ -289,6 +308,7 @@ function Export-HtmlReport {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
+
 
     function Invoke-NetworkHtmlOutput {
         try {
@@ -301,6 +321,7 @@ function Export-HtmlReport {
         }
     }
 
+
     function Invoke-ProcessHtmlOutput {
         try {
             $ProcessHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "004" -Force
@@ -311,6 +332,7 @@ function Export-HtmlReport {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
+
 
     function Invoke-SystemHtmlOutput {
         try {
@@ -323,6 +345,7 @@ function Export-HtmlReport {
         }
     }
 
+
     function Invoke-PrefetchHtmlOutput {
         try {
             $PrefetchHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "006" -Force
@@ -333,6 +356,7 @@ function Export-HtmlReport {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
+
 
     function Invoke-EventLogHtmlOutput {
         try {
@@ -345,6 +369,7 @@ function Export-HtmlReport {
         }
     }
 
+
     function Invoke-FirewallHtmlOutput {
         try {
             $FirewallHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "008" -Force
@@ -355,6 +380,7 @@ function Export-HtmlReport {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
+
 
     function Invoke-BitLockerHtmlOutput {
         try {
@@ -367,16 +393,6 @@ function Export-HtmlReport {
         }
     }
 
-    function Invoke-KeywordSearch {
-        try {
-            $KeywordsHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "010" -Force
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Export-FilesHtmlPage -KeywordsHtmlOutputFolder $KeywordsHtmlOutputFolder -KeywordFile $KeywordListFile -HtmlReportFile $HtmlReportFile
-        }
-        catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
-        }
-    }
 
     # Run the functions
     function Invoke-AllFunctions {
@@ -390,16 +406,14 @@ function Export-HtmlReport {
             Invoke-EventLogHtmlOutput
             Invoke-FirewallHtmlOutput
             Invoke-BitLockerHtmlOutput
-            # Invoke-KeywordSearch
 
             #! Write the closing html text to the main file
-            Write-MainHtmlPage2End -FilePath $HtmlReportFile
+            Write-MainHtmlPageEnd -FilePath $HtmlReportFile
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
-
     Invoke-AllFunctions
 
 
@@ -410,8 +424,32 @@ function Export-HtmlReport {
             Invoke-HtmlNTUserDatFiles -NTUserHtmlOutputFolder $NTUserHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
         }
     }
-
     Invoke-NTUser
+
+
+    function Invoke-ListFiles {
+        if ($ListFiles) {
+            $FilesListHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "FilesList" -Force
+            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+            Invoke-HtmlListAllFiles -FilesListHtmlOutputFolder $FilesListHtmlOutputFolder -DriveList $DriveList -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+        }
+    }
+    Invoke-ListFiles
+
+
+    function Invoke-KeywordSearch {
+        if ($KeyWordSearch) {
+            try {
+                $KeywordsHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "010" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Export-HtmlKeywordSearchPage -KeywordsHtmlOutputFolder $KeywordsHtmlOutputFolder -KeywordListFile $KeywordListFile -HtmlReportFile $HtmlReportFile -KeyWordsDriveList $KeyWordsDriveList
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+    }
+    Invoke-KeywordSearch
 
 
     function Invoke-GetHtmlFileHashes {
@@ -427,7 +465,6 @@ function Export-HtmlReport {
             Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user")
         }
     }
-
     Invoke-GetHtmlFileHashes
 
 
@@ -436,9 +473,9 @@ function Export-HtmlReport {
     }
 
 
-    $FinishedMsg = "tx3-triage script has completed. . ."
-    Show-Message("[INFO] $FinishedMsg") -Header -Green
-    Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FinishedMsg")
+    # $FinishedMsg = "tx3-triage script has completed. . ."
+    # Show-Message("[INFO] $FinishedMsg") -Header -Green
+    # Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FinishedMsg")
 
 
     $HtmlEndTime = (Get-Date).ToUniversalTime()
@@ -446,7 +483,7 @@ function Export-HtmlReport {
     $HtmlExeTime = "$($HtmlDuration.Days) days $($HtmlDuration.Hours) hours $($HtmlDuration.Minutes) minutes $($HtmlDuration.Seconds) seconds"
 
 
-    Show-Message("Html script execution completed in: $HtmlExeTime`n") -Header -Green
+    Show-Message("tx3-triage script execution completed in: $HtmlExeTime`n") -Header -Green
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Html script execution completed in: $HtmlExeTime")
 
 
@@ -458,8 +495,8 @@ TRIAGE SCAN COMPLETED !
 =========================") -NoTime -Yellow
 
 
-    # Show a popup message when script is complete
-    # (New-Object -ComObject Wscript.Shell).popup("Html script has finished running", 0, "Done", 0x1) | Out-Null
+    Show a popup message when script is complete
+    (New-Object -ComObject Wscript.Shell).popup("Html script has finished running", 0, "Done", 0x1) | Out-Null
 }
 
 
