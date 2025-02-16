@@ -7,15 +7,21 @@ function Save-OutputToSingleHtmlFile {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$Name,
+        [string]
+        $Name,
         [Parameter(Mandatory = $True, Position = 1)]
-        [object]$Data,
+        [object]
+        $Data,
         [Parameter(Mandatory = $True, Position = 2)]
-        [string]$OutputHtmlFilePath,
+        [string]
+        $OutputHtmlFilePath,
         [Parameter(Mandatory = $True, Position = 3)]
-        [string]$Title,
-        [switch]$FromPipe,
-        [switch]$FromString
+        [string]
+        $Title,
+        [switch]
+        $FromPipe,
+        [switch]
+        $FromString
     )
 
     process {
@@ -39,13 +45,20 @@ function Write-HtmlLogEntry {
 
     param (
         [Parameter(Mandatory = $True)]
-        [string]$Message,
-        [string]$LogFile = $LogFile,
-        [switch]$NoLevel,
-        [switch]$DebugMessage,
-        [switch]$WarningMessage,
-        [switch]$ErrorMessage,
-        [switch]$NoTime
+        [string]
+        $Message,
+        [string]
+        $LogFile = $LogFile,
+        [switch]
+        $NoLevel,
+        [switch]
+        $DebugMessage,
+        [switch]
+        $WarningMessage,
+        [switch]
+        $ErrorMessage,
+        [switch]
+        $NoTime
     )
 
     $LogFolderPath = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
@@ -79,11 +92,14 @@ function Invoke-ShowErrorMessage {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$ScriptName,
+        [string]
+        $ScriptName,
         [Parameter(Mandatory = $True, Position = 1)]
-        [int]$LineNumber,
+        [int]
+        $LineNumber,
         [Parameter(Mandatory = $True, Position = 2)]
-        [string]$Message
+        [string]
+        $Message
     )
 
         $ErrorMessage = "In Module: $ScriptName (Ln: $LineNumber), MESSAGE: $Message"
@@ -100,14 +116,20 @@ function Invoke-SaveOutputMessage {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FunctionName,
+        [string]
+        $FunctionName,
         [Parameter(Mandatory = $True, Position = 1)]
-        [int]$LineNumber,
+        [int]
+        $LineNumber,
         [Parameter(Mandatory = $True, Position = 2)]
-        [string]$Name,
-        [string]$FileName,
-        [switch]$Start,
-        [switch]$Finish
+        [string]
+        $Name,
+        [string]
+        $FileName,
+        [switch]
+        $Start,
+        [switch]
+        $Finish
     )
 
     if ($Start) {
@@ -124,7 +146,8 @@ function Invoke-SaveOutputMessage {
 function Invoke-NoDataFoundMessage {
 
     param (
-        [string]$Name
+        [string]
+        $Name
     )
 
     $msg = "No data found for '$($Name)'"
@@ -137,7 +160,8 @@ function Show-FinishedHtmlMessage {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$Name
+        [string]
+        $Name
     )
 
     Show-Message("[INFO] '$Name' done.") -Blue
@@ -282,7 +306,6 @@ function Export-HtmlReport {
             Invoke-HtmlEncryptedDiskDetector -EddHtmlOutputFolder $EddHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
         }
     }
-
     Invoke-Edd
 
 
@@ -471,11 +494,6 @@ function Export-HtmlReport {
     if ($MakeArchive) {
         Invoke-HtmlCaseArchive
     }
-
-
-    # $FinishedMsg = "tx3-triage script has completed. . ."
-    # Show-Message("[INFO] $FinishedMsg") -Header -Green
-    # Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FinishedMsg")
 
 
     $HtmlEndTime = (Get-Date).ToUniversalTime()

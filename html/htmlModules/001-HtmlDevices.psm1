@@ -4,8 +4,10 @@ function Export-DeviceHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$DeviceHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $DeviceHtmlOutputFolder,
+        [string]
+        $HtmlReportFile
     )
 
     # Import the hashtables from the data files
