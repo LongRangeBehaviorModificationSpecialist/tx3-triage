@@ -21,7 +21,6 @@ function Get-HtmlRunningProcesses {
 
         $Name = "Capture_Running_Processes"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
             # Show & log $BeginMessage message
@@ -36,15 +35,16 @@ function Get-HtmlRunningProcesses {
             # Run MAGNETProcessCapture.exe from the \bin directory and save the output to the results folder.
             # The program will create its own directory to save the results with the following naming convention:
             # 'MagnetProcessCapture-YYYYMMDD-HHMMSS'
-            Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall '$ProcessHtmlOutputFolder'" -Wait
-
+            Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall $ProcessHtmlOutputFolder" -Wait
+        }
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+        }
+        finally {
             # Show & log $SuccessMsg message
             $SuccessMsg = "Process Capture from $ComputerName completed successfully"
             Show-Message("[INFO] $SuccessMsg")
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
-        }
-        catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 

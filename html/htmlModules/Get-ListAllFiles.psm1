@@ -25,11 +25,6 @@ function Invoke-HtmlListAllFiles {
         Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
-            # Show & log BeginMessage message
-            $BeginMessage = "Collecting list of all files from computer: $($ComputerName)"
-            Show-Message("$BeginMessage") -DarkGray
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
-
             if (-not (Test-Path $FilesListHtmlOutputFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> '$FilesListHtmlOutputFolder'"
             }

@@ -9,6 +9,8 @@ function Get-HtmlFileHashes {
         [string]
         $HashResultsFolder,
         [string]
+        $ResultsFolder,
+        [string]
         $ComputerName,
         [string[]]
         $ExcludedFiles = @('*PowerShell_transcript*')
@@ -16,7 +18,7 @@ function Get-HtmlFileHashes {
 
     try {
         # Show & log $beginMessage message
-        $BeginMessage = "Hashing .html report files for computer: $ComputerName"
+        $BeginMessage = "Hashing report files for computer: $ComputerName"
         Show-Message("[INFO] $BeginMessage") -Header -DarkGray
         Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 

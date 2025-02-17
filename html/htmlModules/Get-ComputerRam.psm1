@@ -20,7 +20,6 @@ function Get-HtmlComputerRam {
 
         $Name = "Get_Computer_RAM"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
 
@@ -29,14 +28,16 @@ function Get-HtmlComputerRam {
             Show-Message("[INFO] $BeginMessage")
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
+            $RamOutputFileName = "$($RunDate)_$($ComputerName)_RAM_Capture.raw"
+
             # Start the RAM acquisition from the current machine
-            Start-Process -NoNewWindow -FilePath $RamCaptureExeFilePath -ArgumentList "/accepteula /go /silent" -Wait
+            Start-Process -NoNewWindow -FilePath $RamCaptureExeFilePath -ArgumentList "/accepteula /go "$RamHtmlOutputFolder\$RamOutputFileName" /silent" -Wait
 
             # Once the RAM has been acquired, move the file to the 'RAM' folder
             Move-Item -Path .\bin\*.raw -Destination $RamHtmlOutputFolder -Force
 
             # Show & log $SuccessMsg message
-            $SuccessMsg = "RAM capture completed successfully from computer: $ComputerName"
+            $SuccessMsg = "RAM capture from $ComputerName completed"
             Show-Message("[INFO] $SuccessMsg")
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
         }

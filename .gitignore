@@ -13,3 +13,4 @@ modules/000-Testing.psm1
 
 # Directories to ignore
 DFIR-MAS-4N6-BOX-2025-02-13/
+bin/

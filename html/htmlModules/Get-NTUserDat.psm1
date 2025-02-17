@@ -56,13 +56,15 @@ function Invoke-HtmlNTUserDatFiles {
                 Show-Message("[ERROR] $RawCopyOtherMsg") -Red
                 Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $RawCopyOtherMsg") -ErrorMessage
             }
+        }
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+        }
+        finally {
             # Show & log $SuccessMsg message
             $SuccessMsg = "NTUSER.DAT files copied from computer: $ComputerName"
             Show-Message("[INFO] $SuccessMsg") -Blue
             Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
-        }
-        catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 

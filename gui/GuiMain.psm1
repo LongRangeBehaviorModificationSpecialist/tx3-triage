@@ -12,7 +12,7 @@ function Get-Gui {
 
     # Add title to the form window
     $Form.Text = "tx3-triage"
-    $Form.Size = New-Object System.Drawing.Size(450, 550)  # width x height
+    $Form.Size = New-Object System.Drawing.Size(450, 570)  # width x height
     $Form.StartPosition = "CenterScreen"
     $Form.FormBorderStyle = "Sizable"
     $Form.TopMost = $false
@@ -96,11 +96,19 @@ function Get-Gui {
     $Form.Controls.Add($cbEdd)
 
 
+    $cbRegHives = New-Object System.Windows.Forms.CheckBox
+    $cbRegHives.Text = "Copy Registry Hives"
+    $cbRegHives.Font = New-Object System.Drawing.Font("Arial", 11)
+    $cbRegHives.Width = 250
+    $cbRegHives.Location = New-Object System.Drawing.Point(150, 210)  # (x, y) position
+    $Form.Controls.Add($cbRegHives)
+
+
     $cbNTUserDat = New-Object System.Windows.Forms.CheckBox
     $cbNTUserDat.Text = "Copy NTUSER.DAT files"
     $cbNTUserDat.Font = New-Object System.Drawing.Font("Arial", 11)
     $cbNTUserDat.Width = 250
-    $cbNTUserDat.Location = New-Object System.Drawing.Point(150, 210)  # (x, y) position
+    $cbNTUserDat.Location = New-Object System.Drawing.Point(150, 240)  # (x, y) position
     $Form.Controls.Add($cbNTUserDat)
 
 
@@ -108,8 +116,17 @@ function Get-Gui {
     $cbListFiles.Text = "List ALL Files"
     $cbListFiles.Font = New-Object System.Drawing.Font("Arial", 11)
     $cbListFiles.Width = 250
-    $cbListFiles.Location = New-Object System.Drawing.Point(150, 240)  # (x, y) position
+    $cbListFiles.Location = New-Object System.Drawing.Point(150, 270)  # (x, y) position
     $Form.Controls.Add($cbListFiles)
+
+    $cbListFiles.Add_CheckedChanged({
+            if ($cbListFiles.Checked) {
+                $tbDrivesList.Enabled = $true
+            }
+            else {
+                $tbDrivesList.Enabled = $false
+            }
+        })
 
 
     $lblDrivesList = New-Object System.Windows.Forms.Label
@@ -117,7 +134,7 @@ function Get-Gui {
     $lblDrivesList.Font = New-Object System.Drawing.Font("Arial", 11)
     $lblDrivesList.ForeColor = [System.Drawing.Color]::Black
     $lblDrivesList.Width = 140
-    $lblDrivesList.Location = New-Object System.Drawing.Point(10, 265)  # (x, y) position -> 25 pt down
+    $lblDrivesList.Location = New-Object System.Drawing.Point(10, 295)  # (x, y) position -> 25 pt down
     $lblDrivesList.TextAlign = "MiddleLeft"
     $Form.Controls.Add($lblDrivesList)
 
@@ -125,7 +142,8 @@ function Get-Gui {
     $tbDrivesList = New-Object System.Windows.Forms.TextBox
     $tbDrivesList.Font = New-Object System.Drawing.Font("Arial", 11)
     $tbDrivesList.Width = 250
-    $tbDrivesList.Location = New-Object System.Drawing.Point(150, 265)  # (x, y) position
+    $tbDrivesList.Location = New-Object System.Drawing.Point(150, 295)  # (x, y) position
+    $tbDrivesList.Enabled = $false
     $Form.Controls.Add($tbDrivesList)
 
 
@@ -133,24 +151,32 @@ function Get-Gui {
     $cbKeyWordSearch.Text = "Search Files by Keyword(s)"
     $cbKeyWordSearch.Font = New-Object System.Drawing.Font("Arial", 11)
     $cbKeyWordSearch.Width = 250
-    $cbKeyWordSearch.Location = New-Object System.Drawing.Point(150, 295)  # (x, y) position
+    $cbKeyWordSearch.Location = New-Object System.Drawing.Point(150, 325)  # (x, y) position
     $Form.Controls.Add($cbKeyWordSearch)
 
+    $cbKeyWordSearch.Add_CheckedChanged({
+            if ($cbKeyWordSearch.Checked) {
+                $tbKeyWordsDrivesList.Enabled = $true
+            }
+            else {
+                $tbKeyWordsDrivesList.Enabled = $false
+            }
+    })
 
     $lblKeyWords = New-Object System.Windows.Forms.Label
     $lblKeyWords.Text = "[Enter Drive Letters]"
     $lblKeyWords.Font = New-Object System.Drawing.Font("Arial", 11)
     $lblKeyWords.ForeColor = [System.Drawing.Color]::Black
     $lblKeyWords.Width = 140
-    $lblKeyWords.Location = New-Object System.Drawing.Point(10, 320)  # (x, y) position
+    $lblKeyWords.Location = New-Object System.Drawing.Point(10, 350)  # (x, y) position
     $lblKeyWords.TextAlign = "MiddleLeft"
     $Form.Controls.Add($lblKeyWords)
-
 
     $tbKeyWordsDrivesList = New-Object System.Windows.Forms.TextBox
     $tbKeyWordsDrivesList.Font = New-Object System.Drawing.Font("Arial", 11)
     $tbKeyWordsDrivesList.Width = 250
-    $tbKeyWordsDrivesList.Location = New-Object System.Drawing.Point(150, 320)  # (x, y) position
+    $tbKeyWordsDrivesList.Location = New-Object System.Drawing.Point(150, 350)  # (x, y) position
+    $tbKeyWordsDrivesList.Enabled = $false
     $Form.Controls.Add($tbKeyWordsDrivesList)
 
 
@@ -158,7 +184,7 @@ function Get-Gui {
     $cbHashFiles.Text = "Hash Results Files"
     $cbHashFiles.Font = New-Object System.Drawing.Font("Arial", 11)
     $cbHashFiles.Width = 250
-    $cbHashFiles.Location = New-Object System.Drawing.Point(150, 350)  # (x, y) position
+    $cbHashFiles.Location = New-Object System.Drawing.Point(150, 380)  # (x, y) position
     $Form.Controls.Add($cbHashFiles)
 
 
@@ -166,7 +192,7 @@ function Get-Gui {
     $cbArchive.Text = "Create Case Archive"
     $cbArchive.Font = New-Object System.Drawing.Font("Arial", 11)
     $cbArchive.Width = 250
-    $cbArchive.Location = New-Object System.Drawing.Point(150, 380)  # (x, y) position
+    $cbArchive.Location = New-Object System.Drawing.Point(150, 410)  # (x, y) position
     $Form.Controls.Add($cbArchive)
 
 
@@ -177,7 +203,7 @@ function Get-Gui {
     $btnHtmlReport.Width = 150
     $btnHtmlReport.Height = 50
     $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object System.Drawing.Point(60, 430)  # (x, y) position -> Down 50 from last checkbox
+    $btnHtmlReport.Location = New-Object System.Drawing.Point(60, 460)  # (x, y) position -> Down 50 from last checkbox
     $btnHtmlReport.BackColor = "#1f618d"
     $btnHtmlReport.Forecolor = "#dddddd"
     $btnHtmlReport.Add_Click({
@@ -188,7 +214,7 @@ function Get-Gui {
         $DriveList = $tbDrivesList.Text
         $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Processes $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Processes $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
         $Form.Close()
         return
@@ -205,12 +231,13 @@ function Get-Gui {
     $btnCloseForm.Width = 150
     $btnCloseForm.Height = 50
     $btnCloseForm.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnCloseForm.Location = New-Object Drawing.Point(240, 430)  # (x, y) position
+    $btnCloseForm.Location = New-Object Drawing.Point(240, 460)  # (x, y) position
     $btnCloseForm.BackColor = "#c0392b"
     $btnCloseForm.Forecolor = "#dddddd"
     $btnCloseForm.Add_Click({
 
         $Form.Close()
+        return
 
         # $User = $tbUserName.Text
         # $Agency = $tbAgency.Text
@@ -221,6 +248,8 @@ function Get-Gui {
     })
     # Add the button
     $Form.Controls.Add($btnCloseForm)
+
+    $Form.Add_Shown({$Form.Activate()})
 
     # Display the form
     [void]$Form.ShowDialog()

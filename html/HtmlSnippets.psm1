@@ -243,6 +243,7 @@ function Write-MainHtmlPage {
                 <a href='#process_capture'>Process Capture</a>&ensp;|&ensp;
                 <a href='#ram_capture'>RAM Capture</a>&ensp;|&ensp;
                 <a href='#edd'>Encryption Detection</a>&ensp;|&ensp;
+                <a href='#hives'>Registry Hives</a>&ensp;|&ensp;
                 <a href='#device'>Device Info</a>&ensp;|&ensp;
                 <a href='#user'>User Info</a>&ensp;|&ensp;
                 <a href='#network'>Network Info</a>&ensp;|&ensp;

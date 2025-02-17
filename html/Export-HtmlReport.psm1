@@ -202,6 +202,8 @@ function Export-HtmlReport {
         [bool]
         $Edd,
         [bool]
+        $Hives,
+        [bool]
         $GetNTUserDat,
         [bool]
         $ListFiles,
@@ -314,6 +316,9 @@ function Export-HtmlReport {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect Running Processes' option was not selected by the user")
+        }
     }
     Invoke-GetHtmlProcesses
 
@@ -328,6 +333,9 @@ function Export-HtmlReport {
             catch {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
             }
+        }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect RAM' option was not selected by the user")
         }
     }
     Invoke-GetHtmlMachineRam
@@ -344,8 +352,29 @@ function Export-HtmlReport {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Run Encrypted Disk Detector' option was not selected by the user")
+        }
     }
     Invoke-Edd
+
+
+    function Invoke-CopyRegistryHives {
+        if ($Hives) {
+            try {
+                $RegistryHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RegistryHives" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Invoke-HtmlCopyRegistryHives -RegistryHtmlOutputFolder $RegistryHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy Registry Hives' option was not selected by the user")
+        }
+    }
+    Invoke-CopyRegistryHives
 
 
     function Invoke-DeviceHtmlOutput {
@@ -536,9 +565,9 @@ function Export-HtmlReport {
     function Invoke-GetHtmlFileHashes {
         if ($GetHtmlFileHashes) {
             try {
-                $HashResultsFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "HashResults" -Force
+                $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "HashResults" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-                Get-HtmlFileHashes -HashResultsFolder $HashResultsFolder -ComputerName $ComputerName
+                Get-HtmlFileHashes -HashResultsFolder $HashResultsFolder -ResultsFolder $ResultsFolder -ComputerName $ComputerName
             }
             catch {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
