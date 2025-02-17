@@ -5,10 +5,14 @@ function Invoke-HtmlEncryptedDiskDetector {
     [CmdletBinding()]
 
     param (
-        [string]$EddHtmlOutputFolder,
-        [string]$HtmlReportFile,
-        [string]$ComputerName,
-        [string]$EddExeFilePath = ".\bin\EDDv310.exe"
+        [string]
+        $EddHtmlOutputFolder,
+        [string]
+        $HtmlReportFile,
+        [string]
+        $ComputerName,
+        [string]
+        $EddExeFilePath = ".\bin\EDDv310.exe"
     )
 
     function Get-HtmlEncryptedDiskDetector {
@@ -17,10 +21,10 @@ function Invoke-HtmlEncryptedDiskDetector {
         $Title = "Encrypted Disk Detector"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name'") -Header -DarkGray
+        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
         $OutputHtmlFilePath = New-Item -Path "$EddHtmlOutputFolder\$FileName" -ItemType File -Force
 
         try {
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
             # Name the file to save the results of the scan to
             $EddTxtFile = New-Item -Path "$EddHtmlOutputFolder\Encrypted_Disk_Detector.txt" -ItemType File -Force

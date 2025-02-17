@@ -6,21 +6,25 @@ function Invoke-HtmlListAllFiles {
     [CmdletBinding()]
 
     param (
-        [string]$FilesListHtmlOutputFolder,
-        [string]$HtmlReportFile,
-        [string]$ComputerName,
+        [string]
+        $FilesListHtmlOutputFolder,
+        [string]
+        $HtmlReportFile,
+        [string]
+        $ComputerName,
         # List of drives to be included or excluded depending on the switch value that is entered
-        [string[]]$DriveList
+        [string[]]
+        $DriveList
     )
 
     function Get-HtmlListAllFiles {
 
         $Name = "List_Attached_Files"
         $DriveArray = ($DriveList -split "\s*,\s*")  # Split on commas with optional surrounding spaces
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
-
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
             # Show & log BeginMessage message
             $BeginMessage = "Collecting list of all files from computer: $($ComputerName)"
             Show-Message("$BeginMessage") -DarkGray

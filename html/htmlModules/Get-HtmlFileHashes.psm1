@@ -6,35 +6,23 @@ function Get-HtmlFileHashes {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
-        [ValidateScript({ Test-Path $_ })]
-        [string]$ResultsFolder,
-        [Parameter(Mandatory = $True, Position = 1)]
-        [string]$ComputerName,
-        [string[]]$ExcludedFiles = @('*PowerShell_transcript*'),
-        # Name of the directory to store the hash results .CSV file
-        [string]$HashResultsFolderName = "HashResults"
+        [string]
+        $HashResultsFolder,
+        [string]
+        $ComputerName,
+        [string[]]
+        $ExcludedFiles = @('*PowerShell_transcript*')
     )
-
-    $FunctionName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     try {
         # Show & log $beginMessage message
         $BeginMessage = "Hashing .html report files for computer: $ComputerName"
         Show-Message("[INFO] $BeginMessage") -Header -DarkGray
-        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $BeginMessage")
-
-        # Make new directory to store the hash results file
-        $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $HashResultsFolderName
+        Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
         if (-not (Test-Path $HashResultsFolder)) {
             throw "[ERROR] The necessary folder does not exist -> '$HashResultsFolder'"
         }
-
-        # Show & log $CreateDirMsg message
-        $CreateDirMsg = "Creating '$($HashResultsFolder.Name)' folder in the case directory`n"
-        Show-Message("[INFO] $CreateDirMsg") -Blue -Header
-        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $CreateDirMsg")
 
         # Add the filename and filetype to the end
         $HashOutputFilePath = Join-Path -Path $HashResultsFolder -ChildPath "$((Get-Item -Path $CaseFolderName).Name)_HashValues.csv"
@@ -72,8 +60,8 @@ function Get-HtmlFileHashes {
             $HashValueMsg = "[SHA256] -> $($FileHash)`n"
             Show-Message("$HashMsgFileName") -Blue
             Show-Message("$HashValueMsg") -Blue
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $HashMsgFileName")
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $HashValueMsg`n")
+            Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashMsgFileName")
+            Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg`n")
         }
 
         # Export the results to the CSV file

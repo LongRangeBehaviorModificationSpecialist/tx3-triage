@@ -19,15 +19,15 @@ function Get-HtmlComputerRam {
     function Get-ComputerRam {
 
         $Name = "Get_Computer_RAM"
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
-
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
             # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
             Show-Message("[INFO] $BeginMessage")
-            Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $BeginMessage")
+            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
             # Start the RAM acquisition from the current machine
             Start-Process -NoNewWindow -FilePath $RamCaptureExeFilePath -ArgumentList "/accepteula /go /silent" -Wait
@@ -38,7 +38,7 @@ function Get-HtmlComputerRam {
             # Show & log $SuccessMsg message
             $SuccessMsg = "RAM capture completed successfully from computer: $ComputerName"
             Show-Message("[INFO] $SuccessMsg")
-            Write-LogEntry("[$($RamFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -56,7 +56,7 @@ function Get-HtmlComputerRam {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $RamCaptureExeFilePath | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $RamHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a class='file_link' href='results\RAM\$File' target='_blank'>$File</a>"

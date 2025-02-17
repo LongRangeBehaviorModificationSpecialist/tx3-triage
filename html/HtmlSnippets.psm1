@@ -240,6 +240,7 @@ function Write-MainHtmlPage {
 
             <div class='nav'>
                 <a class='readme' href='Resources\static\readme.html' target='_blank'><strong>Read Me</strong></a>&ensp;|&ensp;
+                <a href='#process_capture'>Process Capture</a>&ensp;|&ensp;
                 <a href='#ram_capture'>RAM Capture</a>&ensp;|&ensp;
                 <a href='#edd'>Encryption Detection</a>&ensp;|&ensp;
                 <a href='#device'>Device Info</a>&ensp;|&ensp;
@@ -251,6 +252,7 @@ function Write-MainHtmlPage {
                 <a href='#events'>Event Log Info</a>&ensp;|&ensp;
                 <a href='#firewall'>Firewall Info</a>&ensp;|&ensp;
                 <a href='#bitlocker'>BitLocker Info</a>&ensp;|&ensp;
+                <a href='#ntuser'>NTUSER.DAT Files</a>&ensp;|&ensp;
                 <a href='#file_lists'>File List(s)</a>&ensp;|&ensp;
                 <a href='#keywords'>Keyword Search(s)</a>
             </div>

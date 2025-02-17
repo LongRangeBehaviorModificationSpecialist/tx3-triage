@@ -5,19 +5,23 @@ function Invoke-HtmlNTUserDatFiles {
     [CmdletBinding()]
 
     param (
-        [string]$NTUserHtmlOutputFolder,
-        [string]$HtmlReportFile,
-        [string]$ComputerName,
-        [string]$RawCopyPath = ".\bin\RawCopy.exe"
+        [string]
+        $NTUserHtmlOutputFolder,
+        [string]
+        $HtmlReportFile,
+        [string]
+        $ComputerName,
+        [string]
+        $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
     function Get-HtmlNTUserDatFiles {
 
+        $Name = "Copy_NTUSER.DAT_Files"
         Show-Message("[INFO] Running '$Name'") -Header -DarkGray
+        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-
             if (-not (Test-Path $RawCopyPath)) {
                 $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
                 Show-Message("[ERROR] $NoRawCopyWarnMsg") -Red
@@ -67,12 +71,12 @@ function Invoke-HtmlNTUserDatFiles {
         $SectionName = "NTUSER.DAT Files"
 
         $NTUserSectionHeader = "
-        <h4 class='section_header'>$($SectionName)</h4>
+        <h4 class='section_header' id='ntuser'>$($SectionName)</h4>
         <div class='number_list'>"
 
         Add-Content -Path $HtmlReportFile -Value $NTUserSectionHeader
 
-        $FileList = Get-ChildItem -Path $EddHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $NTUserHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\NTUser\$File' target='_blank'>$File</a>"

@@ -196,6 +196,8 @@ function Export-HtmlReport {
         [string]
         $Ipv6,
         [bool]
+        $Processes,
+        [bool]
         $GetRam,
         [bool]
         $Edd,
@@ -301,6 +303,21 @@ function Export-HtmlReport {
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Compiling the tx3-triage report in .html format")
 
 
+    function Invoke-GetHtmlProcesses {
+        if ($Processes) {
+            try {
+                $ProcessHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Processes" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Get-HtmlRunningProcesses -ProcessHtmlOutputFolder $ProcessHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+    }
+    Invoke-GetHtmlProcesses
+
+
     function Invoke-GetHtmlMachineRam {
         if ($GetRam) {
             try {
@@ -318,9 +335,14 @@ function Export-HtmlReport {
 
     function Invoke-Edd {
         if ($Edd) {
-            $EddHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Edd" -Force
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Invoke-HtmlEncryptedDiskDetector -EddHtmlOutputFolder $EddHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            try {
+                $EddHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Edd" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Invoke-HtmlEncryptedDiskDetector -EddHtmlOutputFolder $EddHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
         }
     }
     Invoke-Edd
@@ -459,9 +481,17 @@ function Export-HtmlReport {
 
     function Invoke-NTUser {
         if ($GetNTUserDat) {
-            $NTUserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "NTUser" -Force
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Invoke-HtmlNTUserDatFiles -NTUserHtmlOutputFolder $NTUserHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            try {
+                $NTUserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "NTUser" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Invoke-HtmlNTUserDatFiles -NTUserHtmlOutputFolder $NTUserHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy NTUSER.DAT Files' option was not selected by the user")
         }
     }
     Invoke-NTUser
@@ -469,9 +499,17 @@ function Export-HtmlReport {
 
     function Invoke-ListFiles {
         if ($ListFiles) {
-            $FilesListHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "FilesList" -Force
-            Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-            Invoke-HtmlListAllFiles -FilesListHtmlOutputFolder $FilesListHtmlOutputFolder -DriveList $DriveList -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            try {
+                $FilesListHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "FilesList" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Invoke-HtmlListAllFiles -FilesListHtmlOutputFolder $FilesListHtmlOutputFolder -DriveList $DriveList -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+        else {
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user")
         }
     }
     Invoke-ListFiles
@@ -488,6 +526,9 @@ function Export-HtmlReport {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Search for Keywords' option was not selected by the user")
+        }
     }
     Invoke-KeywordSearch
 
@@ -495,7 +536,9 @@ function Export-HtmlReport {
     function Invoke-GetHtmlFileHashes {
         if ($GetHtmlFileHashes) {
             try {
-                Get-HtmlFileHashes $ResultsFolder $ComputerName
+                $HashResultsFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "HashResults" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Get-HtmlFileHashes -HashResultsFolder $HashResultsFolder -ComputerName $ComputerName
             }
             catch {
                 Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -508,9 +551,20 @@ function Export-HtmlReport {
     Invoke-GetHtmlFileHashes
 
 
-    if ($MakeArchive) {
-        Invoke-HtmlCaseArchive
+    function Invoke-GetHtmlCaseArchive {
+        if ($MakeArchive) {
+            try {
+                Invoke-HtmlCaseArchive
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user")
+        }
     }
+    Invoke-GetHtmlCaseArchive
 
 
     $HtmlEndTime = (Get-Date).ToUniversalTime()
