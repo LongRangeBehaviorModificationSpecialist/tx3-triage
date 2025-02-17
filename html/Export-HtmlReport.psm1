@@ -196,6 +196,8 @@ function Export-HtmlReport {
         [string]
         $Ipv6,
         [bool]
+        $GetRam,
+        [bool]
         $Edd,
         [bool]
         $GetNTUserDat,
@@ -297,6 +299,21 @@ function Export-HtmlReport {
 
     Show-Message("Compiling the tx3-triage report in .html format. Please wait. . . ") -Header -Green
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Compiling the tx3-triage report in .html format")
+
+
+    function Invoke-GetHtmlMachineRam {
+        if ($GetRam) {
+            try {
+                $RamHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RAM" -Force
+                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Get-HtmlComputerRam -RamHtmlOutputFolder $RamHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            }
+        }
+    }
+    Invoke-GetHtmlMachineRam
 
 
     function Invoke-Edd {

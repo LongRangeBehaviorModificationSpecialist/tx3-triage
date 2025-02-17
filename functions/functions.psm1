@@ -1,5 +1,5 @@
 # Date Last Updated
-[string]$Dlu = "2025-02-12"
+[string]$Dlu = "2025-02-17"
 
 
 # [datetime]$StartTime = (Get-Date).ToUniversalTime()
@@ -49,13 +49,20 @@ function Write-LogEntry {
 
     param (
         [Parameter(Mandatory = $True)]
-        [string]$Message,
-        [string]$LogFile = $LogFile,
-        [switch]$NoLevel,
-        [switch]$DebugMessage,
-        [switch]$WarningMessage,
-        [switch]$ErrorMessage,
-        [switch]$NoTime
+        [string]
+        $Message,
+        [string]
+        $LogFile = $LogFile,
+        [switch]
+        $NoLevel,
+        [switch]
+        $DebugMessage,
+        [switch]
+        $WarningMessage,
+        [switch]
+        $ErrorMessage,
+        [switch]
+        $NoTime
     )
 
     $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
@@ -139,9 +146,11 @@ function Show-FinishMessage {
 
     param (
         [Parameter(Mandatory, Position = 0)]
-        [string]$FunctionName,
+        [string]
+        $FunctionName,
         [Parameter(Mandatory, Position = 1)]
-        [timespan]$ExecutionTime
+        [timespan]
+        $ExecutionTime
     )
 
         Show-Message("'$($FunctionName)' function finished in $($ExecutionTime.TotalSeconds) seconds`n") -Blue
@@ -152,9 +161,11 @@ function Write-LogFinishedMessage {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FunctionName,
+        [string]
+        $FunctionName,
         [Parameter(Mandatory = $True, Position = 1)]
-        [timespan]$ExecutionTime
+        [timespan]
+        $ExecutionTime
     )
 
     Write-LogEntry("Function '$FunctionName' finished in $($ExecutionTime.TotalSeconds) seconds`n")
@@ -206,9 +217,11 @@ function Save-Output {
 
     param (
         [Parameter(Mandatory, Position = 0)]
-        [object]$Data,
+        [object]
+        $Data,
         [Parameter(Mandatory, Position = 1)]
-        [string]$File
+        [string]
+        $File
     )
 
     process {
@@ -221,9 +234,11 @@ function Save-OutputAppend {
 
     param (
         [Parameter(Mandatory ,Position = 0)]
-        [object]$Data,
+        [object]
+        $Data,
         [Parameter(Mandatory, Position = 1)]
-        [string]$File
+        [string]
+        $File
     )
 
     process {
@@ -236,9 +251,11 @@ function Save-OutputAsCsv {
 
     param (
         [Parameter(Mandatory, Position = 0)]
-        [object]$Data,
+        [object]
+        $Data,
         [Parameter(Mandatory, Position = 1)]
-        [string]$File
+        [string]
+        $File
     )
 
     process {
@@ -251,8 +268,10 @@ function Show-OutputSavedToFile {
 
     param (
         [Parameter(Mandatory, Position = 0)]
-        [string]$File,
-        [switch]$NoTime
+        [string]
+        $File,
+        [switch]
+        $NoTime
     )
 
     if ($NoTime) {
@@ -268,7 +287,8 @@ function Write-LogOutputAppended {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$File
+        [string]
+        $File
     )
 
     Write-LogEntry("Output appended to -> '$([System.IO.Path]::GetFileName($File))'")
@@ -279,7 +299,8 @@ function Write-LogOutputSaved {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$File
+        [string]
+        $File
     )
 
     Write-LogEntry("Output saved to -> '$([System.IO.Path]::GetFileName($File))'")
@@ -290,7 +311,8 @@ function Write-NoDataFound {
 
     param (
         [Parameter(Mandatory = $True, Position = 0)]
-        [string]$FunctionName
+        [string]
+        $FunctionName
     )
 
     $NoDataMsg = "No data found for '$($FunctionName)' function"

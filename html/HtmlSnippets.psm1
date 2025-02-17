@@ -240,6 +240,7 @@ function Write-MainHtmlPage {
 
             <div class='nav'>
                 <a class='readme' href='Resources\static\readme.html' target='_blank'><strong>Read Me</strong></a>&ensp;|&ensp;
+                <a href='#ram_capture'>RAM Capture</a>&ensp;|&ensp;
                 <a href='#edd'>Encryption Detection</a>&ensp;|&ensp;
                 <a href='#device'>Device Info</a>&ensp;|&ensp;
                 <a href='#user'>User Info</a>&ensp;|&ensp;
