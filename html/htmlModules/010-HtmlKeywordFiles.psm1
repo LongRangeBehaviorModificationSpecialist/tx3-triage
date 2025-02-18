@@ -3,11 +3,15 @@ function Export-HtmlKeywordSearchPage {
     [CmdletBinding()]
 
     param (
-        [string]$KeywordsHtmlOutputFolder,
-        [string]$HtmlReportFile,
-        [string]$KeywordListFile,
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile,
+        [string]
+        $KeywordListFile,
         # List of drives to be included or excluded depending on the switch value that is entered
-        [string[]]$KeyWordsDriveList
+        [string[]]
+        $KeyWordsDriveList
     )
 
     # 10-001
@@ -16,7 +20,7 @@ function Export-HtmlKeywordSearchPage {
         $Name = "10-001_KeywordFileSearch"
         $FileName = "$Name.html"
         $KeywordDriveArray = ($KeyWordsDriveList -split "\s*,\s*")  # Split on commas with optional surrounding spaces
-        $OutputHtmlFilePath = New-Item -Path "$KeywordsHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
@@ -75,7 +79,7 @@ function Export-HtmlKeywordSearchPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $KeywordsHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\010\$File' target='_blank'>$File</a>"

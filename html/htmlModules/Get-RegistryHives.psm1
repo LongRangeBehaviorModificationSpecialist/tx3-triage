@@ -7,7 +7,7 @@ function Invoke-HtmlCopyRegistryHives {
 
     param (
         [string]
-        $RegistryHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile,
         [string]
@@ -25,8 +25,8 @@ function Invoke-HtmlCopyRegistryHives {
             Show-Message("[INFO] $BeginMessage")
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
-            if (-not (Test-Path $RegistryHtmlOutputFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> '$RegistryHtmlOutputFolder'"
+            if (-not (Test-Path $OutputFolder)) {
+                throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
             }
 
             # Show & log $SoftwareMsg message
@@ -34,7 +34,7 @@ function Invoke-HtmlCopyRegistryHives {
                 $SoftwareMsg = "Copying the SOFTWARE Registry Hive"
                 Show-Message("[INFO] $SoftwareMsg")
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SoftwareMsg")
-                cmd /r reg export HKLM\Software $RegistryHtmlOutputFolder\software.reg
+                cmd /r reg export HKLM\Software $OutputFolder\software.reg
             }
             catch {
                 $SoftwareWarnMsg = "An error occurred while copying SOFTWARE Hive: $($PSItem.Exception.Message)"
@@ -47,7 +47,7 @@ function Invoke-HtmlCopyRegistryHives {
                 $SamMsg = "Copying the SAM Registry Hive"
                 Show-Message("[INFO] $SamMsg")
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SamMsg")
-                cmd /r reg export HKLM\Sam $RegistryHtmlOutputFolder\sam.reg
+                cmd /r reg export HKLM\Sam $OutputFolder\sam.reg
             }
             catch {
                 $SamWarnMsg = "An error occurred while copying SAM Hive: $($PSItem.Exception.Message)"
@@ -60,7 +60,7 @@ function Invoke-HtmlCopyRegistryHives {
                 $SysMsg = "Copying the SYSTEM Registry Hive"
                 Show-Message("[INFO] $SysMsg")
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SysMsg")
-                cmd /r reg export HKLM\System $RegistryHtmlOutputFolder\system.reg
+                cmd /r reg export HKLM\System $OutputFolder\system.reg
             }
             catch {
                 $SystemWarnMsg = "An error occurred while copying SYSTEM Hive: $($PSItem.Exception.Message)"
@@ -73,7 +73,7 @@ function Invoke-HtmlCopyRegistryHives {
                 $SecMsg = "Copying the SECURITY Registry Hive"
                 Show-Message("[INFO] $SecMsg")
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SecMsg")
-                cmd /r reg export HKLM\Security $RegistryHtmlOutputFolder\security.reg
+                cmd /r reg export HKLM\Security $OutputFolder\security.reg
             }
             catch {
                 $SecurityWarnMsg = "An error occurred while copying SECURITY Hive: $($PSItem.Exception.Message)"
@@ -86,7 +86,7 @@ function Invoke-HtmlCopyRegistryHives {
                 $NtMsg = "Copying the current user's NTUSER.DAT file"
                 Show-Message("[INFO] $NtMsg")
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NtMsg")
-                cmd /r reg export HKCU $RegistryHtmlOutputFolder\current-ntuser.reg
+                cmd /r reg export HKCU $OutputFolder\current-ntuser.reg
             }
             catch {
                 $NTUserWarnMsg = "An error occurred while copying the current user's NTUSER.DAT file: $($PSItem.Exception.Message)"
@@ -110,7 +110,7 @@ function Invoke-HtmlCopyRegistryHives {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $RegistryHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a class='file_link' href='results\RegistryHives\$File' target='_blank'>$File</a>"

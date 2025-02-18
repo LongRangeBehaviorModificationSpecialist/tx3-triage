@@ -6,7 +6,7 @@ function Invoke-HtmlNTUserDatFiles {
 
     param (
         [string]
-        $NTUserHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile,
         [string]
@@ -41,7 +41,7 @@ function Invoke-HtmlNTUserDatFiles {
 
                         Show-Message("[INFO] $CopyMsg") -Magenta
                         Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $CopyMsg")
-                        Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$NTUserFilePath /OutputPath:"$NTUserHtmlOutputFolder" /OutputName:"$OutputFileName" }
+                        Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$NTUserFilePath /OutputPath:"$OutputFolder" /OutputName:"$OutputFileName" }
 
                         if ($LASTEXITCODE -ne 0) {
                             $NoProperExitMsg = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
@@ -78,7 +78,7 @@ function Invoke-HtmlNTUserDatFiles {
 
         Add-Content -Path $HtmlReportFile -Value $NTUserSectionHeader
 
-        $FileList = Get-ChildItem -Path $NTUserHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\NTUser\$File' target='_blank'>$File</a>"

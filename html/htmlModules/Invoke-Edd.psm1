@@ -6,7 +6,7 @@ function Invoke-HtmlEncryptedDiskDetector {
 
     param (
         [string]
-        $EddHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile,
         [string]
@@ -22,12 +22,12 @@ function Invoke-HtmlEncryptedDiskDetector {
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name'") -Header -DarkGray
         Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-        $OutputHtmlFilePath = New-Item -Path "$EddHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
 
             # Name the file to save the results of the scan to
-            $EddTxtFile = New-Item -Path "$EddHtmlOutputFolder\Encrypted_Disk_Detector.txt" -ItemType File -Force
+            $EddTxtFile = New-Item -Path "$OutputFolder\Encrypted_Disk_Detector.txt" -ItemType File -Force
 
             # Start the encrypted disk detector executable
             Start-Process -NoNewWindow -FilePath $EddExeFilePath -ArgumentList "/batch" -Wait -RedirectStandardOutput $EddTxtFile
@@ -70,7 +70,7 @@ function Invoke-HtmlEncryptedDiskDetector {
 
         Add-Content -Path $HtmlReportFile -Value $EddSectionHeader
 
-        $FileList = Get-ChildItem -Path $EddHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\Edd\$File' target='_blank'>$File</a>"

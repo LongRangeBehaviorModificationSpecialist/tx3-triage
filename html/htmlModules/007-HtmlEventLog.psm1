@@ -3,19 +3,22 @@ function Export-EventLogHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$EventLogHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
 
     # Import the hashtables from the data files
-    $EventLogArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007-EventLogArray.psd1"
-    $OtherEventLogPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007-EventLogOtherArray.psd1"
+    $EventLogArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007A-EventLogArray.psd1"
+    $OtherEventLogPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007B-EventLogOtherArray.psd1"
 
     #7-000A
     function Get-EventLogData {
 
         param (
-            [int]$MaxRecords = 50
+            [int]
+            $MaxRecords = 50
         )
 
         foreach ($item in $EventLogArray.GetEnumerator()) {
@@ -27,7 +30,7 @@ function Export-EventLogHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$EventLogHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 Show-Message("[INFO] Searching for $LogName Log (Event ID: $EventID)") -DarkGray
@@ -70,7 +73,7 @@ function Export-EventLogHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$EventLogHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
@@ -114,7 +117,7 @@ function Export-EventLogHtmlPage {
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
-            Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$EventLogHtmlOutputFolder\$FileName" -Encoding UTF8
+            Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$OutputFolder\$FileName" -Encoding UTF8
 
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
@@ -135,7 +138,7 @@ function Export-EventLogHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $EventLogHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {

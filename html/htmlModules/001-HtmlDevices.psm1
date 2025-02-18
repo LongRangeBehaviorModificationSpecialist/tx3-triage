@@ -1,17 +1,16 @@
-
 function Export-DeviceHtmlPage {
 
     [CmdletBinding()]
 
     param (
         [string]
-        $DeviceHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile
     )
 
     # Import the hashtables from the data files
-    $DevicePropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\001-DeviceDataArray.psd1"
+    $DevicePropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\001A-DeviceDataArray.psd1"
 
     # 1-000
     function Get-DeviceData {
@@ -24,7 +23,7 @@ function Export-DeviceHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
@@ -57,7 +56,7 @@ function Export-DeviceHtmlPage {
         $Title = "PnP Enum Devices"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $data = pnputil /enum-devices | Out-String
@@ -84,7 +83,7 @@ function Export-DeviceHtmlPage {
         $Title = "Time Zone Info"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name'") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
         $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation"
 
         try {
@@ -123,10 +122,10 @@ function Export-DeviceHtmlPage {
         $Title = "AutoRuns Data"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
-            $TempCsvFile = "$DeviceHtmlOutputFolder\1-024_AutoRuns-TEMP.csv"
+            $TempCsvFile = "$OutputFolder\1-024_AutoRuns-TEMP.csv"
             Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
             $Data = Import-Csv -Path $TempCsvFile
             if (-not $Data) {
@@ -156,7 +155,7 @@ function Export-DeviceHtmlPage {
         $Title = "Open Window Titles"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle | Out-String
@@ -183,8 +182,8 @@ function Export-DeviceHtmlPage {
         $Title = "Full System Info"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $tempFile = "$DeviceHtmlOutputFolder\$Name-TEMP.txt"
-        $OutputHtmlFilePath = New-Item -Path "$DeviceHtmlOutputFolder\$FileName" -ItemType File -Force
+        $tempFile = "$OutputFolder\$Name-TEMP.txt"
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
@@ -214,7 +213,7 @@ function Export-DeviceHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $DeviceHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\001\$File' target='_blank'>$File</a>"

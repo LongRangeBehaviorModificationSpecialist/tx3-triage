@@ -1,16 +1,17 @@
-
 function Export-SystemHtmlPage {
 
     [CmdletBinding()]
 
     param (
-        [string]$SystemHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
 
     # Import the hashtables from the data files
-    $RegistryDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005-RegistryDataArray.psd1"
-    $SystemDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005-SystemDataArray.psd1"
+    $RegistryDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005A-RegistryDataArray.psd1"
+    $SystemDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005B-SystemDataArray.psd1"
 
     # 5-000A
     function Get-SelectRegistryValues {
@@ -40,7 +41,7 @@ function Export-SystemHtmlPage {
                         Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
                     }
                     else {
-                        $OutputHtmlFilePath = New-Item -Path "$SystemHtmlOutputFolder\$FileName" -ItemType File -Force
+                        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
                         Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
                         Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
                         Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
@@ -65,7 +66,7 @@ function Export-SystemHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$SystemHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
@@ -102,7 +103,7 @@ function Export-SystemHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $SystemHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\005\$File' target='_blank'>$File</a>"

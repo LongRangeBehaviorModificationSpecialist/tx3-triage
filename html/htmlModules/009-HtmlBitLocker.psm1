@@ -3,8 +3,10 @@ function Export-BitLockerHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$BitLockerHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
 
     # 9-001
@@ -14,7 +16,7 @@ function Export-BitLockerHtmlPage {
         $Title = "BitLocker Volumes"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$BitLockerHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint | Out-String
@@ -36,6 +38,7 @@ function Export-BitLockerHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
+    
     # 9-002
     function Get-BitlockerRecoveryKeys {
 
@@ -43,7 +46,7 @@ function Export-BitLockerHtmlPage {
         $Title = "BitLocker Recovery Keys"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$BitLockerHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Info = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
@@ -97,7 +100,7 @@ function Export-BitLockerHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $BitLockerHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\009\$File' target='_blank'>$File</a>"

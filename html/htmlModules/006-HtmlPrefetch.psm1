@@ -3,8 +3,10 @@ function Export-PrefetchHtmlPage {
     [CmdletBinding()]
 
     param (
-        [string]$PrefetchHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
 
     #6-001
@@ -14,7 +16,7 @@ function Export-PrefetchHtmlPage {
         $FileName = "$Name.html"
         $Title = "Prefetch File Data (Detailed)"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$PrefetchHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime | Out-String
@@ -44,7 +46,7 @@ function Export-PrefetchHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $PrefetchHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\006\$File' target='_blank'>$File</a>"

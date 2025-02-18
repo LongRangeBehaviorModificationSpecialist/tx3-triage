@@ -7,7 +7,7 @@ function Get-HtmlRunningProcesses {
 
     param (
         [string]
-        $ProcessHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile,
         [string]
@@ -28,14 +28,14 @@ function Get-HtmlRunningProcesses {
             Show-Message("[INFO] $BeginMessage")
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
-            if (-not (Test-Path $ProcessHtmlOutputFolder)) {
+            if (-not (Test-Path $OutputFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> '$ProcessesFolder'"
             }
 
             # Run MAGNETProcessCapture.exe from the \bin directory and save the output to the results folder.
             # The program will create its own directory to save the results with the following naming convention:
             # 'MagnetProcessCapture-YYYYMMDD-HHMMSS'
-            Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall $ProcessHtmlOutputFolder" -Wait
+            Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall $OutputFolder" -Wait
         }
         catch {
             Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
@@ -59,7 +59,7 @@ function Get-HtmlRunningProcesses {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $ProcessHtmlOutputFolder -Recurse | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder -Recurse | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a class='file_link' href='results\Processes\$File' target='_blank'>$File</a>"

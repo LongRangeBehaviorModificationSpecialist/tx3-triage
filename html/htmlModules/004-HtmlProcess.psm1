@@ -1,34 +1,15 @@
-$ProcessesPropertyArray = [ordered]@{
-
-    "4-001_RunningProcessesAll"  = ("Win32_Process",
-                                   "Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName | Out-String",
-                                   "String");
-    "4-002 SvcHostsAndProcesses" = ("Svc Hosts & Processes",
-                                   "Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq 'svchost.exe' | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path | Out-String",
-                                   "String");
-    "4-003_DriverQuery"          = ("DriverQuery",
-                                   "driverquery | Out-String",
-                                   "String");
-    "4-004_WMICProcessListFull"  = ("Full Process List (wmic)",
-                                   "wmic process list full | Out-String",
-                                   "String");
-    "4-005_ActiveServices"       = ("Active Windows Services",
-                                   "net start | Out-String",
-                                   "String")
-    "4-006_TaskList"             = ("Services & Assoc Processes",
-                                   "tasklist /svc | Out-String",
-                                   "String")
-}
-
-
 function Export-ProcessHtmlPage {
 
     [CmdletBinding()]
 
     param (
-        [string]$ProcessHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
+
+    $ProcessesPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\004A-ProcessDataArray.psd1"
 
     # 4-000
     function Get-ProcessesData {
@@ -41,7 +22,7 @@ function Export-ProcessHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$ProcessHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
@@ -75,7 +56,7 @@ function Export-ProcessHtmlPage {
 
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-            Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$ProcessHtmlOutputFolder\$FileName" -Encoding UTF8
+            Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$OutputFolder\$FileName" -Encoding UTF8
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -108,7 +89,7 @@ function Export-ProcessHtmlPage {
                     $Data += $ProcessObj
                 }
             }
-            ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$ProcessHtmlOutputFolder\$FileName" -Encoding UTF8
+            ($Data | Select-Object Proc_Path, Proc_ParentProcessId, Proc_ProcessId, Proc_Hash -Unique).GetEnumerator() | Export-Csv -NoTypeInformation -Path "$OutputFolder\$FileName" -Encoding UTF8
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -126,7 +107,7 @@ function Export-ProcessHtmlPage {
 
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-            Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$ProcessHtmlOutputFolder\$FileName" -Encoding UTF8
+            Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$OutputFolder\$FileName" -Encoding UTF8
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -148,7 +129,7 @@ function Export-ProcessHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $ProcessHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {

@@ -7,7 +7,7 @@ function Invoke-HtmlListAllFiles {
 
     param (
         [string]
-        $FilesListHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile,
         [string]
@@ -22,19 +22,18 @@ function Invoke-HtmlListAllFiles {
         $Name = "List_Attached_Files"
         $DriveArray = ($DriveList -split "\s*,\s*")  # Split on commas with optional surrounding spaces
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
         try {
-            if (-not (Test-Path $FilesListHtmlOutputFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> '$FilesListHtmlOutputFolder'"
+            if (-not (Test-Path $OutputFolder)) {
+                throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
             }
 
             # Iterate over filtered drives
             foreach ($DriveName in $DriveArray) {
-                $FileListingSaveFile = "$FilesListHtmlOutputFolder\$($RunDate)_$($ComputerName)_Files_$($DriveName).csv"
+                $FileListingSaveFile = "$OutputFolder\$($RunDate)_$($ComputerName)_Files_$($DriveName).csv"
 
                 $ScanMessage = "Scanning files on the $($DriveName):\ drive"
-                Show-Message("$ScanMessage") -Blue
+                Show-Message("[INFO] $ScanMessage") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $ScanMessage")
 
                 # Scan and save file details
@@ -54,12 +53,12 @@ function Invoke-HtmlListAllFiles {
 
                 # Show & log $DoneMessage message
                 $DoneMessage = "Completed scanning of $($DriveName):\ drive"
-                Show-Message("$DoneMessage") -Blue
+                Show-Message("[INFO] $DoneMessage") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $DoneMessage")
 
                 # Show & log $FileTitle message
                 $FileTitle = "Output saved to -> '$([System.IO.Path]::GetFileName($FileListingSaveFile))'`n"
-                Show-Message("$FileTitle") -Green
+                Show-Message("[INFO] $FileTitle") -Green
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $FileTitle")
             }
         }
@@ -78,7 +77,7 @@ function Invoke-HtmlListAllFiles {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $FilesListHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a class='file_link' href='results\FilesList\$File' target='_blank'>$File</a>"

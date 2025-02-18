@@ -1,14 +1,15 @@
-
 function Export-NetworkHtmlPage {
 
     [CmdletBinding()]
 
     param (
-        [string]$NetworkHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
 
-    $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003-NetworkDataArray.psd1"
+    $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003A-NetworkDataArray.psd1"
 
     # 3-000
     function Get-NetworkData {
@@ -21,7 +22,7 @@ function Export-NetworkHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$NetworkHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
@@ -57,7 +58,7 @@ function Export-NetworkHtmlPage {
         $Title = "Win32 Network Adapter Configuration"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$NetworkHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object Index, InterfaceIndex, Description, Caption, ServiceName, DatabasePath, DHCPEnabled, @{ N = 'IpAddress'; E = { $_.IpAddress -join '; ' } }, @{ N = 'DefaultIPgateway'; E = { $_.DefaultIPgateway -join '; ' } }, DNSDomain, DNSHostName, DNSDomainSuffixSearchOrder, CimClass | Out-String
@@ -82,7 +83,7 @@ function Export-NetworkHtmlPage {
 
         $Name = "3-022_NetstatConnectionsDetailed"
         $FileName = "$Name.html"
-        $TempFile = "$NetworkHtmlOutputFolder\$Name-TEMP.html"
+        $TempFile = "$OutputFolder\$Name-TEMP.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
 
         try {
@@ -170,7 +171,7 @@ Active Connections, Associated Processes and DLLs
             (Get-Content $TempFile) | ForEach-Object {
                 $_ -replace "&lt;p&gt;", "" `
                     -replace "&lt;/p&gt;", "<br />"
-            } | Set-Content -Path "$NetworkHtmlOutputFolder\$FileName" -Force
+            } | Set-Content -Path "$OutputFolder\$FileName" -Force
 
             # Delete the temp .html file
             Remove-Item -Path $TempFile -Force
@@ -192,7 +193,7 @@ Active Connections, Associated Processes and DLLs
 
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-            Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$NetworkHtmlOutputFolder\$FileName" -Encoding UTF8
+            Get-NetTCPConnection | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$OutputFolder\$FileName" -Encoding UTF8
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -208,7 +209,7 @@ Active Connections, Associated Processes and DLLs
         $Title = "Wifi Passwords"
         $FileName = "$Name.html"
         Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $OutputHtmlFilePath = New-Item -Path "$NetworkHtmlOutputFolder\$FileName" -ItemType File -Force
+        $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
             $Data = (netsh wlan show profiles) | Select-String "\:(.+)$" | ForEach-Object { $Name = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { (netsh wlan show profile name="$Name" key=clear) } | Select-String "Key Content\W+\:(.+)$" | ForEach-Object { $Pass = $_.Matches.Groups[1].Value.Trim(); $_ } | ForEach-Object { [PSCustomObject]@{ PROFILE_NAME = $Name; PASSWORD = $Pass } } | Out-String
@@ -237,7 +238,7 @@ Active Connections, Associated Processes and DLLs
 
         try {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-            Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$NetworkHtmlOutputFolder\$FileName" -Encoding UTF8
+            Get-DnsClientCache | Select-Object -Property * | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$OutputFolder\$FileName" -Encoding UTF8
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
@@ -256,7 +257,7 @@ Active Connections, Associated Processes and DLLs
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $NetworkHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {

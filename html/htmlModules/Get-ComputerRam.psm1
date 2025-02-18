@@ -7,7 +7,7 @@ function Get-HtmlComputerRam {
 
     param (
         [string]
-        $RamHtmlOutputFolder,
+        $OutputFolder,
         [string]
         $HtmlReportFile,
         [string]
@@ -31,10 +31,10 @@ function Get-HtmlComputerRam {
             $RamOutputFileName = "$($RunDate)_$($ComputerName)_RAM_Capture.raw"
 
             # Start the RAM acquisition from the current machine
-            Start-Process -NoNewWindow -FilePath $RamCaptureExeFilePath -ArgumentList "/accepteula /go "$RamHtmlOutputFolder\$RamOutputFileName" /silent" -Wait
+            Start-Process -NoNewWindow -FilePath $RamCaptureExeFilePath -ArgumentList "/accepteula /go "$OutputFolder\$RamOutputFileName" /silent" -Wait
 
             # Once the RAM has been acquired, move the file to the 'RAM' folder
-            Move-Item -Path .\bin\*.raw -Destination $RamHtmlOutputFolder -Force
+            Move-Item -Path .\bin\*.raw -Destination $OutputFolder -Force
 
             # Show & log $SuccessMsg message
             $SuccessMsg = "RAM capture from $ComputerName completed"
@@ -57,7 +57,7 @@ function Get-HtmlComputerRam {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $RamHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a class='file_link' href='results\RAM\$File' target='_blank'>$File</a>"

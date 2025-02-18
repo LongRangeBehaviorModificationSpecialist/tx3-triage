@@ -7,7 +7,7 @@ function Get-HtmlFileHashes {
 
     param (
         [string]
-        $HashResultsFolder,
+        $OutputFolder,
         [string]
         $ResultsFolder,
         [string]
@@ -22,12 +22,12 @@ function Get-HtmlFileHashes {
         Show-Message("[INFO] $BeginMessage") -Header -DarkGray
         Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
-        if (-not (Test-Path $HashResultsFolder)) {
-            throw "[ERROR] The necessary folder does not exist -> '$HashResultsFolder'"
+        if (-not (Test-Path $OutputFolder)) {
+            throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
         }
 
         # Add the filename and filetype to the end
-        $HashOutputFilePath = Join-Path -Path $HashResultsFolder -ChildPath "$((Get-Item -Path $CaseFolderName).Name)_HashValues.csv"
+        $HashOutputFilePath = Join-Path -Path $OutputFolder -ChildPath "$((Get-Item -Path $CaseFolderName).Name)_HashValues.csv"
 
         # Return the full name of the CSV file
         $HashOutputFileName = [System.IO.Path]::GetFileName($HashOutputFilePath)

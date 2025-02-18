@@ -1,25 +1,16 @@
-$FirewallPropertyArray = [ordered]@{
-
-    "8-001_FirewallRules"         = ("Net Firewall Rules",
-                                    "Get-NetFirewallRule -all | Out-String",
-                                    "String")
-    "8-002_AdvancedFirewallRules" = ("Advanced Firewall Rules",
-                                    "netsh advfirewall firewall show rule name=all verbose | Out-String",
-                                    "String")
-    "8-003_DefenderExclusions"    = ("Defender Exclusions",
-                                    "Get-MpPreference | Out-String",
-                                    "String")
-}
-
-
 function Export-FirewallHtmlPage {
 
     [CmdletBinding()]
 
     param (
-        [string]$FirewallHtmlOutputFolder,
-        [string]$HtmlReportFile
+        [string]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile
     )
+
+    # Import the hashtables from the data files
+    $FirewallPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\008A-FirewallDataArray.psd1"
 
     # 8-000
     function Get-FirewallData {
@@ -32,7 +23,7 @@ function Export-FirewallHtmlPage {
 
             $FileName = "$Name.html"
             Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-            $OutputHtmlFilePath = New-Item -Path "$FirewallHtmlOutputFolder\$FileName" -ItemType File -Force
+            $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
                 $Data = Invoke-Expression -Command $Command
@@ -71,7 +62,7 @@ function Export-FirewallHtmlPage {
 
         Add-Content -Path $HtmlReportFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $FirewallHtmlOutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
             $FileNameEntry = "<a href='results\008\$File' target='_blank'>$File</a>"
