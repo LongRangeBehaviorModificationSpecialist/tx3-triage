@@ -44,7 +44,7 @@ function Export-DeviceHtmlPage {
                 Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -72,7 +72,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -111,7 +111,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -140,7 +140,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temp csv file
@@ -171,7 +171,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -195,7 +195,7 @@ function Export-DeviceHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temporary text file
@@ -208,12 +208,12 @@ function Export-DeviceHtmlPage {
     function Write-DeviceSectionToMain {
 
 
-        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\001\001_main.html' target='_blank'>Device Info</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\NTUser\001_main.html' target='_blank'>Device Info</a></h4>"
 
         $SectionName = "Device Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
         Add-Content -Path $DeviceHtmlMainFile -Value $HtmlHeader

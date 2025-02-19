@@ -14,6 +14,8 @@ function Invoke-HtmlCopyRegistryHives {
         $ComputerName
     )
 
+    $RegHivesHtmlMainFile = New-Item -Path "$OutputFolder\RegHives_main.html" -ItemType File -Force
+
     function Get-RegistryHives {
 
         $Name = "Copy_Registry_Hives"
@@ -22,7 +24,7 @@ function Invoke-HtmlCopyRegistryHives {
         try {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Windows Registry Hives from computer: $ComputerName"
-            Show-Message("[INFO] $BeginMessage")
+            Show-Message("[INFO] $BeginMessage") -Blue
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
 
             if (-not (Test-Path $OutputFolder)) {
@@ -32,7 +34,7 @@ function Invoke-HtmlCopyRegistryHives {
             # Show & log $SoftwareMsg message
             try {
                 $SoftwareMsg = "Copying the SOFTWARE Registry Hive"
-                Show-Message("[INFO] $SoftwareMsg")
+                Show-Message("[INFO] $SoftwareMsg") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SoftwareMsg")
                 cmd /r reg export HKLM\Software $OutputFolder\software.reg
             }
@@ -45,7 +47,7 @@ function Invoke-HtmlCopyRegistryHives {
             # Show & log $SamMsg message
             try {
                 $SamMsg = "Copying the SAM Registry Hive"
-                Show-Message("[INFO] $SamMsg")
+                Show-Message("[INFO] $SamMsg") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SamMsg")
                 cmd /r reg export HKLM\Sam $OutputFolder\sam.reg
             }
@@ -58,7 +60,7 @@ function Invoke-HtmlCopyRegistryHives {
             # Show & log $SysMsg message
             try {
                 $SysMsg = "Copying the SYSTEM Registry Hive"
-                Show-Message("[INFO] $SysMsg")
+                Show-Message("[INFO] $SysMsg") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SysMsg")
                 cmd /r reg export HKLM\System $OutputFolder\system.reg
             }
@@ -71,7 +73,7 @@ function Invoke-HtmlCopyRegistryHives {
             # Show & log $SecMsg message
             try {
                 $SecMsg = "Copying the SECURITY Registry Hive"
-                Show-Message("[INFO] $SecMsg")
+                Show-Message("[INFO] $SecMsg") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SecMsg")
                 cmd /r reg export HKLM\Security $OutputFolder\security.reg
             }
@@ -84,7 +86,7 @@ function Invoke-HtmlCopyRegistryHives {
             # Show & log $NtMsg message
             try {
                 $NtMsg = "Copying the current user's NTUSER.DAT file"
-                Show-Message("[INFO] $NtMsg")
+                Show-Message("[INFO] $NtMsg") -Blue
                 Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NtMsg")
                 cmd /r reg export HKCU $OutputFolder\current-ntuser.reg
             }
@@ -95,29 +97,37 @@ function Invoke-HtmlCopyRegistryHives {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
 
     function Write-RegistrySectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\RegHives\RegHives_main.html' target='_blank'>Exported Registry Hives</a></h4>"
+
         $SectionName = "Exported Registry Hives"
 
         $SectionHeader = "
-        <h4 class='section_header' id='hives'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $RegHivesHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $RegHivesHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a class='file_link' href='results\RegistryHives\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "Reg") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $RegHivesHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $RegHivesHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

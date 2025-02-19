@@ -10,12 +10,14 @@ function Invoke-HtmlListAllFiles {
         $OutputFolder,
         [string]
         $HtmlReportFile,
-        [string]
-        $ComputerName,
+        # [string]
+        # $ComputerName,
         # List of drives to be included or excluded depending on the switch value that is entered
         [string[]]
         $DriveList
     )
+
+    $ListFilesHtmlMainFile = New-Item -Path "$OutputFolder\FilesList_main.html" -ItemType File -Force
 
     function Get-HtmlListAllFiles {
 
@@ -63,28 +65,36 @@ function Invoke-HtmlListAllFiles {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
     function Write-FilesListSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\FilesList\FilesList_main.html' target='_blank'>File List Results</a></h3>"
+
         $SectionName = "Files List Results"
 
         $SectionHeader = "
-        <h4 class='section_header' id='file_lists'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $ListFilesHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $ListFilesHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a class='file_link' href='results\FilesList\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 9)) -eq "FilesList") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ListFilesHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $ListFilesHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

@@ -44,16 +44,14 @@ function Invoke-HtmlEncryptedDiskDetector {
             Save-OutputToSingleHtmlFile -FromString $Name $(Get-Content -Path $EddTxtFile -Force -Raw) $OutputHtmlFilePath $Title
             Write-Host $Data
 
-            Show-Message("`nEncrypted Disk Detector has finished - Review the results before proceeding") -NoTime -Yellow
-            Write-Host ""
-            Read-Host -Prompt "Press [ENTER] to continue data collection -> "
+            # Show-Message("`nEncrypted Disk Detector has finished - Review the results before proceeding") -NoTime -Yellow
+            # Write-Host ""
+            # Read-Host -Prompt "Press [ENTER] to continue data collection -> "
 
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
-
-            # Add-content -Path $FilePath -Value "</div>"  # To close the `item_table` div
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Delete the Edd text file
@@ -64,12 +62,12 @@ function Invoke-HtmlEncryptedDiskDetector {
 
     function Write-EddSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\Edd\Edd_main.html' target='_blank'>Encrypted Disk Detector Results</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\Edd\Edd_main.html' target='_blank'>Encrypted Disk Detector Results</a></h4>"
 
         $SectionName = "Encrypted Device Detector Results"
 
         $SectionHeader = "
-        <h4 class='section_header'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
         Add-Content -Path $EddHtmlMainFile -Value $HtmlHeader

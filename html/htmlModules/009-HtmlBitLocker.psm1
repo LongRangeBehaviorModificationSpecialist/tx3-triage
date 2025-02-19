@@ -35,7 +35,7 @@ function Export-BitLockerHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -87,19 +87,19 @@ function Export-BitLockerHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
 
     function Write-BitLockerSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\009\009_main.html' target='_blank'>BitLocker Data</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\009\009_main.html' target='_blank'>BitLocker Data</a></h4>"
 
         $SectionName = "BitLocker Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
         Add-Content -Path $BitLockerHtmlMainFile -Value $HtmlHeader

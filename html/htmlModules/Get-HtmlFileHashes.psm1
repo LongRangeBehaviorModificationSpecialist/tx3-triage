@@ -75,7 +75,7 @@ function Get-HtmlFileHashes {
         Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FileMsg")
     }
     catch {
-        Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+        Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
     }
 }
 

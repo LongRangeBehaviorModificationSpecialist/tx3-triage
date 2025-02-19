@@ -33,10 +33,10 @@
     "5-046_Hidden_Files_On_C_Drive" = ("Hidden Files On C:\ Drive",
                                       "Get-ChildItem -Path C:\ -Attributes Hidden -Recurse -Force | Out-String",
                                       "String");
-    "5-047_Last_30_Added_Exe_Files" = ("Last 30 Added Exe Files",
-                                      "Get-ChildItem -Path 'HKLM:\Software' -Recurse -Force | Where-Object -Property Name -like '*.exe' | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 30 | Format-Table PSPath, LastWriteTime | Out-String",
-                                      "String");
-    "5-048_Executable_File_List"    = ("Executable File List",
-                                      "Get-ChildItem -Path C:\ -File -Recurse -Force | Where-Object -Property Extension -eq '.exe' | Out-String",
-                                      "String")
+    # "5-047_Last_30_Added_Exe_Files" = ("Last 30 Added Exe Files",
+    #                                   "Get-ChildItem -Path 'HKLM:\Software' -Recurse -Force | Where-Object -Property Name -like '*.exe' | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 30 | Format-Table PSPath, LastWriteTime | Out-String",
+    #                                   "String");
+    # "5-048_Executable_File_List"    = ("Executable File List",
+    #                                   "Get-ChildItem -Path C:\ -File -Recurse -Force | Where-Object -Property Extension -eq '.exe' | Out-String",
+    #                                   "String")
 }

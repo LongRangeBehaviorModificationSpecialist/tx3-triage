@@ -15,6 +15,8 @@ function Invoke-HtmlNTUserDatFiles {
         $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
+    $NTUserHtmlMainFile = New-Item -Path "$OutputFolder\NTUser_main.html" -ItemType File -Force
+
     function Get-HtmlNTUserDatFiles {
 
         $Name = "Copy_NTUSER.DAT_Files"
@@ -58,7 +60,7 @@ function Invoke-HtmlNTUserDatFiles {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Show & log $SuccessMsg message
@@ -70,22 +72,30 @@ function Invoke-HtmlNTUserDatFiles {
 
     function Write-NTUserSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\NTUser\NTUser_main.html' target='_blank'>NTUSER.DAT Files</a></h4>"
+
         $SectionName = "NTUSER.DAT Files"
 
-        $NTUserSectionHeader = "
-        <h4 class='section_header' id='ntuser'>$($SectionName)</h4>
+        $SectionHeader = "
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $NTUserSectionHeader
+        Add-Content -Path $NTUserHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $NTUserHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\NTUser\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 6)) -eq "NTUser") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $NTUserHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $NTUserHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

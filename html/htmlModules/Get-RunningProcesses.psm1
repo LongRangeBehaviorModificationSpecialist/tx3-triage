@@ -17,6 +17,8 @@ function Get-HtmlRunningProcesses {
         $ProcessCaptureExeFilePath = ".\bin\MagnetProcessCapture.exe"
     )
 
+    $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\Processes_main.html" -ItemType File -Force
+
     function Get-RunningProcesses {
 
         $Name = "Capture_Running_Processes"
@@ -38,7 +40,7 @@ function Get-HtmlRunningProcesses {
             Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall $OutputFolder" -Wait
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Show & log $SuccessMsg message
@@ -51,22 +53,30 @@ function Get-HtmlRunningProcesses {
 
     function Write-ProcessSectionToMain {
 
-        $SectionName = "Process Capture"
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\Processes\Processes_main.html' target='_blank'>Captured Processes</a></h4>"
+
+        $SectionName = "Captured Processes"
 
         $SectionHeader = "
-        <h4 class='section_header' id='process_capture'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $ProcessHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $ProcessHtmlMainFile -Value $SectionHeader
 
-        $FileList = Get-ChildItem -Path $OutputFolder -Recurse | Sort-Object Name | Select-Object -ExpandProperty Name
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a class='file_link' href='results\Processes\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 6)) -eq "NTUser") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $ProcessHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

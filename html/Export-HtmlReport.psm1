@@ -93,16 +93,19 @@ function Invoke-ShowErrorMessage {
     param (
         [Parameter(Mandatory = $True, Position = 0)]
         [string]
-        $ScriptName,
+        $ModuleName,
         [Parameter(Mandatory = $True, Position = 1)]
+        [string]
+        $FunctionName,
+        [Parameter(Mandatory = $True, Position = 2)]
         [int]
         $LineNumber,
-        [Parameter(Mandatory = $True, Position = 2)]
+        [Parameter(Mandatory = $True, Position = 3)]
         [string]
         $Message
     )
 
-        $ErrorMessage = "In Module: $ScriptName (Ln: $LineNumber), MESSAGE: $Message"
+        $ErrorMessage = "In [Module: $ModuleName, Function: $FunctionName, Ln: $LineNumber]: MESSAGE: $Message"
         Show-Message("[ERROR] $ErrorMessage") -Red
         Write-HtmlLogEntry("$ErrorMessage") -ErrorMessage
 }
@@ -304,7 +307,7 @@ function Export-HtmlReport {
                 Get-HtmlRunningProcesses -OutputFolder $ProcessHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -322,7 +325,7 @@ function Export-HtmlReport {
                 Get-HtmlComputerRam -OutputFolder $RamHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -340,7 +343,7 @@ function Export-HtmlReport {
                 Invoke-HtmlEncryptedDiskDetector -OutputFolder $EddHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -353,12 +356,12 @@ function Export-HtmlReport {
     function Invoke-CopyRegistryHives {
         if ($Hives) {
             try {
-                $RegistryHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RegistryHives" -Force
+                $RegistryHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RegHives" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Invoke-HtmlCopyRegistryHives -OutputFolder $RegistryHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -373,10 +376,11 @@ function Export-HtmlReport {
             try {
                 $DeviceHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "001" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-                Export-DeviceHtmlPage -OutputFolder $DeviceHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ResultsFolder $ResultsFolder
+                Export-DeviceHtmlPage -OutputFolder $DeviceHtmlOutputFolder -HtmlReportFile $HtmlReportFile
+                # -ResultsFolder $ResultsFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -394,7 +398,7 @@ function Export-HtmlReport {
                 Export-UserHtmlPage -OutputFolder $UserHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -412,7 +416,7 @@ function Export-HtmlReport {
                 Export-NetworkHtmlPage -OutputFolder $NetworkHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -430,7 +434,7 @@ function Export-HtmlReport {
                 Export-ProcessHtmlPage -OutputFolder $ProcessHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -448,7 +452,7 @@ function Export-HtmlReport {
                 Export-SystemHtmlPage -OutputFolder $SystemHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -466,7 +470,7 @@ function Export-HtmlReport {
                 Export-PrefetchHtmlPage -OutputFolder $PrefetchHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -484,7 +488,7 @@ function Export-HtmlReport {
                 Export-EventLogHtmlPage -OutputFolder $EventLogHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -502,7 +506,7 @@ function Export-HtmlReport {
                 Export-FirewallHtmlPage -OutputFolder $FirewallHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -520,7 +524,7 @@ function Export-HtmlReport {
                 Export-BitLockerHtmlPage -OutputFolder $BitLockerHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -544,7 +548,7 @@ function Export-HtmlReport {
     #         Invoke-BitLockerHtmlOutput
     #     }
     #     catch {
-    #         Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+    #         Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
     #     }
     # }
     # Invoke-AllFunctions
@@ -558,7 +562,7 @@ function Export-HtmlReport {
                 Invoke-HtmlNTUserDatFiles -OutputFolder $NTUserHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -573,10 +577,11 @@ function Export-HtmlReport {
             try {
                 $FilesListHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "FilesList" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
-                Invoke-HtmlListAllFiles -OutputFolder $FilesListHtmlOutputFolder -DriveList $DriveList -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+                Invoke-HtmlListAllFiles -OutputFolder $FilesListHtmlOutputFolder -DriveList $DriveList -HtmlReportFile $HtmlReportFile
+                # -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -594,7 +599,7 @@ function Export-HtmlReport {
                 Export-HtmlKeywordSearchPage -OutputFolder $KeywordsHtmlOutputFolder -KeywordListFile $KeywordListFile -HtmlReportFile $HtmlReportFile -KeyWordsDriveList $KeyWordsDriveList
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -616,7 +621,7 @@ function Export-HtmlReport {
                 Get-HtmlFileHashes -OutputFolder $HashResultsFolder -ResultsFolder $ResultsFolder -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -632,7 +637,7 @@ function Export-HtmlReport {
                 Invoke-HtmlCaseArchive
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
         }
         else {
@@ -647,16 +652,16 @@ function Export-HtmlReport {
     $HtmlExeTime = "$($HtmlDuration.Days) days $($HtmlDuration.Hours) hours $($HtmlDuration.Minutes) minutes $($HtmlDuration.Seconds) seconds"
 
 
-    Show-Message("tx3-triage script execution completed in: $HtmlExeTime`n") -Header -Green
+    # Show-Message("tx3-triage script execution completed in: $HtmlExeTime`n") -Header -Green
     Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Html script execution completed in: $HtmlExeTime")
 
 
     Show-Message("
-=========================
+===========================================================
 
-TRIAGE SCAN COMPLETED !
+TRIAGE SCAN COMPLETED in $HtmlExeTime
 
-=========================") -NoTime -Yellow
+===========================================================") -NoTime -Yellow
 
 
     Show a popup message when script is complete

@@ -44,19 +44,19 @@ function Get-HtmlComputerRam {
             Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
 
     function Write-RamSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\RAM\RAM_main.html' target='_blank'>Computer RAM</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\RAM\RAM_main.html' target='_blank'>Computer RAM</a></h4>"
 
         $SectionName = "Computer Ram Capture"
 
         $SectionHeader = "
-        <h4 class='section_header'>$($SectionName)</h4>
+        <h3 class='section_header'>$($SectionName)</h3>
         <div class='number_list'>"
 
         Add-Content -Path $RamHtmlMainFile -Value $HtmlHeader

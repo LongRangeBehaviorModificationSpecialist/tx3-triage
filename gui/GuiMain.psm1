@@ -152,7 +152,7 @@ function Get-Gui {
 
     $lblDeviceDesc = New-Object System.Windows.Forms.Label
     $lblDeviceDesc.Text = "1 = Device Info  |  2 = User Info`n3 = Network Data  |  4 = Processes`n5 = System Data  |  6 = Prefetch Data`n7 = Event Log Data  |  8 = Firewall Data`n9 = BitLocker Data"
-    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 12)
+    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 11)
     $lblDeviceDesc.ForeColor = [System.Drawing.Color]::Black
     $lblDeviceDesc.BackColor = "#cccccc"
     $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
