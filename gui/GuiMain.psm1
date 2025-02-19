@@ -12,7 +12,7 @@ function Get-Gui {
 
     # Add title to the form window
     $Form.Text = "tx3-triage"
-    $Form.Size = New-Object System.Drawing.Size(450, 570)  # width x height
+    $Form.Size = New-Object System.Drawing.Size(450, 775)  # width x height
     $Form.StartPosition = "CenterScreen"
     $Form.FormBorderStyle = "Sizable"
     $Form.TopMost = $false
@@ -21,7 +21,7 @@ function Get-Gui {
     # Define label and text boxes for source and destination directories
     $lblUserName = New-Object System.Windows.Forms.Label
     $lblUserName.Text = "User Name:"
-    $lblUserName.Font = New-Object System.Drawing.Font("Courier New", 10)  # , [System.Drawing.FontStyle]::Bold
+    $lblUserName.Font = New-Object System.Drawing.Font("Arial", 10)  # , [System.Drawing.FontStyle]::Bold
     $lblUserName.ForeColor = [System.Drawing.Color]::Black
     $lblUserName.Width = 120
     $lblUserName.Location = New-Object System.Drawing.Point(10, 20)  # (x, y) position
@@ -47,6 +47,7 @@ function Get-Gui {
     $Form.Controls.Add($lblAgency)
 
     $tbAgency = New-Object System.Windows.Forms.TextBox
+    $tbAgency.Multiline = $false
     $tbAgency.Font = New-Object System.Drawing.Font("Arial", 10)
     $tbAgency.Width = 250
     $tbAgency.Location = New-Object System.Drawing.Point(150, 55)  # (x, y) position
@@ -63,15 +64,106 @@ function Get-Gui {
     $Form.Controls.Add($lblCaseNumber)
 
     $tbCaseNumber = New-Object System.Windows.Forms.TextBox
+    $tbCaseNumber.Multiline = $false
     $tbCaseNumber.Font = New-Object System.Drawing.Font("Arial", 10)
     $tbCaseNumber.Width = 250
     $tbCaseNumber.Location = New-Object System.Drawing.Point(150, 90)  # (x, y) position
     $Form.Controls.Add($tbCaseNumber)
 
 
+    $cbModuleBox = New-Object System.Windows.Forms.GroupBox
+    $cbModuleBox.Text = "Select Modules"
+    $cbModuleBox.Location = New-Object System.Drawing.Point(10, 125)  # (x, y) position
+    $cbModuleBox.Size = New-Object System.Drawing.Size(410, 60)  # width x height
+    $Form.Controls.Add($cbModuleBox)
+
+
+    $cbOne = New-Object System.Windows.Forms.CheckBox
+    $cbOne.Text = "1"
+    $cbOne.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbOne.Width = 30
+    $cbOne.Location = New-Object System.Drawing.Point(10, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbOne)
+
+
+    $cbTwo = New-Object System.Windows.Forms.CheckBox
+    $cbTwo.Text = "2"
+    $cbTwo.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbTwo.Width = 30
+    $cbTwo.Location = New-Object System.Drawing.Point(55, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbTwo)
+
+
+    $cbThree = New-Object System.Windows.Forms.CheckBox
+    $cbThree.Text = "3"
+    $cbThree.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbThree.Width = 30
+    $cbThree.Location = New-Object System.Drawing.Point(100, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbThree)
+
+
+    $cbFour = New-Object System.Windows.Forms.CheckBox
+    $cbFour.Text = "4"
+    $cbFour.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbFour.Width = 30
+    $cbFour.Location = New-Object System.Drawing.Point(145, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbFour)
+
+
+    $cbFive = New-Object System.Windows.Forms.CheckBox
+    $cbFive.Text = "5"
+    $cbFive.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbFive.Width = 30
+    $cbFive.Location = New-Object System.Drawing.Point(190, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbFive)
+
+
+    $cbSix = New-Object System.Windows.Forms.CheckBox
+    $cbSix.Text = "6"
+    $cbSix.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbSix.Width = 30
+    $cbSix.Location = New-Object System.Drawing.Point(235, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbSix)
+
+
+    $cbSeven = New-Object System.Windows.Forms.CheckBox
+    $cbSeven.Text = "7"
+    $cbSeven.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbSeven.Width = 30
+    $cbSeven.Location = New-Object System.Drawing.Point(280, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbSeven)
+
+
+    $cbEight = New-Object System.Windows.Forms.CheckBox
+    $cbEight.Text = "8"
+    $cbEight.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbEight.Width = 30
+    $cbEight.Location = New-Object System.Drawing.Point(325, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbEight)
+
+
+    $cbNine = New-Object System.Windows.Forms.CheckBox
+    $cbNine.Text = "9"
+    $cbNine.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbNine.Width = 30
+    $cbNine.Location = New-Object System.Drawing.Point(370, 20)  # (x, y) position
+    $cbModuleBox.Controls.Add($cbNine)
+
+
+    $lblDeviceDesc = New-Object System.Windows.Forms.Label
+    $lblDeviceDesc.Text = "1 = Device Info  |  2 = User Info`n3 = Network Data  |  4 = Processes`n5 = System Data  |  6 = Prefetch Data`n7 = Event Log Data  |  8 = Firewall Data`n9 = BitLocker Data"
+    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 12)
+    $lblDeviceDesc.ForeColor = [System.Drawing.Color]::Black
+    $lblDeviceDesc.BackColor = "#cccccc"
+    $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
+    $lblDeviceDesc.Location = New-Object System.Drawing.Point(10, 190)  # (x, y) position
+    $lblDeviceDesc.TextAlign = "MiddleCenter"
+    $Form.Controls.Add($lblDeviceDesc)
+
+
     $gbOptionBox = New-Object System.Windows.Forms.GroupBox
     $gbOptionBox.Text = "Select Options"
-    $gbOptionBox.Location = New-Object System.Drawing.Point(10, 120)  # (x, y) position
+    $gbOptionBox.Location = New-Object System.Drawing.Point(10, 300)  # (x, y) position
     $gbOptionBox.Size = New-Object System.Drawing.Size(410, 300)  # width x height
     $Form.Controls.Add($gbOptionBox)
 
@@ -209,7 +301,7 @@ function Get-Gui {
     $btnHtmlReport.Width = 150
     $btnHtmlReport.Height = 50
     $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object System.Drawing.Point(60, 460)  # (x, y) position -> Down 50 from last checkbox
+    $btnHtmlReport.Location = New-Object System.Drawing.Point(60, 625)  # (x, y) position -> Down 50 from last checkbox
     $btnHtmlReport.BackColor = "#1f618d"
     $btnHtmlReport.Forecolor = "#dddddd"
     $btnHtmlReport.Add_Click({
@@ -220,7 +312,7 @@ function Get-Gui {
         $DriveList = $tbDrivesList.Text
         $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Processes $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
         $Form.Close()
         return
@@ -237,19 +329,13 @@ function Get-Gui {
     $btnCloseForm.Width = 150
     $btnCloseForm.Height = 50
     $btnCloseForm.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnCloseForm.Location = New-Object Drawing.Point(240, 460)  # (x, y) position
+    $btnCloseForm.Location = New-Object Drawing.Point(240, 625)  # (x, y) position
     $btnCloseForm.BackColor = "#c0392b"
     $btnCloseForm.Forecolor = "#dddddd"
     $btnCloseForm.Add_Click({
 
         $Form.Close()
         return
-
-        # $User = $tbUserName.Text
-        # $Agency = $tbAgency.Text
-        # $CaseNumber = $tbCaseNumber.Text
-
-        # Get-TriageData -User $User -Agency $Agency -CaseNumber $CaseNumber
 
     })
     # Add the button

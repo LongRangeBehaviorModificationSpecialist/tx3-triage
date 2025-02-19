@@ -13,6 +13,8 @@ function Export-SystemHtmlPage {
     $RegistryDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005A-RegistryDataArray.psd1"
     $SystemDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005B-SystemDataArray.psd1"
 
+    $SystemHtmlMainFile = New-Item -Path "$OutputFolder\005_main.html" -ItemType File -Force
+
     # 5-000A
     function Get-SelectRegistryValues {
 
@@ -95,22 +97,30 @@ function Export-SystemHtmlPage {
 
     function Write-SystemSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\005\005_main.html' target='_blank'>System Info</a></h4>"
+
         $SectionName = "System Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='system'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $SystemHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $SystemHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\005\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "005") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $SystemHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $SystemHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

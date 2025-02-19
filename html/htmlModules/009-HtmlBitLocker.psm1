@@ -9,6 +9,8 @@ function Export-BitLockerHtmlPage {
         $HtmlReportFile
     )
 
+    $BitLockerHtmlMainFile = New-Item -Path "$OutputFolder\009_main.html" -ItemType File -Force
+
     # 9-001
     function Search-BitlockerVolumes {
 
@@ -38,7 +40,7 @@ function Export-BitLockerHtmlPage {
         Show-FinishedHtmlMessage $Name
     }
 
-    
+
     # 9-002
     function Get-BitlockerRecoveryKeys {
 
@@ -92,22 +94,30 @@ function Export-BitLockerHtmlPage {
 
     function Write-BitLockerSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\009\009_main.html' target='_blank'>BitLocker Data</a></h4>"
+
         $SectionName = "BitLocker Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='bitlocker'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $BitLockerHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $BitLockerHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\009\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "009") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $BitLockerHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $BitLockerHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

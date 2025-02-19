@@ -16,6 +16,8 @@ function Get-HtmlComputerRam {
         $RamCaptureExeFilePath = ".\bin\MRCv120.exe"
     )
 
+    $RamHtmlMainFile = New-Item -Path "$OutputFolder\RAM_main.html" -ItemType File -Force
+
     function Get-ComputerRam {
 
         $Name = "Get_Computer_RAM"
@@ -49,22 +51,30 @@ function Get-HtmlComputerRam {
 
     function Write-RamSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\RAM\RAM_main.html' target='_blank'>Computer RAM</a></h4>"
+
         $SectionName = "Computer Ram Capture"
 
         $SectionHeader = "
-        <h4 class='section_header' id='ram_capture'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $RamHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $RamHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a class='file_link' href='results\RAM\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "RAM") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $RamHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $RamHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

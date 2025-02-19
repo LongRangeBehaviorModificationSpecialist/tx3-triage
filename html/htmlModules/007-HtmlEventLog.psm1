@@ -13,6 +13,8 @@ function Export-EventLogHtmlPage {
     $EventLogArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007A-EventLogArray.psd1"
     $OtherEventLogPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007B-EventLogOtherArray.psd1"
 
+    $EventLogHtmlMainFile = New-Item -Path "$OutputFolder\007_main.html" -ItemType File -Force
+
     #7-000A
     function Get-EventLogData {
 
@@ -130,28 +132,34 @@ function Export-EventLogHtmlPage {
 
     function Write-EventLogSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\007\007_main.html' target='_blank'>Event Log Info</a></h4>"
+
         $SectionName = "Event Log Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='events'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $EventLogHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $EventLogHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
+            if ($($File.SubString(0, 3)) -eq "007") {
+                continue
+            }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
-                $FileNameEntry = "<a class='file_link' href='results\007\$File' target='_blank'>$File</a>"
-                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $EventLogHtmlMainFile -Value $FileNameEntry
             }
             else {
-                $FileNameEntry = "<a href='results\007\$File' target='_blank'>$File</a>"
-                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $EventLogHtmlMainFile -Value $FileNameEntry
             }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $EventLogHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

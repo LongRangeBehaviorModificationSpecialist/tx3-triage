@@ -11,6 +11,8 @@ function Export-UserHtmlPage {
 
     $UserPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\002A-UserDataArray.psd1"
 
+    $UserHtmlMainFile = New-Item -Path "$OutputFolder\002_main.html" -ItemType File -Force
+
     # 2-000
     function Get-UserData {
 
@@ -51,22 +53,30 @@ function Export-UserHtmlPage {
 
     function Write-UserSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\002\002_main.html' target='_blank'>User Info</a></h4>"
+
         $SectionName = "User Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='user'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $UserHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $UserHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\002\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "002") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $UserHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $UserHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

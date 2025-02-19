@@ -11,6 +11,8 @@ function Export-NetworkHtmlPage {
 
     $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003A-NetworkDataArray.psd1"
 
+    $NetworkHtmlMainFile = New-Item -Path "$OutputFolder\003_main.html" -ItemType File -Force
+
     # 3-000
     function Get-NetworkData {
 
@@ -249,28 +251,34 @@ Active Connections, Associated Processes and DLLs
 
     function Write-NetworkSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\003\003_main.html' target='_blank'>Network Info</a></h4>"
+
         $SectionName = "Network Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='network'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $NetworkHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $NetworkHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
+            if ($($File.SubString(0, 3)) -eq "003") {
+                continue
+            }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
-                $FileNameEntry = "<a class='file_link' href='results\003\$File' target='_blank'>$File</a>"
-                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $NetworkHtmlMainFile -Value $FileNameEntry
             }
             else {
-                $FileNameEntry = "<a href='results\003\$File' target='_blank'>$File</a>"
-                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $NetworkHtmlMainFile -Value $FileNameEntry
             }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $NetworkHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

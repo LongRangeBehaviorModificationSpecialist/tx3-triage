@@ -14,6 +14,8 @@ function Export-HtmlKeywordSearchPage {
         $KeyWordsDriveList
     )
 
+    $KeyWordsHtmlMainFile = New-Item -Path "$OutputFolder\010_main.html" -ItemType File -Force
+
     # 10-001
     function Search-FilesByKeywords {
 
@@ -71,22 +73,30 @@ function Export-HtmlKeywordSearchPage {
 
     function Write-KeywordsSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\010\010_main.html' target='_blank'>BitLocker Data</a></h4>"
+
         $SectionName = "Keywords Search Results"
 
         $SectionHeader = "
-        <h4 class='section_header' id='keywords'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $KeyWordsHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $KeyWordsHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\010\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "010") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $KeyWordsHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $KeyWordsHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

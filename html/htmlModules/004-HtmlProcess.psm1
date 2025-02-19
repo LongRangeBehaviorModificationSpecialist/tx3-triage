@@ -11,6 +11,8 @@ function Export-ProcessHtmlPage {
 
     $ProcessesPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\004A-ProcessDataArray.psd1"
 
+    $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\004_main.html" -ItemType File -Force
+
     # 4-000
     function Get-ProcessesData {
 
@@ -118,31 +120,34 @@ function Export-ProcessHtmlPage {
 
     function Write-ProcessSectionToMain {
 
-
-        # [System.IO.Path]::GetExtension($my_file)
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\004\004_main.html' target='_blank'>Processes Info</a></h4>"
 
         $SectionName = "Process Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='processes'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $ProcessHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $ProcessHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
+            if ($($File.SubString(0, 3)) -eq "004") {
+                continue
+            }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
-                $FileNameEntry = "<a class='file_link' href='results\004\$File' target='_blank'>$File</a>"
-                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry
             }
             else {
-                $FileNameEntry = "<a href='results\004\$File' target='_blank'>$File</a>"
-                Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry
             }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $ProcessHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

@@ -12,6 +12,8 @@ function Export-DeviceHtmlPage {
     # Import the hashtables from the data files
     $DevicePropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\001A-DeviceDataArray.psd1"
 
+    $DeviceHtmlMainFile = New-Item -Path "$OutputFolder\001_main.html" -ItemType File -Force
+
     # 1-000
     function Get-DeviceData {
 
@@ -205,22 +207,31 @@ function Export-DeviceHtmlPage {
 
     function Write-DeviceSectionToMain {
 
+
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\001\001_main.html' target='_blank'>Device Info</a></h4>"
+
         $SectionName = "Device Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='device'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $DeviceHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $DeviceHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\001\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "001") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $DeviceHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $DeviceHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 

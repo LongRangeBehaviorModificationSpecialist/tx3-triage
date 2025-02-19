@@ -63,7 +63,7 @@ function Get-HtmlFileHashes {
             Show-Message("$HashMsgFileName") -Blue
             Show-Message("$HashValueMsg") -Blue
             Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashMsgFileName")
-            Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg`n")
+            Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg")
         }
 
         # Export the results to the CSV file

@@ -9,6 +9,8 @@ function Export-PrefetchHtmlPage {
         $HtmlReportFile
     )
 
+    $PrefetchHtmlMainFile = New-Item -Path "$OutputFolder\006_main.html" -ItemType File -Force
+
     #6-001
     function Get-DetailedPrefetchData {
 
@@ -38,22 +40,30 @@ function Export-PrefetchHtmlPage {
 
     function Write-PrefetchSectionToMain {
 
+        Add-Content -Path $HtmlReportFile -Value "<h4><a href='results\006\006_main.html' target='_blank'>Prefetch Data</a></h4>"
+
         $SectionName = "Prefetch Information Section"
 
         $SectionHeader = "
-        <h4 class='section_header' id='prefetch'>$($SectionName)</h4>
+        <h4 class='section_header'>$($SectionName)</h4>
         <div class='number_list'>"
 
-        Add-Content -Path $HtmlReportFile -Value $SectionHeader
+        Add-Content -Path $PrefetchHtmlMainFile -Value $HtmlHeader
+        Add-Content -Path $PrefetchHtmlMainFile -Value $SectionHeader
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "<a href='results\006\$File' target='_blank'>$File</a>"
-            Add-Content -Path $HtmlReportFile -Value $FileNameEntry
+            if ($($File.SubString(0, 3)) -eq "006") {
+                continue
+            }
+            else {
+                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $PrefetchHtmlMainFile -Value $FileNameEntry
+            }
         }
 
-        Add-Content -Path $HtmlReportFile -Value "</div>"
+        Add-Content -Path $PrefetchHtmlMainFile -Value "</div>`n</body>`n</html>"
     }
 
 
