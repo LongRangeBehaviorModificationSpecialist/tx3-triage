@@ -155,15 +155,42 @@ function Get-Gui {
     $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 10)
     $lblDeviceDesc.ForeColor = [System.Drawing.Color]::Black
     $lblDeviceDesc.BackColor = "#cccccc"
-    $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
     $lblDeviceDesc.Location = New-Object System.Drawing.Point(10, 190)  # (x, y) position
+    $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
     $lblDeviceDesc.TextAlign = "MiddleCenter"
     $Form.Controls.Add($lblDeviceDesc)
 
 
+    $btnSelectAll = [System.Windows.Forms.Button]::new()
+    $btnSelectAll = New-Object System.Windows.Forms.Button
+    $btnSelectAll.Text = "Select All Modules"
+    $btnSelectAll.Font = New-Object System.Drawing.Font("Arial", 11)  # , [System.Drawing.FontStyle]::Bold
+    $btnSelectAll.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btnSelectAll.Width = 200
+    $btnSelectAll.Height = 30
+    $btnSelectAll.Padding = New-Object System.Windows.Forms.Padding(3)
+    $btnSelectAll.Location = New-Object Drawing.Point(115, 295)  # (x, y) position
+    $btnSelectAll.BackColor = "#555555"
+    $btnSelectAll.Forecolor = "#eeeeee"
+    $btnSelectAll.Add_Click({
+
+            $cbOne.Checked = $true
+            $cbTwo.Checked = $true
+            $cbThree.Checked = $true
+            $cbFour.Checked = $true
+            $cbFive.Checked = $true
+            $cbSix.Checked = $true
+            $cbSeven.Checked = $true
+            $cbEight.Checked = $true
+            $cbNine.Checked = $true
+
+        })
+    $Form.Controls.Add($btnSelectAll)
+
+
     $gbOptionBox = New-Object System.Windows.Forms.GroupBox
     $gbOptionBox.Text = "Select Options"
-    $gbOptionBox.Location = New-Object System.Drawing.Point(10, 300)  # (x, y) position
+    $gbOptionBox.Location = New-Object System.Drawing.Point(10, 330)  # (x, y) position
     $gbOptionBox.Size = New-Object System.Drawing.Size(410, 300)  # width x height
     $Form.Controls.Add($gbOptionBox)
 
@@ -236,7 +263,7 @@ function Get-Gui {
     $lblDrivesList = New-Object System.Windows.Forms.Label
     $lblDrivesList.Text = "[Enter Drive Letter(s)]"
     $lblDrivesList.Font = New-Object System.Drawing.Font("Arial", 8)
-    $lblDrivesList.ForeColor = [System.Drawing.Color]::Black
+    $lblDrivesList.ForeColor = [System.Drawing.Color]::Blue
     $lblDrivesList.Width = 260
     $lblDrivesList.Location = New-Object System.Drawing.Point(130, 165)  # (x, y) position -> 25 pt down
     $lblDrivesList.TextAlign = "MiddleLeft"
@@ -271,7 +298,7 @@ function Get-Gui {
     $lblKeyWords = New-Object System.Windows.Forms.Label
     $lblKeyWords.Text = "[Enter Drive Letter(s)]"
     $lblKeyWords.Font = New-Object System.Drawing.Font("Arial", 8)
-    $lblKeyWords.ForeColor = [System.Drawing.Color]::Black
+    $lblKeyWords.ForeColor = [System.Drawing.Color]::Blue
     $lblKeyWords.Width = 185
     $lblKeyWords.Location = New-Object System.Drawing.Point(205, 210)  # (x, y) position
     $lblKeyWords.TextAlign = "MiddleLeft"
@@ -295,15 +322,40 @@ function Get-Gui {
 
 
     # Define a button for initiating the html report
-    $btnHtmlReport = New-Object System.Windows.Forms.Button
-    $btnHtmlReport.Text = "Html Output"
-    $btnHtmlReport.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-    $btnHtmlReport.Width = 150
-    $btnHtmlReport.Height = 50
-    $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnHtmlReport.Location = New-Object System.Drawing.Point(60, 625)  # (x, y) position -> Down 50 from last checkbox
+    $btnHtmlReport           = [System.Windows.Forms.Button]::new()
+    $btnHtmlReport.Name      = "btnHtmlReport"
+    $btnHtmlReport.Text      = "Html Output"
+    $btnHtmlReport.Font      = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
+    $btnHtmlReport.Width     = 150
+    $btnHtmlReport.Height    = 50
+    $btnHtmlReport.Padding   = New-Object System.Windows.Forms.Padding(10)
+    $btnHtmlReport.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btnHtmlReport.Location  = New-Object System.Drawing.Point(60, 640)  # (x, y) position -> Down 50 from last checkbox
+    $btnHtmlReport.FlatAppearance.BorderSize = 1
+    $btnHtmlReport.FlatAppearance.BorderColor = [System.Drawing.Color]::black
     $btnHtmlReport.BackColor = "#1f618d"
     $btnHtmlReport.Forecolor = "#dddddd"
+    # $btnHtmlReport.Add_MouseEnter({
+
+    #         $this.BackColor = [System.Drawing.Color]::CadetBlue
+    #         $this.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Underline)
+    #         $this.FlatAppearance.BorderSize = 1
+    #         $this.FlatAppearance.BorderColor = [System.Drawing.Color]::black
+
+    # })
+
+    # $btnHtmlReport.Add_MouseLeave({
+
+    #         $this.ForeColor = "#dddddd"
+    #         $this.BackColor = "#1f618d"
+    #         $this.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
+    #         $this.FlatAppearance.BorderSize = 1
+    #         $this.FlatAppearance.BorderColor = [System.Drawing.Color]::black
+
+    #     })
+
+
+
     $btnHtmlReport.Add_Click({
 
         $User = $tbUserName.Text
@@ -329,7 +381,10 @@ function Get-Gui {
     $btnCloseForm.Width = 150
     $btnCloseForm.Height = 50
     $btnCloseForm.Padding = New-Object System.Windows.Forms.Padding(10)
-    $btnCloseForm.Location = New-Object Drawing.Point(240, 625)  # (x, y) position
+    $btnCloseForm.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btnCloseForm.Location = New-Object Drawing.Point(240, 640)  # (x, y) position
+    $btnCloseForm.FlatAppearance.BorderSize = 1
+    $btnCloseForm.FlatAppearance.BorderColor = [System.Drawing.Color]::black
     $btnCloseForm.BackColor = "#c0392b"
     $btnCloseForm.Forecolor = "#dddddd"
     $btnCloseForm.Add_Click({
