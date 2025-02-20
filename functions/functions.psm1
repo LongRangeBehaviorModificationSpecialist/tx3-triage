@@ -1,5 +1,5 @@
 # Date Last Updated
-[string]$Dlu = "2025-02-17"
+[string]$Dlu = "2025-02-20"
 
 
 # [datetime]$StartTime = (Get-Date).ToUniversalTime()
@@ -67,11 +67,13 @@ function Write-LogEntry {
 
     $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    if (-not $Message) {
+    if (-not $Message)
+    {
         throw "The message parameter cannot be empty."
     }
 
-    $MsgLevel = switch ($True) {
+    $MsgLevel = switch ($True)
+    {
         $DebugMessage { " [DEBUG] "; break }
         $WarningMessage { " [WARNING] "; break }
         $ErrorMessage { " [ERROR] "; break }
@@ -128,7 +130,8 @@ function Show-Message {
     $FormattedMessage = "$HeaderText$DisplayTimeStamp $Message"
 
     # Display the message with the appropriate color
-    switch ($Color) {
+    switch ($Color)
+    {
         "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
         "DarkGray" { Write-Host $FormattedMessage -ForegroundColor DarkGray }
         "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
@@ -188,7 +191,8 @@ function Set-CaseFolders {
         "Logs"
     )
 
-    foreach ($Folder in $Folders) {
+    foreach ($Folder in $Folders)
+    {
         New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
         Write-Host "Created '$($Folder)' Folder" -ForegroundColor Green
     }
@@ -224,7 +228,8 @@ function Save-Output {
         $File
     )
 
-    process {
+    process
+    {
         $Data | Out-File -FilePath $File -Encoding UTF8
     }
 }
@@ -241,7 +246,8 @@ function Save-OutputAppend {
         $File
     )
 
-    process {
+    process
+    {
         $Data | Out-File -Append -FilePath $File -Encoding UTF8
     }
 }
@@ -258,7 +264,8 @@ function Save-OutputAsCsv {
         $File
     )
 
-    process {
+    process
+    {
         $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
     }
 }
@@ -274,10 +281,12 @@ function Show-OutputSavedToFile {
         $NoTime
     )
 
-    if ($NoTime) {
+    if ($NoTime)
+    {
         Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -NoTime -Green
     }
-    else {
+    else
+    {
         Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -Green
     }
 }
