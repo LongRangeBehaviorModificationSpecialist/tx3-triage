@@ -41,7 +41,7 @@ function Export-HtmlKeywordSearchPage {
 
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
 
-            Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>"
+            Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>" -Encoding UTF8
 
             foreach ($DriveName in $KeywordDriveArray) {
                 # Stream through files and search for matches
@@ -57,32 +57,31 @@ function Export-HtmlKeywordSearchPage {
                 }
 
                 foreach ($File in $Data) {
-                    Add-Content -Path $OutputHtmlFilePath -Value "<tr><td>$($File)</td></tr>"
+                    Add-Content -Path $OutputHtmlFilePath -Value "<tr><td>$($File)</td></tr>" -Encoding UTF8
                 }
             }
 
-            Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n$HtmlFooter"
+            Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n`t</body>`n</html>" -Encoding UTF8
 
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
 
     function Write-KeywordsSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\010\010_main.html' target='_blank'>BitLocker Data</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\010\010_main.html' target='_blank'>BitLocker Data</a></h3>" -Encoding UTF8
 
         $SectionName = "Keywords Search Results"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $KeyWordsHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $KeyWordsHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $KeyWordsHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $KeyWordsHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -91,12 +90,12 @@ function Export-HtmlKeywordSearchPage {
                 continue
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $KeyWordsHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $KeyWordsHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $KeyWordsHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $KeyWordsHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

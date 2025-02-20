@@ -37,7 +37,7 @@ function Invoke-HtmlEncryptedDiskDetector {
             # Show & log $SuccessMsg message
             $SuccessMsg = "Encrypted Disk Detector completed successfully on computer: $ComputerName"
             Show-Message("[INFO] $SuccessMsg") -Green
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $SuccessMsg")
 
             # Read the contents of the EDD text file and show the results on the screen
             $Data = Get-Content -Path $EddTxtFile -Force -Raw | Out-String
@@ -51,7 +51,7 @@ function Invoke-HtmlEncryptedDiskDetector {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Delete the Edd text file
@@ -62,16 +62,15 @@ function Invoke-HtmlEncryptedDiskDetector {
 
     function Write-EddSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\Edd\Edd_main.html' target='_blank'>Encrypted Disk Detector Results</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\Edd\Edd_main.html' target='_blank'>Encrypted Disk Detector Results</a></h3>" -Encoding UTF8
 
         $SectionName = "Encrypted Device Detector Results"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $EddHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $EddHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $EddHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $EddHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -80,12 +79,12 @@ function Invoke-HtmlEncryptedDiskDetector {
                 continue
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $EddHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $EddHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $EddHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $EddHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

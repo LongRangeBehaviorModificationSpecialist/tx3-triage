@@ -65,22 +65,21 @@ function Invoke-HtmlListAllFiles {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
     }
 
     function Write-FilesListSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\FilesList\FilesList_main.html' target='_blank'>File List Results</a></h3>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\FilesList\FilesList_main.html' target='_blank'>File List Results</a></h3>" -Encoding UTF8
 
         $SectionName = "Files List Results"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $ListFilesHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $ListFilesHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $ListFilesHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $ListFilesHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -89,12 +88,12 @@ function Invoke-HtmlListAllFiles {
                 continue
             }
             else {
-                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $ListFilesHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ListFilesHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $ListFilesHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $ListFilesHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

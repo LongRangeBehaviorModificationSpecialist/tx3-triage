@@ -35,7 +35,7 @@ function Export-BitLockerHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -87,23 +87,22 @@ function Export-BitLockerHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
 
     function Write-BitLockerSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\009\009_main.html' target='_blank'>BitLocker Data</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\009\009_main.html' target='_blank'>BitLocker Data</a></h3>" -Encoding UTF8
 
         $SectionName = "BitLocker Information Section"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $BitLockerHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $BitLockerHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $BitLockerHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $BitLockerHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -112,12 +111,12 @@ function Export-BitLockerHtmlPage {
                 continue
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $BitLockerHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $BitLockerHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $BitLockerHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $BitLockerHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

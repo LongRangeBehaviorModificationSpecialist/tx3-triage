@@ -44,7 +44,7 @@ function Export-DeviceHtmlPage {
                 Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -72,7 +72,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -93,7 +93,7 @@ function Export-DeviceHtmlPage {
             if (-not (Test-Path -Path $RegKey)) {
                 $dneMsg = "Registry Key [$RegKey] does not exist"
                 Show-Message("[WARNING] $dneMsg") -Yellow
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $dneMsg") -WarningMessage
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $dneMsg") -WarningMessage
             }
             else {
                 $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Out-String
@@ -101,7 +101,7 @@ function Export-DeviceHtmlPage {
                 if (-not $Data) {
                     $msg = "The registry key [$RegKey] exists, but contains no data"
                     Show-Message("[INFO] $msg") -Yellow
-                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
+                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $msg")
                 }
                 else {
                     Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
@@ -111,7 +111,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -140,7 +140,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temp csv file
@@ -171,7 +171,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -195,7 +195,7 @@ function Export-DeviceHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temporary text file
@@ -207,17 +207,15 @@ function Export-DeviceHtmlPage {
 
     function Write-DeviceSectionToMain {
 
-
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\NTUser\001_main.html' target='_blank'>Device Info</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\001\001_main.html' target='_blank'>Device Info</a></h3>" -Encoding UTF8
 
         $SectionName = "Device Information Section"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $DeviceHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $DeviceHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $DeviceHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $DeviceHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -226,12 +224,12 @@ function Export-DeviceHtmlPage {
                 continue
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $DeviceHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $DeviceHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $DeviceHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $DeviceHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

@@ -152,7 +152,7 @@ function Get-Gui {
 
     $lblDeviceDesc = New-Object System.Windows.Forms.Label
     $lblDeviceDesc.Text = "1 = Device Info  |  2 = User Info`n3 = Network Data  |  4 = Processes`n5 = System Data  |  6 = Prefetch Data`n7 = Event Log Data  |  8 = Firewall Data`n9 = BitLocker Data"
-    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 11)
+    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 10)
     $lblDeviceDesc.ForeColor = [System.Drawing.Color]::Black
     $lblDeviceDesc.BackColor = "#cccccc"
     $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
@@ -234,7 +234,7 @@ function Get-Gui {
 
 
     $lblDrivesList = New-Object System.Windows.Forms.Label
-    $lblDrivesList.Text = "[Enter Drive Letters]"
+    $lblDrivesList.Text = "[Enter Drive Letter(s)]"
     $lblDrivesList.Font = New-Object System.Drawing.Font("Arial", 8)
     $lblDrivesList.ForeColor = [System.Drawing.Color]::Black
     $lblDrivesList.Width = 260
@@ -269,7 +269,7 @@ function Get-Gui {
 
 
     $lblKeyWords = New-Object System.Windows.Forms.Label
-    $lblKeyWords.Text = "[Enter Drive Letters]"
+    $lblKeyWords.Text = "[Enter Drive Letter(s)]"
     $lblKeyWords.Font = New-Object System.Drawing.Font("Arial", 8)
     $lblKeyWords.ForeColor = [System.Drawing.Color]::Black
     $lblKeyWords.Width = 185

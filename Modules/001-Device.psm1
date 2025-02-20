@@ -679,14 +679,14 @@ function Get-DataFromReg {
 
                     if ($Data.Count -eq 0) {
                         $NoDataMsg = "[$Counter] No data found in [$RegPath] registry key"
-                        Add-Content -Path $File -Value "[$Counter] No data found in [$RegPath] registry key`n"
+                        Add-Content -Path $File -Value "[$Counter] No data found in [$RegPath] registry key`n" -Encoding UTF8
                         Show-Message($NoDataMsg) -Yellow
                         Write-LogEntry($NoDataMsg)
 
                     }
                     else {
                         $DataSavedMsg = "[$Counter] Data from [$RegPath] saved to $($FileName)"
-                        Add-Content -Path $File -Value "[$Counter] Data from [$RegPath] Registry key"
+                        Add-Content -Path $File -Value "[$Counter] Data from [$RegPath] Registry key" -Encoding UTF8
                         $Data | Out-File -Append -FilePath $File -Encoding UTF8
                         Show-Message($DataSavedMsg) -Green
                         Write-LogEntry($DataSavedMsg)
@@ -694,7 +694,7 @@ function Get-DataFromReg {
                 }
                 else {
                     $KeyDneMsg = "[$Counter] Cannot find key [$RegPath] because it does not exist"
-                    Add-Content -Path $File -Value "[$Counter] Key [$RegPath] does not exist on this system`n"
+                    Add-Content -Path $File -Value "[$Counter] Key [$RegPath] does not exist on this system`n" -Encoding UTF8
                     Show-Message($KeyDneMsg) -Yellow
                     Write-LogEntry($KeyDneMsg) -WarningMessage
                 }

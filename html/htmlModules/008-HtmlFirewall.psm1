@@ -48,7 +48,7 @@ function Export-FirewallHtmlPage {
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -56,16 +56,15 @@ function Export-FirewallHtmlPage {
 
     function Write-FirewallSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\008\008_main.html' target='_blank'>Firewall Data</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\008\008_main.html' target='_blank'>Firewall Data</a></h3>" -Encoding UTF8
 
         $SectionName = "Firewall Information Section"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $FirewallHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $FirewallHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $FirewallHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $FirewallHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -74,12 +73,12 @@ function Export-FirewallHtmlPage {
                 continue
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $FirewallHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $FirewallHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $FirewallHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $FirewallHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

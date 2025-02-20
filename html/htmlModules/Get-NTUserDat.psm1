@@ -27,7 +27,7 @@ function Invoke-HtmlNTUserDatFiles {
             if (-not (Test-Path $RawCopyPath)) {
                 $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
                 Show-Message("[ERROR] $NoRawCopyWarnMsg") -Red
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoRawCopyWarnMsg") -ErrorMessage
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $NoRawCopyWarnMsg") -ErrorMessage
             }
 
             try {
@@ -42,13 +42,13 @@ function Invoke-HtmlNTUserDatFiles {
                         $CopyMsg = "Copying NTUSER.DAT file from the $User profile from computer: $ComputerName"
 
                         Show-Message("[INFO] $CopyMsg") -Magenta
-                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $CopyMsg")
+                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $CopyMsg")
                         Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$NTUserFilePath /OutputPath:"$OutputFolder" /OutputName:"$OutputFileName" }
 
                         if ($LASTEXITCODE -ne 0) {
                             $NoProperExitMsg = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
                             Show-Message("[ERROR] $NoProperExitMsg") -Red
-                            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoProperExitMsg") -ErrorMessage
+                            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $NoProperExitMsg") -ErrorMessage
                         }
                     }
                 }
@@ -56,32 +56,31 @@ function Invoke-HtmlNTUserDatFiles {
             catch {
                 $RawCopyOtherMsg = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
                 Show-Message("[ERROR] $RawCopyOtherMsg") -Red
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $RawCopyOtherMsg") -ErrorMessage
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $RawCopyOtherMsg") -ErrorMessage
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         finally {
             # Show & log $SuccessMsg message
             $SuccessMsg = "NTUSER.DAT files copied from computer: $ComputerName"
             Show-Message("[INFO] $SuccessMsg") -Blue
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $SuccessMsg")
         }
     }
 
     function Write-NTUserSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\NTUser\NTUser_main.html' target='_blank'>NTUSER.DAT Files</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\NTUser\NTUser_main.html' target='_blank'>NTUSER.DAT Files</a></h3>" -Encoding UTF8
 
         $SectionName = "NTUSER.DAT Files"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $NTUserHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $NTUserHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $NTUserHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $NTUserHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -90,12 +89,12 @@ function Invoke-HtmlNTUserDatFiles {
                 continue
             }
             else {
-                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $NTUserHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $NTUserHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $NTUserHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $NTUserHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

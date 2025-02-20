@@ -32,7 +32,7 @@ function Export-SystemHtmlPage {
 
                 if (-not (Test-Path -Path $RegKey)) {
                     Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
+                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
                 }
                 else {
                     $Data = Invoke-Expression -Command $Command | Out-String
@@ -40,7 +40,7 @@ function Export-SystemHtmlPage {
                     if (-not $Data) {
                         $msg = "The registry key [$RegKey] exists, but contains no data"
                         Show-Message("[INFO] $msg") -Yellow
-                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
+                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $msg")
                     }
                     else {
                         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
@@ -51,7 +51,7 @@ function Export-SystemHtmlPage {
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -89,7 +89,7 @@ function Export-SystemHtmlPage {
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -97,16 +97,15 @@ function Export-SystemHtmlPage {
 
     function Write-SystemSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\005\005_main.html' target='_blank'>System Info</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\005\005_main.html' target='_blank'>System Info</a></h3>" -Encoding UTF8
 
         $SectionName = "System Information Section"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $SystemHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $SystemHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $SystemHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $SystemHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -115,12 +114,12 @@ function Export-SystemHtmlPage {
                 continue
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $SystemHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $SystemHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $SystemHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $SystemHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 

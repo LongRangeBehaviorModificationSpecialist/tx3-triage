@@ -43,7 +43,7 @@ function Export-ProcessHtmlPage {
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -62,7 +62,7 @@ function Export-ProcessHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -95,7 +95,7 @@ function Export-ProcessHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -113,23 +113,22 @@ function Export-ProcessHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Path) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
 
     function Write-ProcessSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "<h3><a href='results\004\004_main.html' target='_blank'>Processes Info</a></h4>"
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\004\004_main.html' target='_blank'>Processes Info</a></h3>" -Encoding UTF8
 
         $SectionName = "Process Information Section"
 
-        $SectionHeader = "
-        <h3 class='section_header'>$($SectionName)</h3>
-        <div class='number_list'>"
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
 
-        Add-Content -Path $ProcessHtmlMainFile -Value $HtmlHeader
-        Add-Content -Path $ProcessHtmlMainFile -Value $SectionHeader
+        Add-Content -Path $ProcessHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $ProcessHtmlMainFile -Value $SectionHeader -Encoding UTF8
 
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
@@ -138,16 +137,16 @@ function Export-ProcessHtmlPage {
                 continue
             }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
-                $FileNameEntry = "<a class='file_link' href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
             else {
-                $FileNameEntry = "<a href='$File' target='_blank'>$File</a>"
-                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry
+                $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $ProcessHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
 
-        Add-Content -Path $ProcessHtmlMainFile -Value "</div>`n</body>`n</html>"
+        Add-Content -Path $ProcessHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 
 
