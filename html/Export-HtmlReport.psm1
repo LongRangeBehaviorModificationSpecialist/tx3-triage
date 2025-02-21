@@ -24,16 +24,14 @@ function Save-OutputToSingleHtmlFile {
         $FromString
     )
 
-    process
-    {
+    process {
         Add-Content -Path $OutputHtmlFilePath -Value $HtmlHeader -Encoding UTF8
 
-        if ($FromPipe)
-        {
+        if ($FromPipe) {
             $Data | ConvertTo-Html -As List -Fragment -PreContent "`t`t`t<h3>$Title</h3>" | Out-File -Append $OutputHtmlFilePath -Encoding UTF8
         }
-        if ($FromString)
-        {
+
+        if ($FromString) {
             Add-Content -Path $OutputHtmlFilePath -Value "`t`t`t<h3>$Title</h3>" -Encoding UTF8
             Add-Content -Path $OutputHtmlFilePath -Value "`t`t`t<pre>`n`t`t`t`t<p>`n$Data`n`t`t`t`t</p>`n`t`t`t</pre>`n`t`t</div>" -NoNewline -Encoding UTF8
         }
@@ -69,13 +67,11 @@ function Write-HtmlLogEntry {
 
     $LogFile = "$LogFolderPath\$LogFileName"
 
-    if (-not $Message)
-    {
+    if (-not $Message) {
         throw "The message parameter cannot be empty."
     }
 
-    $MsgLevel = switch ($True)
-    {
+    $MsgLevel = switch ($True) {
         $DebugMessage { " [DEBUG] "; break }
         $WarningMessage { " [WARNING] "; break }
         $ErrorMessage { " [ERROR] "; break }
@@ -117,7 +113,7 @@ function Invoke-ShowErrorMessage {
 
 
 Import-Module -Name .\html\HtmlSnippets.psm1 -Global -Force
-Import-Module -Name .\html\Get-HtmlFileHashes.psm1 -Global -Force
+# Import-Module -Name .\html\Get-HtmlFileHashes.psm1 -Global -Force
 
 
 function Invoke-SaveOutputMessage {
@@ -140,12 +136,11 @@ function Invoke-SaveOutputMessage {
         $Finish
     )
 
-    if ($Start)
-    {
+    if ($Start) {
         $msg = "Saving output from '$($Name)'"
     }
-    if ($Finish)
-    {
+
+    if ($Finish) {
         $msg = "Output saved to -> '$FileName'"
     }
     Show-Message("[INFO] $msg") -Blue
@@ -216,7 +211,7 @@ function Export-HtmlReport {
         [string]$DriveList,
         [bool]$KeyWordSearch,
         [string]$KeyWordsDriveList,
-        [bool]$GetHtmlFileHashes,
+        [bool]$GetFileHashes,
         [bool]$MakeArchive
     )
 
@@ -239,8 +234,7 @@ function Export-HtmlReport {
     $HtmlModulesDirectory = "html\htmlModules"
 
 
-    foreach ($file in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force))
-    {
+    foreach ($file in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
         Show-Message("Module file: '.\$($file.Name)' was imported successfully") -NoTime -Blue
         Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully")
@@ -308,353 +302,289 @@ function Export-HtmlReport {
 
 
     function Invoke-GetHtmlProcesses {
-        if ($CaptureProcesses)
-        {
-            try
-            {
+        if ($CaptureProcesses) {
+            try {
                 $ProcessHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Processes" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Get-HtmlRunningProcesses -OutputFolder $ProcessHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Collect Running Processes' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect Running Processes' option was not selected by the user")
         }
     }
     Invoke-GetHtmlProcesses
 
 
     function Invoke-GetHtmlMachineRam {
-        if ($GetRam)
-        {
-            try
-            {
+        if ($GetRam) {
+            try {
                 $RamHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RAM" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Get-HtmlComputerRam -OutputFolder $RamHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Collect RAM' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect RAM' option was not selected by the user")
         }
     }
     Invoke-GetHtmlMachineRam
 
 
     function Invoke-Edd {
-        if ($Edd)
-        {
-            try
-            {
+        if ($Edd) {
+            try {
                 $EddHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Edd" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Invoke-HtmlEncryptedDiskDetector -OutputFolder $EddHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Run Encrypted Disk Detector' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Run Encrypted Disk Detector' option was not selected by the user")
         }
     }
     Invoke-Edd
 
 
     function Invoke-CopyRegistryHives  {
-        if ($Hives)
-        {
-            try
-            {
+        if ($Hives) {
+            try {
                 $RegistryHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RegHives" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Invoke-HtmlCopyRegistryHives -OutputFolder $RegistryHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Copy Registry Hives' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy Registry Hives' option was not selected by the user")
         }
     }
     Invoke-CopyRegistryHives
 
 
     function Invoke-DeviceHtmlOutput {
-        if ($Device)
-        {
-            try
-            {
+        if ($Device) {
+            try {
                 $DeviceHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "001" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-DeviceHtmlPage -OutputFolder $DeviceHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get Device Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Device Data' option was not selected by the user")
         }
     }
     Invoke-DeviceHtmlOutput
 
 
     function Invoke-UserHtmlOutput {
-        if ($UserData)
-        {
-            try
-            {
+        if ($UserData) {
+            try {
                 $UserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "002" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-UserHtmlPage -OutputFolder $UserHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get User Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get User Data' option was not selected by the user")
         }
     }
     Invoke-UserHtmlOutput
 
 
     function Invoke-NetworkHtmlOutput {
-        if ($Network)
-        {
-            try
-            {
+        if ($Network) {
+            try {
                 $NetworkHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "003" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-NetworkHtmlPage -OutputFolder $NetworkHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get Network Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Network Data' option was not selected by the user")
         }
     }
     Invoke-NetworkHtmlOutput
 
 
     function Invoke-ProcessHtmlOutput {
-        if ($Process)
-        {
-            try
-            {
+        if ($Process) {
+            try {
                 $ProcessHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "004" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-ProcessHtmlPage -OutputFolder $ProcessHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get Process Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Process Data' option was not selected by the user")
         }
     }
     Invoke-ProcessHtmlOutput
 
 
     function Invoke-SystemHtmlOutput {
-        if ($System)
-        {
-            try
-            {
+        if ($System) {
+            try {
                 $SystemHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "005" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-SystemHtmlPage -OutputFolder $SystemHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get System Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get System Data' option was not selected by the user")
         }
     }
     Invoke-SystemHtmlOutput
 
 
     function Invoke-PrefetchHtmlOutput {
-        if ($Prefetch)
-        {
-            try
-            {
+        if ($Prefetch) {
+            try {
                 $PrefetchHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "006" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-PrefetchHtmlPage -OutputFolder $PrefetchHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user")
         }
     }
     Invoke-PrefetchHtmlOutput
 
 
     function Invoke-EventLogHtmlOutput {
-        if ($EventLogs)
-        {
-            try
-            {
+        if ($EventLogs) {
+            try {
                 $EventLogHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "007" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-EventLogHtmlPage -OutputFolder $EventLogHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get Event Log Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Event Log Data' option was not selected by the user")
         }
     }
     Invoke-EventLogHtmlOutput
 
 
     function Invoke-FirewallHtmlOutput {
-        if ($Firewall)
-        {
-            try
-            {
+        if ($Firewall) {
+            try {
                 $FirewallHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "008" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-FirewallHtmlPage -OutputFolder $FirewallHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get Firewall Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Firewall Data' option was not selected by the user")
         }
     }
     Invoke-FirewallHtmlOutput
 
 
     function Invoke-BitLockerHtmlOutput {
-        if ($BitLocker)
-        {
-            try
-            {
+        if ($BitLocker) {
+            try {
                 $BitLockerHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "009" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-BitLockerHtmlPage -OutputFolder $BitLockerHtmlOutputFolder -HtmlReportFile $HtmlReportFile
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Get BitLocker Data' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get BitLocker Data' option was not selected by the user")
         }
     }
     Invoke-BitLockerHtmlOutput
 
 
     function Invoke-NTUser {
-        if ($GetNTUserDat)
-        {
-            try
-            {
+        if ($GetNTUserDat) {
+            try {
                 $NTUserHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "NTUser" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Invoke-HtmlNTUserDatFiles -OutputFolder $NTUserHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Copy NTUSER.DAT Files' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy NTUSER.DAT Files' option was not selected by the user")
         }
     }
     Invoke-NTUser
 
 
     function Invoke-ListFiles {
-        if ($ListFiles)
-        {
-            try
-            {
+        if ($ListFiles) {
+            try {
                 $FilesListHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "FilesList" -Force
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Invoke-HtmlListAllFiles -OutputFolder $FilesListHtmlOutputFolder -DriveList $DriveList -HtmlReportFile $HtmlReportFile
                 # -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user")
+        else {
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user")
         }
     }
     Invoke-ListFiles
 
 
     function Invoke-KeywordSearch {
-        if ($KeyWordSearch)
-        {
-            try
-            {
+        if ($KeyWordSearch) {
+            try {
                 $KeywordsHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "010" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Export-HtmlKeywordSearchPage -OutputFolder $KeywordsHtmlOutputFolder -KeywordListFile $KeywordListFile -HtmlReportFile $HtmlReportFile -KeyWordsDriveList $KeyWordsDriveList
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Search for Keywords' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Search for Keywords' option was not selected by the user")
         }
     }
     Invoke-KeywordSearch
@@ -664,43 +594,35 @@ function Export-HtmlReport {
     Add-Content -Path $HtmlReportFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
 
 
-    function Invoke-GetHtmlFileHashes {
-        if ($GetHtmlFileHashes)
-        {
-            try
-            {
+    function Invoke-GetFileHashes {
+        if ($GetFileHashes) {
+            try {
                 $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "HashResults" -Force
                 Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
                 Get-HtmlFileHashes -OutputFolder $HashResultsFolder -ResultsFolder $ResultsFolder -ComputerName $ComputerName
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user")
         }
     }
-    Invoke-GetHtmlFileHashes
+    Invoke-GetFileHashes
 
 
     function Invoke-GetHtmlCaseArchive {
-        if ($MakeArchive)
-        {
-            try
-            {
+        if ($MakeArchive) {
+            try {
                 Invoke-HtmlCaseArchive
             }
-            catch
-            {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
-        else
-        {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user")
+        else {
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user")
         }
     }
     Invoke-GetHtmlCaseArchive

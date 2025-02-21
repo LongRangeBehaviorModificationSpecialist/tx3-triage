@@ -150,17 +150,6 @@ function Get-Gui {
     $cbModuleBox.Controls.Add($cbNine)
 
 
-    $lblDeviceDesc = New-Object System.Windows.Forms.Label
-    $lblDeviceDesc.Text = "1 = Device Info  |  2 = User Info`n3 = Network Data  |  4 = Processes`n5 = System Data  |  6 = Prefetch Data`n7 = Event Log Data  |  8 = Firewall Data`n9 = BitLocker Data"
-    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 10)
-    $lblDeviceDesc.ForeColor = [System.Drawing.Color]::Black
-    $lblDeviceDesc.BackColor = "#cccccc"
-    $lblDeviceDesc.Location = New-Object System.Drawing.Point(10, 190)  # (x, y) position
-    $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
-    $lblDeviceDesc.TextAlign = "MiddleCenter"
-    $Form.Controls.Add($lblDeviceDesc)
-
-
     $btnSelectAll = [System.Windows.Forms.Button]::new()
     $btnSelectAll = New-Object System.Windows.Forms.Button
     $btnSelectAll.Text = "Select All Modules"
@@ -169,7 +158,9 @@ function Get-Gui {
     $btnSelectAll.Width = 200
     $btnSelectAll.Height = 30
     $btnSelectAll.Padding = New-Object System.Windows.Forms.Padding(3)
-    $btnSelectAll.Location = New-Object Drawing.Point(115, 295)  # (x, y) position
+    $btnSelectAll.Location = New-Object Drawing.Point(115, 190)  # (x, y) position
+    $btnSelectAll.FlatAppearance.BorderSize = 1
+    $btnSelectAll.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
     $btnSelectAll.BackColor = "#555555"
     $btnSelectAll.Forecolor = "#eeeeee"
     $btnSelectAll.Add_Click({
@@ -186,6 +177,17 @@ function Get-Gui {
 
         })
     $Form.Controls.Add($btnSelectAll)
+
+
+    $lblDeviceDesc = New-Object System.Windows.Forms.Label
+    $lblDeviceDesc.Text = "1 = Device Info  |  2 = User Info`n3 = Network Data  |  4 = Processes`n5 = System Data  |  6 = Prefetch Data`n7 = Event Log Data  |  8 = Firewall Data`n9 = BitLocker Data"
+    $lblDeviceDesc.Font = New-Object System.Drawing.Font("Arial", 10)
+    $lblDeviceDesc.ForeColor = [System.Drawing.Color]::Black
+    $lblDeviceDesc.BackColor = "#cccccc"
+    $lblDeviceDesc.Location = New-Object System.Drawing.Point(10, 225)  # (x, y) position
+    $lblDeviceDesc.Size = New-Object System.Drawing.Size(410, 100)  # width x height
+    $lblDeviceDesc.TextAlign = "MiddleCenter"
+    $Form.Controls.Add($lblDeviceDesc)
 
 
     $gbOptionBox = New-Object System.Windows.Forms.GroupBox
@@ -326,11 +328,11 @@ function Get-Gui {
     $btnHtmlReport.Name      = "btnHtmlReport"
     $btnHtmlReport.Text      = "Html Output"
     $btnHtmlReport.Font      = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-    $btnHtmlReport.Width     = 150
-    $btnHtmlReport.Height    = 50
-    $btnHtmlReport.Padding   = New-Object System.Windows.Forms.Padding(10)
+    $btnHtmlReport.Width     = 124
+    $btnHtmlReport.Height    = 40
+    $btnHtmlReport.Padding   = New-Object System.Windows.Forms.Padding(5)
     $btnHtmlReport.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-    $btnHtmlReport.Location  = New-Object System.Drawing.Point(60, 640)  # (x, y) position -> Down 50 from last checkbox
+    $btnHtmlReport.Location  = New-Object System.Drawing.Point(10, 640)  # (x, y) position -> Down 50 from last checkbox
     $btnHtmlReport.FlatAppearance.BorderSize = 1
     $btnHtmlReport.FlatAppearance.BorderColor = [System.Drawing.Color]::black
     $btnHtmlReport.BackColor = "#1f618d"
@@ -353,9 +355,6 @@ function Get-Gui {
     #         $this.FlatAppearance.BorderColor = [System.Drawing.Color]::black
 
     #     })
-
-
-
     $btnHtmlReport.Add_Click({
 
         $User = $tbUserName.Text
@@ -364,7 +363,7 @@ function Get-Gui {
         $DriveList = $tbDrivesList.Text
         $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetHtmlFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
         $Form.Close()
         return
@@ -374,17 +373,50 @@ function Get-Gui {
     $Form.Controls.Add($btnHtmlReport)
 
 
+
+    # Define a button for initiating the files only report
+    $btnFilesReport = [System.Windows.Forms.Button]::new()
+    $btnFilesReport.Name = "btnFilesReport"
+    $btnFilesReport.Text = "Files Output"
+    $btnFilesReport.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
+    $btnFilesReport.Width = 124
+    $btnFilesReport.Height = 40
+    $btnFilesReport.Padding = New-Object System.Windows.Forms.Padding(5)
+    $btnFilesReport.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btnFilesReport.Location = New-Object System.Drawing.Point(153, 640)  # (x, y) position -> Down 50 from last checkbox
+    $btnFilesReport.FlatAppearance.BorderSize = 1
+    $btnFilesReport.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
+    $btnFilesReport.BackColor = "#17a589"
+    $btnFilesReport.Forecolor = "#dddddd"
+    $btnFilesReport.Add_Click({
+
+            $User = $tbUserName.Text
+            $Agency = $tbAgency.Text
+            $CaseNumber = $tbCaseNumber.Text
+            $DriveList = $tbDrivesList.Text
+            $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
+
+            Export-FilesReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+
+            $Form.Close()
+            return
+
+    })
+    # Add the button
+    $Form.Controls.Add($btnFilesReport)
+
+
     # Define a button for initiating the files report
     $btnCloseForm = New-Object Windows.Forms.Button
     $btnCloseForm.Text = "Close Form"
     $btnCloseForm.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-    $btnCloseForm.Width = 150
-    $btnCloseForm.Height = 50
-    $btnCloseForm.Padding = New-Object System.Windows.Forms.Padding(10)
+    $btnCloseForm.Width = 124
+    $btnCloseForm.Height = 40
+    $btnCloseForm.Padding = New-Object System.Windows.Forms.Padding(5)
     $btnCloseForm.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-    $btnCloseForm.Location = New-Object Drawing.Point(240, 640)  # (x, y) position
+    $btnCloseForm.Location = New-Object Drawing.Point(296, 640)  # (x, y) position
     $btnCloseForm.FlatAppearance.BorderSize = 1
-    $btnCloseForm.FlatAppearance.BorderColor = [System.Drawing.Color]::black
+    $btnCloseForm.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
     $btnCloseForm.BackColor = "#c0392b"
     $btnCloseForm.Forecolor = "#dddddd"
     $btnCloseForm.Add_Click({

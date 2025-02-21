@@ -51,16 +51,13 @@
     "1-017_Win32Bios"                = ("Win32_Bios",
                                        "Get-WmiObject -ClassName Win32_Bios | Select-Object -Property * | Out-String",
                                        "String")
-    "1-018_PnpDevice"                = ("PnP Devices",
-                                       "Get-PnpDevice | Format-List | Out-String",
-                                       "String")
-    "1-019_Win32PnPEntity"           = ("Win32_PnPEntity",
+    "1-018_Win32PnPEntity"           = ("Win32_PnPEntity",
                                        "Get-CimInstance Win32_PnPEntity | Select-Object -Property * | Out-String",
                                        "String")
-    "1-020_Win32Product"             = ("Win32_Product",
+    "1-019_Win32Product"             = ("Win32_Product",
                                        "Get-WmiObject Win32_Product | Out-String",
                                        "String")
-    "1-021_DiskAllocation"           = ("FSUtil Volume",
+    "1-020_DiskAllocation"           = ("FSUtil Volume",
                                        "fsutil volume allocationReport C: | Out-String",
                                        "String")
 }

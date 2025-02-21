@@ -32,7 +32,7 @@ function Export-SystemHtmlPage {
 
                 if (-not (Test-Path -Path $RegKey)) {
                     Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
+                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
                 }
                 else {
                     $Data = Invoke-Expression -Command $Command | Out-String
@@ -40,7 +40,7 @@ function Export-SystemHtmlPage {
                     if (-not $Data) {
                         $msg = "The registry key [$RegKey] exists, but contains no data"
                         Show-Message("[INFO] $msg") -Yellow
-                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $msg")
+                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
                     }
                     else {
                         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
@@ -51,7 +51,7 @@ function Export-SystemHtmlPage {
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
@@ -89,7 +89,7 @@ function Export-SystemHtmlPage {
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }

@@ -44,10 +44,29 @@ function Export-DeviceHtmlPage {
                 Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
             Show-FinishedHtmlMessage $Name
         }
+    }
+
+
+    #! 1-021 (Csv Output)
+    function Get-PnpDevicesAsCsv {
+
+        $Name = "1-021_PnpDevicesAsCsv"
+        $FileName = "$Name.html"
+        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+
+        try {
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Get-PnpDevice | Export-Csv -Path "$OutputFolder\$FileName" -NoTypeInformation -Encoding UTF8
+            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+        }
+        catch {
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+        }
+        Show-FinishedHtmlMessage $Name
     }
 
 
@@ -72,7 +91,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -93,7 +112,7 @@ function Export-DeviceHtmlPage {
             if (-not (Test-Path -Path $RegKey)) {
                 $dneMsg = "Registry Key [$RegKey] does not exist"
                 Show-Message("[WARNING] $dneMsg") -Yellow
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $dneMsg") -WarningMessage
+                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $dneMsg") -WarningMessage
             }
             else {
                 $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Out-String
@@ -101,7 +120,7 @@ function Export-DeviceHtmlPage {
                 if (-not $Data) {
                     $msg = "The registry key [$RegKey] exists, but contains no data"
                     Show-Message("[INFO] $msg") -Yellow
-                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $msg")
+                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
                 }
                 else {
                     Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
@@ -111,7 +130,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -140,7 +159,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temp csv file
@@ -171,7 +190,7 @@ function Export-DeviceHtmlPage {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         Show-FinishedHtmlMessage $Name
     }
@@ -195,7 +214,7 @@ function Export-DeviceHtmlPage {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temporary text file
@@ -223,6 +242,10 @@ function Export-DeviceHtmlPage {
             if ($($File.SubString(0, 3)) -eq "001") {
                 continue
             }
+            if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
+                $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $DeviceHtmlMainFile -Value $FileNameEntry -Encoding UTF8
+            }
             else {
                 $FileNameEntry = "`t`t`t`t<a href='$File' target='_blank'>$File</a>"
                 Add-Content -Path $DeviceHtmlMainFile -Value $FileNameEntry -Encoding UTF8
@@ -237,11 +260,12 @@ function Export-DeviceHtmlPage {
     # Run the functions from the module
     # ----------------------------------
     Get-DeviceData
+    Get-PnpDevicesAsCsv
     Get-PnpEnumDevices
     Get-TimeZoneInfo
     Get-AutoRunsData
     Get-OpenWindowTitles
-    # Get-FullSystemInfo
+    Get-FullSystemInfo
 
 
     Write-DeviceSectionToMain

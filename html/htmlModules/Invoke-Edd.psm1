@@ -37,7 +37,7 @@ function Invoke-HtmlEncryptedDiskDetector {
             # Show & log $SuccessMsg message
             $SuccessMsg = "Encrypted Disk Detector completed successfully on computer: $ComputerName"
             Show-Message("[INFO] $SuccessMsg") -Green
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand), Ln: $(Get-LineNum)] $SuccessMsg")
+            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
 
             # Read the contents of the EDD text file and show the results on the screen
             $Data = Get-Content -Path $EddTxtFile -Force -Raw | Out-String
@@ -51,7 +51,7 @@ function Invoke-HtmlEncryptedDiskDetector {
             Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand) $(Get-LineNum) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         finally {
             # Delete the Edd text file

@@ -1,5 +1,5 @@
 # Date Last Updated
-[string]$Dlu = "2025-02-20"
+[string]$Dlu = "2025-02-21"
 
 
 # [datetime]$StartTime = (Get-Date).ToUniversalTime()
@@ -67,13 +67,11 @@ function Write-LogEntry {
 
     $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    if (-not $Message)
-    {
+    if (-not $Message) {
         throw "The message parameter cannot be empty."
     }
 
-    $MsgLevel = switch ($True)
-    {
+    $MsgLevel = switch ($True) {
         $DebugMessage { " [DEBUG] "; break }
         $WarningMessage { " [WARNING] "; break }
         $ErrorMessage { " [ERROR] "; break }
@@ -130,8 +128,7 @@ function Show-Message {
     $FormattedMessage = "$HeaderText$DisplayTimeStamp $Message"
 
     # Display the message with the appropriate color
-    switch ($Color)
-    {
+    switch ($Color) {
         "Blue" { Write-Host $FormattedMessage -ForegroundColor Blue }
         "DarkGray" { Write-Host $FormattedMessage -ForegroundColor DarkGray }
         "Green" { Write-Host $FormattedMessage -ForegroundColor DarkGreen }
@@ -175,41 +172,37 @@ function Write-LogFinishedMessage {
 }
 
 
-function Set-CaseFolders {
+# function Set-LogFolder {
 
-    $Folders = @(
-        "000_Testing",
-        "001_DeviceInfo",
-        "002_UserInfo",
-        "003_Network",
-        "004_Processes",
-        "005_System",
-        "006_Prefetch",
-        "007_EventLogFiles",
-        "008_Firewall",
-        "009_BitLocker",
-        "Logs"
-    )
+    # $Folders = @(
+    #     "000_Testing",
+    #     "001_DeviceInfo",
+    #     "002_UserInfo",
+    #     "003_Network",
+    #     "004_Processes",
+    #     "005_System",
+    #     "006_Prefetch",
+    #     "007_EventLogFiles",
+    #     "008_Firewall",
+    #     "009_BitLocker",
+    #     "Logs"
+    # )
 
-    foreach ($Folder in $Folders)
-    {
-        New-Item -ItemType Directory -Path $CaseFolderName -Name $Folder -Force | Out-Null
-        Write-Host "Created '$($Folder)' Folder" -ForegroundColor Green
-    }
+        # New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force | Out-Null
 
 
-    $global:TestingFolder = "$CaseFolderName\$($Folders[0])"
-    $global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
-    $global:UserFolder = "$CaseFolderName\$($Folders[2])"
-    $global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
-    $global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
-    $global:SystemFolder = "$CaseFolderName\$($Folders[5])"
-    $global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
-    $global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
-    $global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
-    $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
-    $global:LogFolder = "$CaseFolderName\$($Folders[10])"
-}
+    # $global:TestingFolder = "$CaseFolderName\$($Folders[0])"
+    # $global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
+    # $global:UserFolder = "$CaseFolderName\$($Folders[2])"
+    # $global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
+    # $global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
+    # $global:SystemFolder = "$CaseFolderName\$($Folders[5])"
+    # $global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
+    # $global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
+    # $global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
+    # $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
+    # $global:LogFolder = "$CaseFolderName\$($Folders[10])"
+# }
 
 
 function Get-LineNum {
@@ -228,8 +221,7 @@ function Save-Output {
         $File
     )
 
-    process
-    {
+    process {
         $Data | Out-File -FilePath $File -Encoding UTF8
     }
 }
@@ -246,8 +238,7 @@ function Save-OutputAppend {
         $File
     )
 
-    process
-    {
+    process {
         $Data | Out-File -Append -FilePath $File -Encoding UTF8
     }
 }
@@ -264,8 +255,7 @@ function Save-OutputAsCsv {
         $File
     )
 
-    process
-    {
+    process {
         $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
     }
 }
@@ -281,12 +271,10 @@ function Show-OutputSavedToFile {
         $NoTime
     )
 
-    if ($NoTime)
-    {
+    if ($NoTime) {
         Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -NoTime -Green
     }
-    else
-    {
+    else {
         Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -Green
     }
 }
@@ -319,7 +307,6 @@ function Write-LogOutputSaved {
 function Write-NoDataFound {
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
         [string]
         $FunctionName
     )
