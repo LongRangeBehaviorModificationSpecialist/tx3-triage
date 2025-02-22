@@ -25,8 +25,9 @@ function Export-FirewallFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
+
                 $Data = Get-NetFirewallRule
 
                 if ($Data.Count -eq 0) {
@@ -42,7 +43,7 @@ function Export-FirewallFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -61,8 +62,9 @@ function Export-FirewallFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
+
                 $Data = netsh advfirewall firewall show rule name=all verbose
 
                 if ($Data.Count -eq 0) {
@@ -78,7 +80,7 @@ function Export-FirewallFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -97,8 +99,9 @@ function Export-FirewallFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
+
                 $Data = Get-MpPreference
 
                 if ($Data.Count -eq 0) {
@@ -114,7 +117,7 @@ function Export-FirewallFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 

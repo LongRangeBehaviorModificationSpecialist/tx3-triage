@@ -27,8 +27,8 @@ function Export-PrefetchFilesPage {
             # Run the command
             $ExecutionTime = Measure-Command {
 
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
 
                 $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
@@ -46,7 +46,7 @@ function Export-PrefetchFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -65,8 +65,8 @@ function Export-PrefetchFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object Name, LastAccessTime, CreationTime | Sort-Object LastAccessTime | Format-List
 
@@ -83,7 +83,7 @@ function Export-PrefetchFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 

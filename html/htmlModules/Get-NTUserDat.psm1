@@ -60,7 +60,7 @@ function Invoke-HtmlNTUserDatFiles {
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
         finally {
             # Show & log $SuccessMsg message

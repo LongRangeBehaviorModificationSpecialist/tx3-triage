@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Export-SystemFilesPage {
@@ -25,12 +25,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ADSData
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -43,7 +43,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -58,17 +58,17 @@ function Export-SystemFilesPage {
         )
 
         $File = Join-Path -Path $OutputFolder -ChildPath "$($Num)_$FileName"
-        $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+        $Header = "`n$Num Running '$($MyInvocation.MyCommand.Name)' function"
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 # Get list of open files with openfiles.exe, output it to CSV format
                 $Data = openfiles.exe /query /FO CSV /V
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -81,7 +81,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -100,12 +100,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_Share | Select-Object -Property *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -118,7 +118,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -137,18 +137,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $Data = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object * -ExcludeProperty PS*
-                }
-                catch [PathNotFound] {
-                    Show-Message("$KeyNotFoundMsg") -Yellow
-                    Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
-                }
+                $Data = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -161,7 +155,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -180,12 +174,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_ScheduledJob
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -198,7 +192,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -217,12 +211,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ScheduledTask | Select-Object -Property * | Where-Object { ($_.State -ne 'Disabled') }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -235,7 +229,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -254,12 +248,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" } | Get-ScheduledTaskInfo | Select-Object -Property *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -272,7 +266,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -291,12 +285,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -309,7 +303,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -328,18 +322,18 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object -Property * | Sort-Object InstallDate -Descending
                 }
                 catch [PathNotFound] {
-                    Show-Message("$KeyNotFoundMsg") -Yellow
-                    Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
+                    Show-Message -Message "$KeyNotFoundMsg" -Yellow
+                    Write-LogEntry -Message "$KeyNotFoundMsg" -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -352,7 +346,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -371,12 +365,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-AppxPackage | Format-List
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -389,7 +383,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -408,12 +402,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -426,7 +420,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -446,12 +440,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = ipconfig /displaydns
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -464,7 +458,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -484,12 +478,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-DnsClientCache | ConvertTo-Csv -NoTypeInformation
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -502,7 +496,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -521,12 +515,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -539,7 +533,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -558,13 +552,13 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $AppData = $Env:LOCALAPPDATA
                 $Data = Get-ChildItem -Recurse -Force "$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies" | Select-Object Name |ForEach-Object { $N = $_.Name; Get-Content "$($AppData)\Microsoft\Windows\cookies\$N" | Select-String "/" }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -577,7 +571,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -596,12 +590,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -614,7 +608,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -633,12 +627,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -651,7 +645,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -670,12 +664,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains" | Select-Object PSChildName
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -688,7 +682,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -707,12 +701,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" | Select-Object -Property *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -725,7 +719,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -744,12 +738,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -762,7 +756,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -781,12 +775,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = gpresult.exe /z
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -799,7 +793,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -818,12 +812,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*" | Select-Object -Property *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -836,7 +830,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -855,12 +849,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*" | Select-Object -Property * | Sort-Object '(default)'
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -873,7 +867,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -892,12 +886,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*" | Select-Object -Property *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -910,7 +904,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -929,12 +923,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -947,7 +941,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -966,12 +960,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Security Center\Svc" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -984,7 +978,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1003,12 +997,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1021,7 +1015,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1039,12 +1033,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1057,7 +1051,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1076,12 +1070,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1094,7 +1088,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1104,7 +1098,8 @@ function Export-SystemFilesPage {
         param (
             [string]
             $Num = "5-030",
-            [string]$FielName = "ProgExeBySessionManager.txt"
+            [string]
+            $FileName = "ProgExeBySessionManager.txt"
         )
 
         $File = Join-Path -Path $OutputFolder -ChildPath "$($Num)_$FileName"
@@ -1112,12 +1107,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1130,7 +1125,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1149,12 +1144,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1167,7 +1162,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1186,12 +1181,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object startup
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1204,7 +1199,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1223,12 +1218,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1241,7 +1236,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1260,19 +1255,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls" | Select-Object * -ExcludeProperty PS*
-                }
-                catch [PathNotFound] {
-                    $KeyNotFoundMsg = "Cannot find the listed registry key because it does not exist."
-                    Show-Message("$KeyNotFoundMsg") -Yellow
-                    Write-LogEntry("$KeyNotFoundMsg") -ErrorMessage
-                }
+                $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1285,7 +1273,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1304,12 +1292,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\exefile\shell\open\command" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1322,7 +1310,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1341,12 +1329,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\http\shell\open\command" | Select-Object "(Default)"
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1359,7 +1347,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1378,12 +1366,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\BCD00000000\*\*\*\*" | Select-Object Element | Select-String "exe" | Select-Object Line
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1396,7 +1384,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1415,12 +1403,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" | Select-Object * -ExcludeProperty PS*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1433,7 +1421,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1452,12 +1440,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1470,7 +1458,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             throw $PSItem
         }
     }
@@ -1490,12 +1478,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1508,7 +1496,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1526,29 +1514,23 @@ function Export-SystemFilesPage {
         $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
 
         try {
-            # Run the commands
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
-                try {
-                    $Data1 = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
-                    $Data2 = Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
-                }
-                catch [PathNotFound] {
-                    Show-Message("$KeyNotFoundMsg") -Yellow
-                    Write-LogEntry("$KeyNotFoundMsg") -WarningMessage
-                }
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                if ($Data1.Count -eq 0) {
-                    Write-NoDataFound -FunctionName  $Data1
+                $Data1 = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
+                $Data2 = Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
+
+                if (-not $Data1) {
+                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
                     Save-Output $Data1 $File
                     Show-OutputSavedToFile $File
                 }
 
-                if ($Data2.Count -eq 0) {
-                    Write-NoDataFound -FunctionName  $Data2
+                if (-not $Data2) {
+                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
                     Save-OutputAppend $Data2 $File
@@ -1560,7 +1542,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1579,12 +1561,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*" | Select-Object FriendlyName, PSChildName, ContainerID
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1597,7 +1579,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1616,12 +1598,12 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = auditpol /get /category:*
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1634,7 +1616,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1655,19 +1637,19 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-ChildItem -Path HKLM:\Software -Recurse -Force | Where-Object { $_.Name -like "*.exe" } | Sort-Object -Property LastWriteTime -Descending | Select-Object -First $NumberOfRecords | Format-Table PSPath, LastWriteTime
                 }
                 catch [System.Security.SecurityException] {
                     $ErrorMessage = "Requested registry access is not allowed"
-                    Show-Message("$ErrorMessage") -Red
-                    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+                    Show-Message -Message "$ErrorMessage" -Red
+                    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $ErrorMessage" -ErrorMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1680,7 +1662,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1701,8 +1683,8 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 # Validate the input path
                 if (-not (Test-Path $Path)) {
@@ -1712,9 +1694,9 @@ function Export-SystemFilesPage {
                 $Data = Get-ChildItem -Path $Path -Attributes Hidden -Recurse -Force
                 $Count = $Data.Count
 
-                Show-Message("Found $Count hidden files within $Path")
+                Show-Message -Message "Found $Count hidden files within $Path"
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1727,7 +1709,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1748,8 +1730,8 @@ function Export-SystemFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 # Validate the input path
                 if (-not (Test-Path $Path)) {
@@ -1759,7 +1741,7 @@ function Export-SystemFilesPage {
                 $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object { $_.Extension -eq ".exe" }
                 $Count = $Data.Count
 
-                Show-Message("Found $Count executable files within $Path")
+                Show-Message -Message "Found $Count executable files within $Path"
 
                 if ($Count -eq 0) {
                     Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
@@ -1774,7 +1756,7 @@ function Export-SystemFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1827,7 +1809,7 @@ function Export-SystemFilesPage {
     Get-AuditPolicy
     Get-RecentAddedExeFiles
     Get-HiddenFiles
-    Get-ExecutableFiles
+    # Get-ExecutableFiles
 }
 
 

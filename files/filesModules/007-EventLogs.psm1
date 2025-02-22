@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Export-EventLogFilesPage {
@@ -25,18 +25,12 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $Data = Get-WinEvent -ListLog * | Sort-Object -Property RecordCount -Descending
-                }
-                catch [NoMatchingEventsFound] {
-                    Show-Message("$NoMatchingEventsMsg") -Yellow
-                    Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
-                }
+                $Data = Get-WinEvent -ListLog * | Select-Object -Property LogName, LogType, LogIsolation, RecordCount, FileSize, LastAccessTime, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount | Format-List
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -49,7 +43,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -68,18 +62,12 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $Data = Get-WinEvent -ListLog * | Where-Object { $_.IsEnabled -eq "True" } | Select-Object LogName, RecordCount, FileSize, LogMode, LogFilePath, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending | Format-List
-                }
-                catch [NoMatchingEventsFound] {
-                    Show-Message("$NoMatchingEventsMsg") -Yellow
-                    Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
-                }
+                $Data = Get-WinEvent -ListLog * | Where-Object { $_.IsEnabled -eq "True" } | Select-Object LogName, RecordCount, FileSize, LogMode, LogFilePath, LastWriteTime, IsEnabled | Sort-Object -Property RecordCount -Descending | Format-List
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -92,7 +80,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -113,19 +101,13 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $CutoffDate = (Get-Date).AddDays(-$DaysBack)
-                    $Data = Get-EventLog -LogName security -After $CutoffDate | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending
-                }
-                catch [NoMatchingEventsFound] {
-                    Show-Message("$NoMatchingEventsMsg") -Yellow
-                    Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
-                }
+                $CutoffDate = (Get-Date).AddDays(-$DaysBack)
+                $Data = Get-EventLog -LogName security -After $CutoffDate | Group-Object -Property EventID -NoElement | Sort-Object -Property Count -Descending
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -138,7 +120,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -159,19 +141,13 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $CutoffDate = (Get-Date).AddDays(-$DaysBack)
-                    $Data = Get-EventLog Security -After $CutoffDate | Format-List *
-                }
-                catch [NoMatchingEventsFound] {
-                    Show-Message("$NoMatchingEventsMsg") -Yellow
-                    Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
-                }
+                $CutoffDate = (Get-Date).AddDays(-$DaysBack)
+                $Data = Get-EventLog Security -After $CutoffDate | Format-List *
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -184,7 +160,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -205,19 +181,13 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
-                try {
-                    $CutoffDate = (Get-Date).AddDays(-$DaysBack)
-                    $Data = Get-EventLog Security -After $CutoffDate | ConvertTo-Csv -NoTypeInformation
-                }
-                catch [NoMatchingEventsFound] {
-                    Show-Message("$NoMatchingEventsMsg") -Yellow
-                    Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
-                }
+                $CutoffDate = (Get-Date).AddDays(-$DaysBack)
+                $Data = Get-EventLog Security -After $CutoffDate | ConvertTo-Csv -NoTypeInformation
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -230,7 +200,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -252,8 +222,8 @@ function Export-EventLogFilesPage {
         try {
             $ExecutionTime = Measure-Command {
 
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1002 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -263,7 +233,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -276,7 +246,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -294,8 +264,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 1014 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -305,7 +275,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -318,7 +288,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             throw $PSItem
         }
     }
@@ -340,8 +310,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Application"; ID = 1102 } |Select-Object TimeCreated, ID, Message | Format-List
@@ -351,8 +321,8 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
-                    Write-NoDataFound $($MyInvocation.MyCommand.Name)
+                if (-not $Data) {
+                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
                 }
                 else {
                     Save-Output $Data $File
@@ -364,7 +334,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -385,8 +355,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4616 } |Select-Object TimeCreated, ID, Message | Format-List
@@ -396,7 +366,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -409,7 +379,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -430,8 +400,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4624 } | Select-Object TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
@@ -441,7 +411,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -454,7 +424,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -474,8 +444,8 @@ function Export-EventLogFilesPage {
         $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4625 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -485,7 +455,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -498,7 +468,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -521,8 +491,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4648 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -532,7 +502,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -545,7 +515,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -566,8 +536,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4672 } | Select-Object TimeCreated, ID, TaskDisplayName, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
@@ -577,7 +547,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -590,7 +560,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -611,8 +581,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4673 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -622,7 +592,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -635,7 +605,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -656,8 +626,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4674 } |Select-Object TimeCreated, ID, Message | Format-List
@@ -667,7 +637,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -680,7 +650,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -700,8 +670,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4688 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -711,7 +681,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -724,7 +694,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -745,8 +715,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "Security"; ID = 4720 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -756,7 +726,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -769,7 +739,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -790,8 +760,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 7036 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -801,7 +771,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -814,7 +784,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -835,8 +805,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 7045 } | Select-Object TimeCreated, ID, Message, UserId, ProcessId, ThreadId, MachineName | Format-List
@@ -846,7 +816,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -859,7 +829,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -880,8 +850,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -Max $NumberOfEntries -FilterHashtable @{ Logname = "System"; ID = 64001 } | Select-Object TimeCreated, ID, Message | Format-List
@@ -891,7 +861,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -904,7 +874,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -923,8 +893,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -LogName Microsoft-Windows-Application-Experience/Program-Inventory | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending | Format-List
@@ -934,7 +904,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -947,7 +917,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -966,8 +936,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -LogName Microsoft-Windows-TerminalServices-LocalSessionManager/Operational | Select-Object TimeCreated, ID, Message | Sort-Object -Property TimeCreated -Descending | Format-List
@@ -977,7 +947,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -990,7 +960,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -1009,8 +979,8 @@ function Export-EventLogFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 try {
                     $Data = Get-WinEvent -FilterHashtable @{ LogName = "Microsoft-Windows-PowerShell/Operational"; ID = 4104 } | Format-Table TimeCreated, Message -AutoSize
@@ -1020,7 +990,7 @@ function Export-EventLogFilesPage {
                     Write-LogEntry("$NoMatchingEventsMsg") -WarningMessage
                 }
 
-                if ($Data.Count -eq 0) {
+                if (-not $Data) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
                 else {
@@ -1033,7 +1003,7 @@ function Export-EventLogFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 

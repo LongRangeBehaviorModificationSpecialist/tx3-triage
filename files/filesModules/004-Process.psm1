@@ -25,8 +25,8 @@ function Export-ProcessFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_Process | Select-Object -Property * | Sort-Object ProcessName
 
@@ -43,7 +43,7 @@ function Export-ProcessFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -62,8 +62,8 @@ function Export-ProcessFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_Process | Select-Object ProcessName, ExecutablePath, CreationDate, ProcessId, ParentProcessId, CommandLine, SessionID | Sort-Object -Property ParentProcessId | ConvertTo-Csv -NoTypeInformation
 
@@ -80,7 +80,7 @@ function Export-ProcessFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -99,8 +99,8 @@ function Export-ProcessFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = @()
                 foreach ($P in (Get-WmiObject Win32_Process | Select-Object Name, ExecutablePath, CommandLine, ParentProcessId, ProcessId)) {
@@ -131,7 +131,7 @@ function Export-ProcessFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -150,8 +150,8 @@ function Export-ProcessFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq "svchost.exe" | Select-Object ProcessID, Name, Handle, HandleCount, WorkingSetSize, VirtualSize, SessionId, WriteOperationCount, Path
 
@@ -168,7 +168,7 @@ function Export-ProcessFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -187,8 +187,8 @@ function Export-ProcessFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = Get-CimInstance -ClassName Win32_Service | Select-Object * | ConvertTo-Csv -NoTypeInformation
 
@@ -205,7 +205,7 @@ function Export-ProcessFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 
@@ -224,8 +224,8 @@ function Export-ProcessFilesPage {
 
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
 
                 $Data = driverquery
 
@@ -242,7 +242,7 @@ function Export-ProcessFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 

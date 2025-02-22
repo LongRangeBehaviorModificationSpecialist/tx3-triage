@@ -36,7 +36,7 @@ function Get-ForensicData {
 
     try {
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             # Create a hashtable to store all forensic data
@@ -154,7 +154,7 @@ function Get-SuspiciousFiles {
     process {
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
+                Show-Message("[INFO] $Header") -Header -DarkGray
                 Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
                 $Data = Get-ChildItem -Path $Path -Recurse -ErrorAction SilentlyContinue | Where-Object {
@@ -203,7 +203,7 @@ function Get-BrowserHistory {
     process {
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
+                Show-Message("[INFO] $Header") -Header -DarkGray
                 Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
                 $BrowserPaths = @(
@@ -276,7 +276,7 @@ function Compare-FileHashes {
     process {
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
+                Show-Message("[INFO] $Header") -Header -DarkGray
                 Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
                 $KnownHashes = Get-Content $HashDatabase
@@ -326,7 +326,7 @@ function Get-USBSTOR {
         try {
             # Run the command
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
+                Show-Message("[INFO] $Header") -Header -DarkGray
                 Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
                 $DataKeys = @(

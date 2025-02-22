@@ -28,9 +28,11 @@ function Export-BitLockerFilesPage {
         try {
             # Run the command
             $ExecutionTime = Measure-Command {
-                Show-Message("$Header")
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message $Header
+
                 $Data1 = Get-BitLockerVolume | Select-Object -Property * | Sort-Object MountPoint
+                
                 if ($Data1.Count -eq 0) {
                     Write-NoDataFound $($MyInvocation.MyCommand.Name)
                 }
@@ -76,7 +78,7 @@ function Export-BitLockerFilesPage {
             Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
         }
     }
 

@@ -29,7 +29,7 @@ function Get-RecentDllFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object { $_.Extension -eq ".dll" } | Select-Object Name, Directory, FullName, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc
             if ($Data.Count -eq 0) {
@@ -71,7 +71,7 @@ function Get-RecentLinkFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Get Recent .lnk files
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
@@ -123,7 +123,7 @@ function Get-CompressedFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             # Get compressed files
             $Data = Get-ChildItem -Path $Path -Include $FileTypes -Recurse -Force | Where-Object { $_.Attributes -band [IO.FileAttributes]::Compressed }
@@ -166,7 +166,7 @@ function Get-EncryptedFiles {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | Where-Object { $_.Attributes -band [IO.FileAttributes]::Encrypted }
             if ($Data.Count -eq 0) {
@@ -209,7 +209,7 @@ function Get-ExeTimeline {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
 
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
@@ -253,7 +253,7 @@ function Get-DownloadedExecutables {
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("$Header")
+            Show-Message("[INFO] $Header") -Header -DarkGray
             Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | ForEach-Object { Get-Item $_.FullName -Stream * } | Where-Object { $_.Stream -Match "Zone.Identifier" } | Select-Object Filename, Stream, @{ N = "LastWriteTime"; E = { (Get-Item $_.FileName).LastWriteTime } }
             if ($Data.Count -eq 0) {

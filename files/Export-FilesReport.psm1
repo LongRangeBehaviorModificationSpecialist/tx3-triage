@@ -1,25 +1,75 @@
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
+function Write-LogEntry {
+
+    [CmdletBinding()]
+
+    param (
+        # [Parameter(Mandatory = $true)]
+        [string]
+        $Message,
+        [string]
+        $LogFile = $LogFile,
+        [switch]
+        $NoLevel,
+        [switch]
+        $DebugMessage,
+        [switch]
+        $WarningMessage,
+        [switch]
+        $ErrorMessage,
+        [switch]
+        $NoTime
+    )
+
+    $LogFileName = "$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
+
+
+    $LogFile = "$LogFolderPath\$LogFileName"
+
+    if (-not $Message) {
+        throw "The message parameter cannot be empty."
+    }
+
+    $MsgLevel = switch ($True) {
+        $DebugMessage { " [DEBUG] "; break }
+        $WarningMessage { " [WARNING] "; break }
+        $ErrorMessage { " [ERROR] "; break }
+        default { " [INFO] " }
+    }
+
+    $MsgLevel = if (-not $NoLevel) { $MsgLevel } else { "" }
+
+    # Generate timestamp if -NoTime is not provided
+    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
+
+    # Format the full message
+    $FormattedMessage = $DisplayTimeStamp + $MsgLevel + $Message
+
+    Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
+}
+
+
 function Export-FilesReport {
 
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-        [Parameter(Mandatory = $True, Position = 1)]
+        [Parameter(Mandatory = $true, Position = 1)]
         [string]$User,
-        [Parameter(Mandatory = $True, Position = 2)]
+        [Parameter(Mandatory = $true, Position = 2)]
         [string]$Agency,
-        [Parameter(Mandatory = $True, Position = 3)]
+        [Parameter(Mandatory = $true, Position = 3)]
         [string]$CaseNumber,
-        [Parameter(Mandatory = $True, Position = 4)]
+        [Parameter(Mandatory = $true, Position = 4)]
         [string]$ComputerName,
-        [Parameter(Mandatory = $True, Position = 5)]
+        [Parameter(Mandatory = $true, Position = 5)]
         [string]$Ipv4,
-        [Parameter(Mandatory = $True, Position = 6)]
+        [Parameter(Mandatory = $true, Position = 6)]
         [string]$Ipv6,
         [bool]$Device,
         [bool]$UserData,
@@ -47,8 +97,7 @@ function Export-FilesReport {
     )
 
 
-    # Create the Logs directory
-    # Set-LogFolder
+    $LogFolderPath = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
 
 
     # Name of the folder containing the .psm1 files that are to be imported
@@ -57,23 +106,23 @@ function Export-FilesReport {
 
     foreach ($file in (Get-ChildItem -Path $FilesModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
-        Show-Message("Module file: '.\$($file.Name)' was imported successfully") -NoTime -Blue
-        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully")
+        Show-Message -Message "Module file: '.\$($file.Name)' was imported successfully" -NoTime -Blue
+        Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully"
     }
 
 
     # Start transcript to record all of the screen output
     $BeginRecord = Start-Transcript -OutputDirectory $LogFolder -IncludeInvocationHeader -NoClobber
-    Show-Message("$BeginRecord") -NoTime
-    Write-LogEntry("$BeginRecord")
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] PowerShell transcript started") -DebugMessage
+    Show-Message -Message $BeginRecord -NoTime
+    Write-LogEntry -Message $BeginRecord
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] PowerShell transcript started" -DebugMessage
     Write-Host ""
 
 
     # Write the data to the log file and display start time message on the screen
-    Write-LogEntry("`n-----------------------------------------------") -NoTime  -NoLevel
-    Write-LogEntry("    Script Log for tX3 DFIR Script Usage") -NoTime -NoLevel
-    Write-LogEntry("-----------------------------------------------") -NoTime -NoLevel
+    Write-LogEntry -Message "`n-----------------------------------------------" -NoTime  -NoLevel
+    Write-LogEntry -Message "    Script Log for tX3 DFIR Script Usage" -NoTime -NoLevel
+    Write-LogEntry -Message "-----------------------------------------------" -NoTime -NoLevel
 
 
     [string]$Banner = "
@@ -88,19 +137,21 @@ function Export-FilesReport {
 
 
     # Display the DFIR banner and instructions to the user
-    Show-Message("$Banner") -NoTime -Red
-    Write-LogEntry("$Banner") -NoTime -NoLevel
+    Show-Message -Message $Banner -NoTime -Red
+    Write-LogEntry -Message $Banner -NoTime -NoLevel
 
 
-    $StartMessage = "$ScriptName execution started"
-    Show-Message("$StartMessage") -Blue
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $StartMessage")
+    $StartMessage = "$($MyInvocation.MyCommand.ModuleName) execution started"
+    Show-Message -Message "[INFO] $StartMessage" -Blue
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $StartMessage"
 
 
-    Show-Message("
+    Show-Message -Message "
+
 =============
 INSTRUCTIONS
 =============
+
 
 [A]  You are about to run the tx3-triage DFIR Powershell Script.
 [B]  PURPOSE: TO gather information from the target machine and
@@ -114,12 +165,11 @@ INSTRUCTIONS
 [E]  DO NOT close any pop-up windows that may appear.
 [F]  To get help for this script, run ``Get-Help .\tx3-triage.ps1``
      command from a PowerShell CLI prompt.
-[G]  To exit this script at anytime, press ``Ctrl + C``.`n"
-    ) -NoTime -Yellow
+[G]  To exit this script at anytime, press ``Ctrl + C``.`n" -NoTime -Yellow
 
 
     Write-Host ""
-    Show-Message("--> Please read the instructions before executing the script! <--") -NoTime -BlueOnGray
+    Show-Message -Message "--> Please read the instructions before executing the script! <--" -NoTime -BlueOnGray
 
 
     # Stops the script until the user presses the ENTER key so the script does not begin before the user is ready
@@ -127,32 +177,32 @@ INSTRUCTIONS
 
 
     if (-not $User) {
-        [String]$User = Read-Host -Prompt "[*] Enter user's name -> "
+        [string]$User = Read-Host -Prompt "[*] Enter user's name -> "
     }
 
 
     if (-not $Agency) {
-        [String]$Agency = Read-Host -Prompt "`n[*] Enter agency name -> "
+        [string]$Agency = Read-Host -Prompt "`n[*] Enter agency name -> "
     }
 
 
     if (-not $CaseNumber) {
-        [String]$CaseNumber = Read-Host -Prompt "`n[*] Enter case number -> "
+        [string]$CaseNumber = Read-Host -Prompt "`n[*] Enter case number -> "
     }
 
 
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Operator Name Entered: $User")
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Agency Name Entered: $Agency")
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Case Number Entered: $CaseNumber")
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Computer Name: $ComputerName")
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Operator Name Entered: $User"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Agency Name Entered: $Agency"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Case Number Entered: $CaseNumber"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Computer Name: $ComputerName"
 
     # Write device IP information to the log file
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv4 address: $Ipv4")
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv6 address: $Ipv6")
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv4 address: $Ipv4"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv6 address: $Ipv6"
 
 
-    Show-Message("Data acquisition started. This may take a hot minute...`n")
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Data acquisition started`n")
+    Show-Message -Message "Data acquisition started. This may take a hot minute...`n"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Data acquisition started`n"
 
 
     # Running Encrypted Disk Detector
@@ -162,17 +212,14 @@ INSTRUCTIONS
                 Get-EncryptedDiskDetector $CaseFolderName $ComputerName
                 # Read the contents of the EDD text file and show the results on the screen
                 Get-Content -Path "$CaseFolderName\00A_EncryptedDiskDetector\EncryptedDiskDetector.txt" -Force
-                Show-Message("`nEncrypted Disk Detector has finished") -NoTime -Yellow
+                Show-Message -Message "`nEncrypted Disk Detector has finished" -NoTime -Yellow
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # If the user does not want to execute EDD
-            Show-Message("[WARNING] Encrypted Disk Detector will NOT be run`n") -Yellow
-            # Write message that EDD was not run to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The Encrypted Disk Detector option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Run Encrypted Disk Detector' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-Edd
@@ -184,14 +231,11 @@ INSTRUCTIONS
                 Get-RunningProcesses $CaseFolderName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # If the user does not want to execute ProcessCapture
-            Show-Message("[WARNING] Process Capture will NOT be run`n") -Yellow
-            # Write message that Processes Capture was not collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The Process Capture option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Process Capture' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-Processes
@@ -203,14 +247,11 @@ INSTRUCTIONS
                 Get-ComputerRam $CaseFolderName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # Display message that the RAM was not collected
-            Show-Message("[WARNING] RAM will NOT be collected`n") -Yellow
-            # Write message that RAM was not collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The RAM Capture option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'RAM Capture' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-Ram
@@ -220,15 +261,15 @@ INSTRUCTIONS
         if ($Device) {
             try {
                 $DeviceOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "001_Device_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-DeviceFilesPage -OutputFolder $DeviceOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Device Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Device Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-DeviceFilesOutput
@@ -238,15 +279,15 @@ INSTRUCTIONS
         if ($UserData) {
             try {
                 $UserOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "002_User_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-UserFilesPage -OutputFolder $UserOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get User Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get User Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-UserFilesOutput
@@ -256,15 +297,15 @@ INSTRUCTIONS
         if ($Network) {
             try {
                 $NetworkOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "003_Network_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-NetworkFilesPage -OutputFolder $NetworkOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Network Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Network Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-NetworkFilesOutput
@@ -274,15 +315,15 @@ INSTRUCTIONS
         if ($Process) {
             try {
                 $ProcessOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "004_Process_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-ProcessFilesPage -OutputFolder $ProcessOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Process Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Process Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-ProcessFilesOutput
@@ -292,15 +333,15 @@ INSTRUCTIONS
         if ($System) {
             try {
                 $SystemOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "005_System_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-SystemFilesPage -OutputFolder $SystemOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-SystemFilesOutput
@@ -310,15 +351,15 @@ INSTRUCTIONS
         if ($Prefetch) {
             try {
                 $PrefetchOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "006_Prefetch_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-PrefetchFilesPage -OutputFolder $PrefetchOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-PrefetchFilesOutput
@@ -328,15 +369,15 @@ INSTRUCTIONS
         if ($EventLogs) {
             try {
                 $EventLogOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "007_EventLog_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-EventLogFilesPage -OutputFolder $EventLogOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Event Log Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Event Log Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-EventLogFilesOutput
@@ -346,15 +387,15 @@ INSTRUCTIONS
         if ($Firewall) {
             try {
                 $FirewallOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "008_Firewall_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-FirewallFilesPage -OutputFolder $FirewallOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Firewall Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get Firewall Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-FirewallFilesOutput
@@ -364,15 +405,15 @@ INSTRUCTIONS
         if ($BitLocker) {
             try {
                 $BitLockerOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "009_BitLocker_Info" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Export-BitLockerFilesPage -OutputFolder $BitLockerOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get BitLocker Data' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Get BitLocker Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-BitLockerFilesOutput
@@ -384,14 +425,11 @@ INSTRUCTIONS
                 Get-RegistryHives $CaseFolderName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # Display message that Registry Hive files will not be collected
-            Show-Message("[WARNING] Registry Hive files will NOT be collected`n") -Yellow
-            # Write message that Registry Hive files will not be collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Collect Registry Hive' option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Collect Registry Hive' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-Registry
@@ -404,14 +442,11 @@ INSTRUCTIONS
                 Get-EventLogs $CaseFolderName $ComputerName -NumOfEventLogs $NumOfEventLogs
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # Display message that event logs will not be collected
-            Show-Message("[WARNING] Windows Event Logs will NOT be collected`n") -Yellow
-            # Write message that event logs will not be collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The Windows Event Log collection option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy Windows Event Log' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-EventLogs
@@ -423,14 +458,11 @@ INSTRUCTIONS
                 Get-NTUserDatFiles $CaseFolderName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # Display message that NTUSER.DAT file will not be collected
-            Show-Message("[WARNING] NTUSER.DAT files will NOT be collected`n") -Yellow
-            # Write message that NTUSER.DAT files will not be collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The NTUSER.DAT file collection option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy NTUSER.DAT files' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-NTUser
@@ -443,14 +475,11 @@ INSTRUCTIONS
                 Get-PrefetchFiles $CaseFolderName $ComputerName -NumOfPFRecords $NumOfPFRecords
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # Display message that prefetch files will not be collected
-            Show-Message("[WARNING] Windows Prefetch files will NOT be collected`n") -Yellow
-            # Write message that prefetch files will not be collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The Windows Prefetch file collection option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Collect Windows Prefetch Files' collection option was not enabled by the user" -WarningMessage
         }
     }
     Invoke-Prefetch
@@ -463,14 +492,11 @@ INSTRUCTIONS
                 Get-SrumDB $CaseFolderName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            # Display message that file lists will not be collected
-            Show-Message("[WARNING] SRUM.dat database will NOT be collected`n") -Yellow
-            # Write message that file lists will not be collected to the .log file
-            Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The SRUM database collection option was not enabled") -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy SRUM Database File' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-SrumDB
@@ -480,51 +506,62 @@ INSTRUCTIONS
         if ($ListFiles) {
             try {
                 $FilesListOutputFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "FilesList" -Force
-                Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Invoke-GetAllFilesList -OutputFolder $FilesListOutputFolder -DriveList $DriveList
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-ListAllFiles
-
-
 
 
     function Invoke-GetFileHashes {
         if ($GetFileHashes) {
             try {
                 $HashResultsFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "HashResults" -Force
-                Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run")
+                Write-LogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
                 Get-FileHashes -OutputFolder $HashResultsFolder -CaseFolderName $CaseFolderName -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.ModuleName) $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user")
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-GetFileHashes
 
 
-    if (-not $Archive) {
-        # Display message that prefetch files will not be collected
-        Show-Message("[WARNING] Case archive (.zip) file will NOT be created`n") -Yellow
+    function Invoke-CaseArchive {
+        if ($MakeArchive) {
+            try {
+                # Stop the transcript before the .zip file is made
+                $StopTranscript = "`n$(Stop-Transcript)"
+                Show-Message -Message "$StopTranscript" -NoTime -Green
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $StopTranscript"
 
-        # Write message that prefetch files will not be collected to the .log file
-        Write-LogEntry("[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The create Case Archive file option was not enabled") -WarningMessage
+                # Call the function
+                Get-CaseArchive
+            }
+            catch {
+                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user" -WarningMessage
+        }
     }
+    Invoke-CaseArchive
 
 
     # Get the time the script was completed
-    $EndTimeForLog = (Get-Date).ToUniversalTime()
+    $EndTimeForLog = Get-Date
     $DurationForLog = New-TimeSpan -Start $StartTime -End $EndTimeForLog
 
 
@@ -533,50 +570,26 @@ INSTRUCTIONS
 
 
     # Display a message that the script has completed and list the total time run time on the screen
-    Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Script execution completed in: $DiffForLog")
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Script execution completed in: $DiffForLog"
 
 
-    Write-LogEntry("
-===========================
-Hashing result files...
-===========================`n") -NoTime -NoLevel
-
-
-    # If the `-HashResults` switch was passed when the script was run
-    if ($HashResults) {
-        Get-FileHashes $CaseFolderName $ComputerName
-    }
-
-
-    # If the `-Archive` switch was passed when the script was run
-    if ($Archive) {
-        # Stop the transcript before the .zip file is made
-        $StopTranscript = "`n$(Stop-Transcript)"
-        Show-Message("$StopTranscript") -NoTime -Green
-        Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $StopTranscript")
-
-        # Call the function
-        Get-CaseArchive
-    }
-
-    $EndTimeForShow = (Get-Date).ToUniversalTime()
+    $EndTimeForShow = Get-Date
     $DurationForShow = New-TimeSpan -Start $StartTime -End $EndTimeForShow
     $DiffForShow = "$($DurationForShow.Days) days $($DurationForShow.Hours) hours $($DurationForShow.Minutes) minutes $($DurationForShow.Seconds) seconds"
 
 
-    Show-Message("Script execution completed in: $DiffForShow`n") -Green
-    Show-Message("The results are available in the '\$(($CaseFolderName).Name)\' directory") -Green
+    Show-Message -Message "[INFO] Script execution completed in: $DiffForShow`n" -Header -Green
+    Show-Message -Message "[INFO] The results are available in the '$CaseFolderName' directory" -Header -Green
 
 
     # Stop the transcript
-    Show-Message("`n$(Stop-Transcript)") -NoTime
+    Show-Message -Message "$(Stop-Transcript)" -Header -NoTime
 
 
     # Show a popup message when script is complete
     (New-Object -ComObject Wscript.Shell).popup("The Script has finished running", 0, "Done", 0x1) | Out-Null
 
-}  # End `Get-TriageData` function block
+}
 
 
-
-Export-ModuleMember -Function Export-FilesReport -Variable *
+Export-ModuleMember -Function Export-FilesReport, Write-LogEntry -Variable *

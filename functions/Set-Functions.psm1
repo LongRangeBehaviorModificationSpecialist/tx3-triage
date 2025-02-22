@@ -43,57 +43,57 @@ function Get-TimeStamp {
 }
 
 
-function Write-LogEntry {
+# function Write-LogEntry {
 
-    [CmdletBinding()]
+#     [CmdletBinding()]
 
-    param (
-        [Parameter(Mandatory = $True)]
-        [string]
-        $Message,
-        [string]
-        $LogFile = $LogFile,
-        [switch]
-        $NoLevel,
-        [switch]
-        $DebugMessage,
-        [switch]
-        $WarningMessage,
-        [switch]
-        $ErrorMessage,
-        [switch]
-        $NoTime
-    )
+#     param (
+#         [Parameter(Mandatory)]
+#         [string]
+#         $Message,
+#         [string]
+#         $LogFile = $LogFile,
+#         [switch]
+#         $NoLevel,
+#         [switch]
+#         $DebugMessage,
+#         [switch]
+#         $WarningMessage,
+#         [switch]
+#         $ErrorMessage,
+#         [switch]
+#         $NoTime
+#     )
 
-    $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
+#     $LogFile = "$LogFolder\$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    if (-not $Message) {
-        throw "The message parameter cannot be empty."
-    }
+#     if (-not $Message) {
+#         throw "The message parameter cannot be empty."
+#     }
 
-    $MsgLevel = switch ($True) {
-        $DebugMessage { " [DEBUG] "; break }
-        $WarningMessage { " [WARNING] "; break }
-        $ErrorMessage { " [ERROR] "; break }
-        default { " [INFO] " }
-    }
+#     $MsgLevel = switch ($True) {
+#         $DebugMessage { " [DEBUG] "; break }
+#         $WarningMessage { " [WARNING] "; break }
+#         $ErrorMessage { " [ERROR] "; break }
+#         default { " [INFO] " }
+#     }
 
-    $MsgLevel = if (-not $NoLevel) { $MsgLevel } else { "" }
+#     $MsgLevel = if (-not $NoLevel) { $MsgLevel } else { "" }
 
-    # Generate timestamp if -NoTime is not provided
-    $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
+#     # Generate timestamp if -NoTime is not provided
+#     $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
 
-    # Format the full message
-    $FormattedMessage = $DisplayTimeStamp + $MsgLevel + $Message
+#     # Format the full message
+#     $FormattedMessage = $DisplayTimeStamp + $MsgLevel + $Message
 
-    Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
-}
+#     Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
+# }
 
 
 function Show-Message {
 
     param (
-        [Parameter(Mandatory)]
+        # [Parameter(Mandatory)]
         [string]$Message,
         [switch]$Header,
         [switch]$NoTime,
@@ -153,56 +153,23 @@ function Show-FinishMessage {
         $ExecutionTime
     )
 
-        Show-Message("'$($FunctionName)' function finished in $($ExecutionTime.TotalSeconds) seconds`n") -Blue
+        Show-Message -Message "[INFO] '$($FunctionName)' function finished in $($ExecutionTime.TotalSeconds) seconds" -Blue
 }
 
 
 function Write-LogFinishedMessage {
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
+        [Parameter(Mandatory, Position = 0)]
         [string]
         $FunctionName,
-        [Parameter(Mandatory = $True, Position = 1)]
+        [Parameter(Mandatory, Position = 1)]
         [timespan]
         $ExecutionTime
     )
 
-    Write-LogEntry("Function '$FunctionName' finished in $($ExecutionTime.TotalSeconds) seconds`n")
+    Write-LogEntry -Message "Function '$FunctionName' finished in $($ExecutionTime.TotalSeconds) seconds"
 }
-
-
-# function Set-LogFolder {
-
-    # $Folders = @(
-    #     "000_Testing",
-    #     "001_DeviceInfo",
-    #     "002_UserInfo",
-    #     "003_Network",
-    #     "004_Processes",
-    #     "005_System",
-    #     "006_Prefetch",
-    #     "007_EventLogFiles",
-    #     "008_Firewall",
-    #     "009_BitLocker",
-    #     "Logs"
-    # )
-
-        # New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force | Out-Null
-
-
-    # $global:TestingFolder = "$CaseFolderName\$($Folders[0])"
-    # $global:DeviceFolder = "$CaseFolderName\$($Folders[1])"
-    # $global:UserFolder = "$CaseFolderName\$($Folders[2])"
-    # $global:NetworkFolder = "$CaseFolderName\$($Folders[3])"
-    # $global:ProcessFolder = "$CaseFolderName\$($Folders[4])"
-    # $global:SystemFolder = "$CaseFolderName\$($Folders[5])"
-    # $global:PrefetchFolder = "$CaseFolderName\$($Folders[6])"
-    # $global:EventLogFolder = "$CaseFolderName\$($Folders[7])"
-    # $global:FirewallFolder = "$CaseFolderName\$($Folders[8])"
-    # $global:BitlockerFolder = "$CaseFolderName\$($Folders[8])"
-    # $global:LogFolder = "$CaseFolderName\$($Folders[10])"
-# }
 
 
 function Get-LineNum {
@@ -230,7 +197,7 @@ function Save-Output {
 function Save-OutputAppend {
 
     param (
-        [Parameter(Mandatory ,Position = 0)]
+        [Parameter(Mandatory, Position = 0)]
         [object]
         $Data,
         [Parameter(Mandatory, Position = 1)]
@@ -272,10 +239,10 @@ function Show-OutputSavedToFile {
     )
 
     if ($NoTime) {
-        Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -NoTime -Green
+        Show-Message -Message "[INFO] Output saved to -> '$([System.IO.Path]::GetFileName($File))'" -NoTime -Green
     }
     else {
-        Show-Message("Output saved to -> '$([System.IO.Path]::GetFileName($File))'") -Green
+        Show-Message -Message "[INFO] Output saved to -> '$([System.IO.Path]::GetFileName($File))'" -Green
     }
 }
 
@@ -283,38 +250,39 @@ function Show-OutputSavedToFile {
 function Write-LogOutputAppended {
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
+        [Parameter(Mandatory, Position = 0)]
         [string]
         $File
     )
 
-    Write-LogEntry("Output appended to -> '$([System.IO.Path]::GetFileName($File))'")
+    Write-LogEntry -Message "Output appended to -> '$([System.IO.Path]::GetFileName($File))'"
 }
 
 
 function Write-LogOutputSaved {
 
     param (
-        [Parameter(Mandatory = $True, Position = 0)]
+        [Parameter(Mandatory, Position = 0)]
         [string]
         $File
     )
 
-    Write-LogEntry("Output saved to -> '$([System.IO.Path]::GetFileName($File))'")
+    Write-LogEntry -Message "Output saved to -> '$([System.IO.Path]::GetFileName($File))'"
 }
 
 
 function Write-NoDataFound {
 
     param (
+        [Parameter(Mandatory, Position = 0)]
         [string]
         $FunctionName
     )
 
-    $NoDataMsg = "No data found for '$($FunctionName)' function"
-    Show-Message("$NoDataMsg") -Yellow
-    Write-LogEntry("$NoDataMsg")
+    $NoDataMsg = "No data found for '$FunctionName' function"
+    Show-Message -Message $NoDataMsg -Yellow
+    Write-LogEntry -Message $NoDataMsg
 }
 
 
-Export-ModuleMember -Function Get-TimeStamp, Write-LogEntry, Show-Message, Show-FinishMessage, Write-LogFinishedMessage, Set-CaseFolders, Get-LineNum, Save-Output, Save-OutputAppend, Save-OutputAsCsv, Show-OutputSavedToFile, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound -Variable Dlu, StartTime, Date, Time, RunDate, Ipv4, Ipv6, ComputerName, Cwd, CaseFolderName, KeyNotFoundMsg, NoMatchingEventsMsg, ExecutableFileTypes
+Export-ModuleMember -Function Get-TimeStamp, Show-Message, Show-FinishMessage, Write-LogFinishedMessage, Set-CaseFolders, Get-LineNum, Save-Output, Save-OutputAppend, Save-OutputAsCsv, Show-OutputSavedToFile, Write-LogOutputAppended, Write-LogOutputSaved, Write-NoDataFound -Variable Dlu, StartTime, Date, Time, RunDate, Ipv4, Ipv6, ComputerName, Cwd, CaseFolderName, KeyNotFoundMsg, NoMatchingEventsMsg, ExecutableFileTypes
