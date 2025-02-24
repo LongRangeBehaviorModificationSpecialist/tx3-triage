@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-HtmlComputerRam {
@@ -21,14 +21,14 @@ function Get-HtmlComputerRam {
     function Get-ComputerRam {
 
         $Name = "Get_Computer_RAM"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
 
             # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
-            Show-Message("[INFO] $BeginMessage")
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
+            Show-Message -Message "[INFO] $BeginMessage"
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             $RamOutputFileName = "$($RunDate)_$($ComputerName)_RAM_Capture.raw"
 
@@ -40,11 +40,11 @@ function Get-HtmlComputerRam {
 
             # Show & log $SuccessMsg message
             $SuccessMsg = "RAM capture from $ComputerName completed"
-            Show-Message("[INFO] $SuccessMsg")
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
+            Show-Message -Message "[INFO] $SuccessMsg"
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg"
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 

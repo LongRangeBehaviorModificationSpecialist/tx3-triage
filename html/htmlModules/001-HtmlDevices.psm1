@@ -17,14 +17,14 @@ function Export-DeviceHtmlPage {
     # 1-000
     function Get-DeviceData {
 
-        foreach ($item in $DevicePropertyArray.GetEnumerator()) {
-            $Name = $item.Key
-            $Title = $item.value[0]
-            $Command = $item.value[1]
-            $Type = $item.value[2]
+        foreach ($Item in $DevicePropertyArray.GetEnumerator()) {
+            $Name = $Item.Key
+            $Title = $Item.value[0]
+            $Command = $Item.value[1]
+            $Type = $Item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+            Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
@@ -33,20 +33,20 @@ function Export-DeviceHtmlPage {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
                     if ($Type -eq "Pipe") {
-                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromPipe
                     }
                     if ($Type -eq "String") {
-                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
                     }
                 }
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 
@@ -56,17 +56,17 @@ function Export-DeviceHtmlPage {
 
         $Name = "1-021_PnpDevicesAsCsv"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
             Get-PnpDevice | Export-Csv -Path "$OutputFolder\$FileName" -NoTypeInformation -Encoding UTF8
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -76,24 +76,24 @@ function Export-DeviceHtmlPage {
         $Name = "1-022_PnpEnumDevices"
         $Title = "PnP Enum Devices"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
-            $data = pnputil /enum-devices | Out-String
-            if (-not $data) {
+            $Data = pnputil /enum-devices | Out-String
+            if (-not $Data) {
                 Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+                Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -103,36 +103,36 @@ function Export-DeviceHtmlPage {
         $Name = "1-023_TimeZoneInfo"
         $Title = "Time Zone Info"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name'") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
         $RegKey = "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation"
 
         try {
-            Show-Message("[INFO] Searching for key [$RegKey]") -Blue
+            Show-Message -Message "[INFO] Searching for key [$RegKey]" -Blue
             if (-not (Test-Path -Path $RegKey)) {
-                $dneMsg = "Registry Key [$RegKey] does not exist"
-                Show-Message("[WARNING] $dneMsg") -Yellow
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $dneMsg") -WarningMessage
+                $dneMessage = "Registry Key '$RegKey' does not exist on the examined machine"
+                Show-Message -Message "[WARNING] $dneMessage" -Yellow
+                Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $dneMessage" -WarningMessage
             }
             else {
                 $Data = Get-ItemProperty $RegKey | Select-Object -Property * | Out-String
 
                 if (-not $Data) {
-                    $msg = "The registry key [$RegKey] exists, but contains no data"
-                    Show-Message("[INFO] $msg") -Yellow
-                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
+                    $NoDataMessage = "The registry key '$RegKey' exists, but contains no data"
+                    Show-Message -Message "[INFO] $NoDataMessage" -Yellow
+                    Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoDataMessage"
                 }
                 else {
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-                    Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+                    Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -142,7 +142,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-024_AutoRuns"
         $Title = "AutoRuns Data"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
@@ -153,19 +153,19 @@ function Export-DeviceHtmlPage {
                 Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+                Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temp csv file
             Remove-Item -Path $TempCsvFile -Force
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -175,7 +175,7 @@ function Export-DeviceHtmlPage {
         $Name = "1-025_OpenWindowTitles"
         $Title = "Open Window Titles"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
@@ -184,15 +184,15 @@ function Export-DeviceHtmlPage {
                 Invoke-NoDataFoundMessage -Name $Name
             }
             else {
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-                Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+                Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+                Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -202,25 +202,25 @@ function Export-DeviceHtmlPage {
         $Name = "1-026_FullSystemInfo"
         $Title = "Full System Info"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
-        $tempFile = "$OutputFolder\$Name-TEMP.txt"
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
+        $TempFile = "$OutputFolder\$Name-TEMP.txt"
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-            Start-Process -DeviceHtmlOutputFolder "msinfo32.exe" -ArgumentList "/report $tempFile" -NoNewWindow -Wait
-            $Data = Get-Content -Path $tempFile -Raw
-            Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+            Start-Process -FilePath "msinfo32.exe" -ArgumentList "/report $TempFile" -NoNewWindow -Wait
+            $Data = Get-Content -Path $TempFile -Raw
+            Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
         finally {
             # Remove the temporary text file
-            Remove-Item -Path $tempFile -Force
+            Remove-Item -Path $TempFile -Force
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
@@ -259,12 +259,12 @@ function Export-DeviceHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    Get-DeviceData
-    Get-PnpDevicesAsCsv
-    Get-PnpEnumDevices
-    Get-TimeZoneInfo
-    Get-AutoRunsData
-    Get-OpenWindowTitles
+    # Get-DeviceData
+    # Get-PnpDevicesAsCsv
+    # Get-PnpEnumDevices
+    # Get-TimeZoneInfo
+    # Get-AutoRunsData
+    # Get-OpenWindowTitles
     Get-FullSystemInfo
 
 

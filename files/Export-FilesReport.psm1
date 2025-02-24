@@ -6,7 +6,7 @@ function Write-LogEntry {
     [CmdletBinding()]
 
     param (
-        # [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         $Message,
         [string]
@@ -25,8 +25,9 @@ function Write-LogEntry {
 
     $LogFileName = "$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
+    $LogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
 
-    $LogFile = "$LogFolderPath\$LogFileName"
+    $LogFile = "$LogFolder\$LogFileName"
 
     if (-not $Message) {
         throw "The message parameter cannot be empty."
@@ -97,7 +98,7 @@ function Export-FilesReport {
     )
 
 
-    $LogFolderPath = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
+    $LogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
 
 
     # Name of the folder containing the .psm1 files that are to be imported
@@ -106,17 +107,16 @@ function Export-FilesReport {
 
     foreach ($file in (Get-ChildItem -Path $FilesModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
-        Show-Message -Message "Module file: '.\$($file.Name)' was imported successfully" -NoTime -Blue
+        # Show-Message -Message "Module file: '.\$($file.Name)' was imported successfully" -NoTime -Blue
         Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully"
     }
 
 
     # Start transcript to record all of the screen output
-    $BeginRecord = Start-Transcript -OutputDirectory $LogFolder -IncludeInvocationHeader -NoClobber
-    Show-Message -Message $BeginRecord -NoTime
-    Write-LogEntry -Message $BeginRecord
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] PowerShell transcript started" -DebugMessage
-    Write-Host ""
+    $TranscriptBeginMessage = "Powershell Transcript started"
+    Start-Transcript -OutputDirectory $LogFolder -IncludeInvocationHeader -NoClobber
+    Show-Message -Message $TranscriptBeginMessage -Blue
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $TranscriptBeginMessage" -DebugMessage
 
 
     # Write the data to the log file and display start time message on the screen
@@ -191,14 +191,14 @@ INSTRUCTIONS
     }
 
 
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Operator Name Entered: $User"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Agency Name Entered: $Agency"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Case Number Entered: $CaseNumber"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Computer Name: $ComputerName"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Operator Name Entered: '$User'"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Agency Name Entered: '$Agency'"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Case Number Entered: '$CaseNumber'"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Computer Name: '$ComputerName'"
 
     # Write device IP information to the log file
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv4 address: $Ipv4"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv6 address: $Ipv6"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv4 address: '$Ipv4'"
+    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv6 address: '$Ipv6'"
 
 
     Show-Message -Message "Data acquisition started. This may take a hot minute...`n"
@@ -209,13 +209,14 @@ INSTRUCTIONS
     function Invoke-Edd {
         if ($Edd) {
             try {
-                Get-EncryptedDiskDetector $CaseFolderName $ComputerName
+                $EddFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "EncryptedDiskDetector" -Force
+                Get-EncryptedDiskDetector -CaseFolderName $CaseFolderName -ComputerName $ComputerName -EddFolder $EddFolder
                 # Read the contents of the EDD text file and show the results on the screen
                 Get-Content -Path "$CaseFolderName\00A_EncryptedDiskDetector\EncryptedDiskDetector.txt" -Force
                 Show-Message -Message "`nEncrypted Disk Detector has finished" -NoTime -Yellow
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -228,10 +229,12 @@ INSTRUCTIONS
     function Invoke-Processes {
         if ($CaptureProcesses) {
             try {
-                Get-RunningProcesses $CaseFolderName $ComputerName
+                # Make new directory to store the process .dmp files
+                $ProcessesFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Processes" -Force
+                Get-RunningProcesses -CaseFolderName $CaseFolderName -ComputerName $ComputerName -ProcessesFolder $ProcessesFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -244,10 +247,12 @@ INSTRUCTIONS
     function Invoke-Ram {
         if ($GetRam) {
             try {
-                Get-ComputerRam $CaseFolderName $ComputerName
+                # Create a folder called "RAM" to store the captured RAM file
+                $RamFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "RAM" -Force
+                Get-ComputerRam -CaseFolderName $CaseFolderName -ComputerName $ComputerName -RamFolder $RamFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -265,7 +270,7 @@ INSTRUCTIONS
                 Export-DeviceFilesPage -OutputFolder $DeviceOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -283,7 +288,7 @@ INSTRUCTIONS
                 Export-UserFilesPage -OutputFolder $UserOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -301,7 +306,7 @@ INSTRUCTIONS
                 Export-NetworkFilesPage -OutputFolder $NetworkOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -319,7 +324,7 @@ INSTRUCTIONS
                 Export-ProcessFilesPage -OutputFolder $ProcessOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -337,7 +342,7 @@ INSTRUCTIONS
                 Export-SystemFilesPage -OutputFolder $SystemOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -355,7 +360,7 @@ INSTRUCTIONS
                 Export-PrefetchFilesPage -OutputFolder $PrefetchOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -373,7 +378,7 @@ INSTRUCTIONS
                 Export-EventLogFilesPage -OutputFolder $EventLogOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -391,7 +396,7 @@ INSTRUCTIONS
                 Export-FirewallFilesPage -OutputFolder $FirewallOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -409,7 +414,7 @@ INSTRUCTIONS
                 Export-BitLockerFilesPage -OutputFolder $BitLockerOutputFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -422,10 +427,11 @@ INSTRUCTIONS
     function Invoke-Registry {
         if ($Hives) {
             try {
-                Get-RegistryHives $CaseFolderName $ComputerName
+                $RegHiveFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Registry_Hives" -Force
+                Get-RegistryHives -CaseFolderName $CaseFolderName -ComputerName $ComputerName -RegHiveFolder $RegHiveFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -439,14 +445,15 @@ INSTRUCTIONS
     function Invoke-EventLogs {
         if ($GetEventLogs) {
             try {
-                Get-EventLogs $CaseFolderName $ComputerName -NumOfEventLogs $NumOfEventLogs
+                $EventLogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Event_Logs" -Force
+                Get-EventLogs -CaseFolderName $CaseFolderName -ComputerName $ComputerName -EventLogFolder $EventLogFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy Windows Event Log' option was not selected by the user" -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy Windows Event Logs' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-EventLogs
@@ -455,10 +462,11 @@ INSTRUCTIONS
     function Invoke-NTUser {
         if ($GetNTUserDat) {
             try {
-                Get-NTUserDatFiles $CaseFolderName $ComputerName
+                $NTUserFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "NTUser_Files" -Force
+                Get-NTUserDatFiles -CaseFolderName $CaseFolderName -ComputerName $ComputerName -NTUserFolder $NTUserFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -472,14 +480,15 @@ INSTRUCTIONS
     function Invoke-Prefetch {
         if ($CopyPrefetch) {
             try {
-                Get-PrefetchFiles $CaseFolderName $ComputerName -NumOfPFRecords $NumOfPFRecords
+                $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Prefetch_Files" -Force
+                Get-PrefetchFiles -CaseFolderName $CaseFolderName -ComputerName $ComputerName -PFFolder $PFFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Collect Windows Prefetch Files' collection option was not enabled by the user" -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Collect Windows Prefetch Files' option was not enabled by the user" -WarningMessage
         }
     }
     Invoke-Prefetch
@@ -489,10 +498,11 @@ INSTRUCTIONS
     function Invoke-SrumDB {
         if ($Srum) {
             try {
-                Get-SrumDB $CaseFolderName $ComputerName
+                $SrumFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "SRUM_DB" -Force
+                Get-SrumDB -CaseFolderName $CaseFolderName -ComputerName $ComputerName -SrumFolder $SrumFolder
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -510,7 +520,7 @@ INSTRUCTIONS
                 Invoke-GetAllFilesList -OutputFolder $FilesListOutputFolder -DriveList $DriveList
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -528,7 +538,7 @@ INSTRUCTIONS
                 Get-FileHashes -OutputFolder $HashResultsFolder -CaseFolderName $CaseFolderName -ComputerName $ComputerName
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
@@ -550,11 +560,11 @@ INSTRUCTIONS
                 Get-CaseArchive
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user" -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Save Case Archive' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-CaseArchive
@@ -583,7 +593,8 @@ INSTRUCTIONS
 
 
     # Stop the transcript
-    Show-Message -Message "$(Stop-Transcript)" -Header -NoTime
+    Stop-Transcript
+    Show-Message -Message "Transcript ended" -Header
 
 
     # Show a popup message when script is complete

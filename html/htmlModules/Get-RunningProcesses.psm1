@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-HtmlRunningProcesses {
@@ -22,13 +22,13 @@ function Get-HtmlRunningProcesses {
     function Get-RunningProcesses {
 
         $Name = "Capture_Running_Processes"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
             # Show & log $BeginMessage message
-            $BeginMessage = "Starting Process Capture from: $ComputerName.  Please wait..."
-            Show-Message("[INFO] $BeginMessage")
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
+            $BeginMessage = "Starting Process Capture from: '$ComputerName'.  Please wait..."
+            Show-Message -Message "[INFO] $BeginMessage"
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $OutputFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> '$ProcessesFolder'"
@@ -40,13 +40,13 @@ function Get-HtmlRunningProcesses {
             Start-Process -NoNewWindow -FilePath $ProcessCaptureExeFilePath -ArgumentList "/saveall $OutputFolder" -Wait
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
         finally {
             # Show & log $SuccessMsg message
-            $SuccessMsg = "Process Capture from $ComputerName completed successfully"
-            Show-Message("[INFO] $SuccessMsg")
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
+            $SuccessMessage = "Process Capture from $ComputerName completed successfully"
+            Show-Message -Message "[INFO] $SuccessMessage"
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMessage"
         }
     }
 
@@ -66,7 +66,7 @@ function Get-HtmlRunningProcesses {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 6)) -eq "NTUser") {
+            if ($($File.SubString(0, 9)) -eq "Processes") {
                 continue
             }
             else {

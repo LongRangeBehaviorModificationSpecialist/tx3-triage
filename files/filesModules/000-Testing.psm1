@@ -1,7 +1,7 @@
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 # 0-001
@@ -26,18 +26,19 @@ function Get-ForensicData {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-001",
-        [string]$FileName = "SystemInfo.txt"
+        [string]
+        $Num = "0-001",
+        [string]
+        $FileName = "SystemInfo.txt"
     )
 
     $File = Join-Path -Path $TestingFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
 
     try {
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
 
             # Create a hashtable to store all forensic data
             $ForensicData = @{}
@@ -117,19 +118,15 @@ function Get-ForensicData {
                 $Output += "Device: $($_.FriendlyName), Manufacturer: $($_.Manufacturer)"
             }
 
-            Save-Output $Output $File
-            Show-OutputSavedToFile $File
-            Write-LogOutputSaved $File
+            Save-Output -Data $Output -File $File
+            Show-OutputSavedToFile -File $File
+            Write-LogOutputSaved -File $File
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 
@@ -139,23 +136,27 @@ function Get-SuspiciousFiles {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-002",
-        [string]$FileName = "SuspiciousFiles.txt",
-        [string]$Path = "C:\",
-        [string[]]$Keywords = @("child", "porn", "csam", "abuse"),
-        [string[]]$Extensions = @("jpg", "png", "mp4", "mov")
+        [string]
+        $Num = "0-002",
+        [string]
+        $FileName = "SuspiciousFiles.txt",
+        [string]
+        $Path = "C:\",
+        [string[]]
+        $Keywords = @("child", "porn", "csam", "abuse"),
+        [string[]]
+        $Extensions = @("jpg", "png", "mp4", "mov")
     )
 
     begin {
         $File = Join-Path -Path $TestingFolder -ChildPath "$($Num)_$FileName"
-        $FunctionName = $MyInvocation.MyCommand.Name
-        $Header = "$Num Running ``$FunctionName`` function"
+        $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
     }
     process {
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("[INFO] $Header") -Header -DarkGray
-                Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
 
                 $Data = Get-ChildItem -Path $Path -Recurse -ErrorAction SilentlyContinue | Where-Object {
                     ($_.Extension -replace "\.", "") -in $Extensions -and
@@ -163,23 +164,19 @@ function Get-SuspiciousFiles {
                 } | Select-Object FullName, Name, Extension, CreationTime, LastWriteTime, Length
 
                 if ($Data.Count -eq 0) {
-                    Write-NoDataFound $FunctionName
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            # Finish logging
-            Show-FinishMessage $FunctionName $ExecutionTime
-            Write-LogFinishedMessage $FunctionName $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 }
@@ -190,21 +187,23 @@ function Get-BrowserHistory {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-003",
-        [string]$FileName = "SuspiciousFiles.txt",
-        [string[]]$Keywords = @("child", "porn", "csam", "abuse")
+        [string]
+        $Num = "0-003",
+        [string]
+        $FileName = "SuspiciousFiles.txt",
+        [string[]]
+        $Keywords = @("child", "porn", "csam", "abuse")
     )
 
     begin {
         $File = Join-Path -Path $TestingFolder -ChildPath "$($Num)_$FileName"
-        $FunctionName = $MyInvocation.MyCommand.Name
-        $Header = "$Num Running ``$FunctionName`` function"
+        $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
     }
     process {
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("[INFO] $Header") -Header -DarkGray
-                Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
 
                 $BrowserPaths = @(
                     "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\History",
@@ -221,13 +220,14 @@ function Get-BrowserHistory {
                             $Query = "SELECT url, title, last_visit_time FROM urls"
                             $Data = & sqlite3 $SqlitePath $Query
                             $Data | Where-Object { $_ -match ($Keywords -join "|") }
+
                             if ($Data.Count -eq 0) {
-                                Write-NoDataFound $FunctionName
+                                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                             }
                             else {
-                                Save-Output $Data $File
-                                Show-OutputSavedToFile $File
-                                Write-LogOutputSaved $File
+                                Save-Output -Data $Data -File $File
+                                Show-OutputSavedToFile -File $File
+                                Write-LogOutputSaved -File $File
                             }
                         }
                         catch {
@@ -236,20 +236,16 @@ function Get-BrowserHistory {
                     }
                     else {
                         $PathDNEMsg = "The following path does not exist -> ``$Path``"
-                        Show-Message("$PathDNEMsg")
-                        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $PathDNEMsg")
+                        Show-Message -Message $PathDNEMsg
+                        Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $PathDNEMsg"
                     }
                 }
             }
-            # Finish logging
-            Show-FinishMessage $FunctionName $ExecutionTime
-            Write-LogFinishedMessage $FunctionName $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 }
@@ -262,22 +258,25 @@ function Compare-FileHashes {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-004",
-        [string]$FileName = "CompareHashes.txt",
-        [string]$Path = "C:\",
-        [string]$HashDatabase = "C:\hashes.txt"
+        [string]
+        $Num = "0-004",
+        [string]
+        $FileName = "CompareHashes.txt",
+        [string]
+        $Path = "C:\",
+        [string]
+        $HashDatabase = "C:\hashes.txt"
     )
 
     begin {
         $File = Join-Path -Path $TestingFolder -ChildPath "$($Num)_$FileName"
-        $FunctionName = $MyInvocation.MyCommand.Name
-        $Header = "$Num Running ``$FunctionName`` function"
+        $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
     }
     process {
         try {
             $ExecutionTime = Measure-Command {
-                Show-Message("[INFO] $Header") -Header -DarkGray
-                Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
 
                 $KnownHashes = Get-Content $HashDatabase
                 Get-ChildItem -Path $Path -Recurse -ErrorAction SilentlyContinue | Where-Object {
@@ -294,15 +293,11 @@ function Compare-FileHashes {
                     }
                 }
             }
-            # Finish logging
-            Show-FinishMessage $FunctionName $ExecutionTime
-            Write-LogFinishedMessage $FunctionName $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 }
@@ -313,21 +308,21 @@ function Get-USBSTOR {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-005",
-        [string]$FileName = "USBSTOR.txt"
+        [string]
+        $Num = "0-005",
+        [string]
+        $FileName = "USBSTOR.txt"
     )
 
     begin {
         $File = Join-Path -Path $TestingFolder -ChildPath "$($Num)_$FileName"
-        $FunctionName = $MyInvocation.MyCommand.Name
-        $Header = "$Num Running ``$FunctionName`` function"
+        $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
     }
     process {
         try {
-            # Run the command
             $ExecutionTime = Measure-Command {
-                Show-Message("[INFO] $Header") -Header -DarkGray
-                Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+                Show-Message -Message "[INFO] $Header" -Header -DarkGray
+                Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
 
                 $DataKeys = @(
                     "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*",
@@ -359,20 +354,16 @@ function Get-USBSTOR {
                     }
                     $Counter ++
                 }
-                Save-Output $Data $File
+                Save-Output -Data $Data -File $File
                 # $Data | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
-            # Show & log finish messages
-            Show-FinishMessage $FunctionName $ExecutionTime
-            Write-LogFinishedMessage $FunctionName $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            # Error handling
-            $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-            Show-Message("$ErrorMessage") -Red
-            Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 }
@@ -383,11 +374,16 @@ function Get-RecentlyAccessedFiles {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-006",
-        [string]$FileName = "RecentlyAccessedFiles.txt",
-        [string]$Path = "C:\",
-        [string[]]$Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg"),
-        [int]$Days = 7
+        [string]
+        $Num = "0-006",
+        [string]
+        $FileName = "RecentlyAccessedFiles.txt",
+        [string]
+        $Path = "C:\",
+        [string[]]
+        $Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg"),
+        [int]
+        $Days = 7
     )
 
     process {
@@ -398,16 +394,21 @@ function Get-RecentlyAccessedFiles {
     }
 }
 
+
 # 0-007
 function Get-SuspiciousFilePermissions {
 
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-007",
-        [string]$FileName = "SuspiciousFilePermissions.txt",
-        [string]$Path = "C:\",
-        [string[]]$Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg")
+        [string]
+        $Num = "0-007",
+        [string]
+        $FileName = "SuspiciousFilePermissions.txt",
+        [string]
+        $Path = "C:\",
+        [string[]]
+        $Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg")
     )
 
     process {
@@ -429,15 +430,19 @@ function Get-SuspiciousFilePermissions {
     }
 }
 
+
 # 0-008
 function Get-PrefetchAnalysis {
 
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-008",
-        [string]$FileName = "PrefetchAnalysis.txt",
-        [string]$Path = "C:\Windows\Prefetch"
+        [string]
+        $Num = "0-008",
+        [string]
+        $FileName = "PrefetchAnalysis.txt",
+        [string]
+        $Path = "C:\Windows\Prefetch"
     )
 
     process {
@@ -451,6 +456,7 @@ function Get-PrefetchAnalysis {
     }
 }
 
+
 # TODO -- Add ThumbCacheViewer.exe to .bin directory.
 # TODO -- Have this function only copy the thumbcache*.db files
 # TODO -- Make seperate function to analyze the .db files on a seperate machine
@@ -460,9 +466,12 @@ function Get-ThumbnailCache {
     [CmdletBinding()]
 
     param (
-        [string]$Num = "0-009",
-        [string]$FileName = "RecentlyAccessedFiles.txt",
-        [string]$CachePath = "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"
+        [string]
+        $Num = "0-009",
+        [string]
+        $FileName = "RecentlyAccessedFiles.txt",
+        [string]
+        $CachePath = "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"
     )
 
     process {

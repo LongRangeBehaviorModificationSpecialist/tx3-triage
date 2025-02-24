@@ -145,30 +145,30 @@ function Show-Message {
 function Show-FinishMessage {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [string]
-        $FunctionName,
-        [Parameter(Mandatory, Position = 1)]
+        $Function,
+        [Parameter(Mandatory)]
         [timespan]
         $ExecutionTime
     )
 
-        Show-Message -Message "[INFO] '$($FunctionName)' function finished in $($ExecutionTime.TotalSeconds) seconds" -Blue
+        Show-Message -Message "[INFO] '$($Function)' function finished in $($ExecutionTime.TotalSeconds) seconds" -Blue
 }
 
 
 function Write-LogFinishedMessage {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [string]
-        $FunctionName,
-        [Parameter(Mandatory, Position = 1)]
+        $Function,
+        [Parameter(Mandatory)]
         [timespan]
         $ExecutionTime
     )
 
-    Write-LogEntry -Message "Function '$FunctionName' finished in $($ExecutionTime.TotalSeconds) seconds"
+    Write-LogEntry -Message "Function '$Function' finished in $($ExecutionTime.TotalSeconds) seconds"
 }
 
 
@@ -180,10 +180,10 @@ function Get-LineNum {
 function Save-Output {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [object]
         $Data,
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(Mandatory)]
         [string]
         $File
     )
@@ -197,10 +197,10 @@ function Save-Output {
 function Save-OutputAppend {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [object]
         $Data,
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(Mandatory)]
         [string]
         $File
     )
@@ -214,10 +214,10 @@ function Save-OutputAppend {
 function Save-OutputAsCsv {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [object]
         $Data,
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(Mandatory)]
         [string]
         $File
     )
@@ -231,7 +231,7 @@ function Save-OutputAsCsv {
 function Show-OutputSavedToFile {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [string]
         $File,
         [switch]
@@ -247,22 +247,10 @@ function Show-OutputSavedToFile {
 }
 
 
-function Write-LogOutputAppended {
-
-    param (
-        [Parameter(Mandatory, Position = 0)]
-        [string]
-        $File
-    )
-
-    Write-LogEntry -Message "Output appended to -> '$([System.IO.Path]::GetFileName($File))'"
-}
-
-
 function Write-LogOutputSaved {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [string]
         $File
     )
@@ -274,12 +262,12 @@ function Write-LogOutputSaved {
 function Write-NoDataFound {
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [string]
-        $FunctionName
+        $Function
     )
 
-    $NoDataMsg = "No data found for '$FunctionName' function"
+    $NoDataMsg = "No data found for '$Function' function"
     Show-Message -Message $NoDataMsg -Yellow
     Write-LogEntry -Message $NoDataMsg
 }

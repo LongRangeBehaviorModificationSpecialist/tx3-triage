@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-ADSData {
@@ -32,7 +32,8 @@ function Get-ADSData {
     [CmdletBinding()]
 
     param (
-        [string]$Path = "C:\Users"
+        [string]
+        $Path = "C:\Users"
     )
 
     try {
@@ -45,7 +46,7 @@ function Get-ADSData {
                     Get-Content -Path $File.FullName -Stream $Stream.Stream
                 }
                 catch {
-                    Show-Message("Error reading stream content: $($PSItem)") -Red
+                    Show-Message -Message "Error reading stream content: $($PSItem)" -Red
                 }
                 $Results += [PSCustomObject]@{
                     Host              = $env:COMPUTERNAME
@@ -61,15 +62,10 @@ function Get-ADSData {
                 }
             }
         }
-
         return $Results | Select-Object Host, DateScanned, FileName, Stream, StreamLength, StreamContent, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc, Attributes
     }
-
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 

@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 function Invoke-HtmlNTUserDatFiles {
 
@@ -20,14 +20,14 @@ function Invoke-HtmlNTUserDatFiles {
     function Get-HtmlNTUserDatFiles {
 
         $Name = "Copy_NTUSER.DAT_Files"
-        Show-Message("[INFO] Running '$Name'") -Header -DarkGray
-        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+        Show-Message -Message "[INFO] Running '$Name'" -Header -DarkGray
+        Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
 
         try {
             if (-not (Test-Path $RawCopyPath)) {
                 $NoRawCopyWarnMsg = "The required RawCopy.exe binary is missing. Please ensure it is located at: $RawCopyPath"
-                Show-Message("[ERROR] $NoRawCopyWarnMsg") -Red
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoRawCopyWarnMsg") -ErrorMessage
+                Show-Message -Message "[ERROR] $NoRawCopyWarnMsg" -Red
+                Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoRawCopyWarnMsg" -ErrorMessage
             }
 
             try {
@@ -39,34 +39,33 @@ function Invoke-HtmlNTUserDatFiles {
                         # Show & log the $CopyMsg message
                         $NTUserFilePath = "$Env:HOMEDRIVE\Users\$User\NTUSER.DAT"
                         $OutputFileName = "$User-NTUSER.DAT"
-                        $CopyMsg = "Copying NTUSER.DAT file from the $User profile from computer: $ComputerName"
+                        $CopyMessage = "Copying NTUSER.DAT file from the '$User' profile from computer: '$ComputerName'"
 
-                        Show-Message("[INFO] $CopyMsg") -Magenta
-                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $CopyMsg")
+                        Show-Message -Message "[INFO] $CopyMessage" -Magenta
+                        Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $CopyMessage"
                         Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$NTUserFilePath /OutputPath:"$OutputFolder" /OutputName:"$OutputFileName" }
 
                         if ($LASTEXITCODE -ne 0) {
-                            $NoProperExitMsg = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
-                            Show-Message("[ERROR] $NoProperExitMsg") -Red
-                            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoProperExitMsg") -ErrorMessage
+                            $NoProperExitMessage = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
+                            Show-Message -Message "[ERROR] $NoProperExitMessage" -Red
+                            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoProperExitMessage" -ErrorMessage
                         }
                     }
                 }
             }
             catch {
-                $RawCopyOtherMsg = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $RawCopyOtherMsg") -Red
-                Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $RawCopyOtherMsg") -ErrorMessage
+                $RawCopyOtherMessage = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
+                Show-Message -Message "[ERROR] $RawCopyOtherMessage" -Red
+                Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $RawCopyOtherMessage" -ErrorMessage
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
         finally {
-            # Show & log $SuccessMsg message
-            $SuccessMsg = "NTUSER.DAT files copied from computer: $ComputerName"
-            Show-Message("[INFO] $SuccessMsg") -Blue
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
+            $SuccessMsg = "NTUSER.DAT files copied from computer: '$ComputerName'"
+            Show-Message -Message "[INFO] $SuccessMsg" -Blue
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg"
         }
     }
 
@@ -93,7 +92,6 @@ function Invoke-HtmlNTUserDatFiles {
                 Add-Content -Path $NTUserHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
-
         Add-Content -Path $NTUserHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 

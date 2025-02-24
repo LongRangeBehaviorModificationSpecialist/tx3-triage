@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 function Invoke-HtmlEncryptedDiskDetector {
 
@@ -22,12 +22,11 @@ function Invoke-HtmlEncryptedDiskDetector {
         $Name = "Encrypted_Disk_Detector"
         $Title = "Encrypted Disk Detector"
         $FileName = "$Name.html"
-        Show-Message("[INFO] Running '$Name'") -Header -DarkGray
-        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+        Show-Message -Message "[INFO] Running '$Name'" -Header -DarkGray
+        Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
-
             # Name the file to save the results of the scan to
             $EddTxtFile = New-Item -Path "$OutputFolder\Encrypted_Disk_Detector.txt" -ItemType File -Force
 
@@ -35,23 +34,19 @@ function Invoke-HtmlEncryptedDiskDetector {
             Start-Process -NoNewWindow -FilePath $EddExeFilePath -ArgumentList "/batch" -Wait -RedirectStandardOutput $EddTxtFile
 
             # Show & log $SuccessMsg message
-            $SuccessMsg = "Encrypted Disk Detector completed successfully on computer: $ComputerName"
-            Show-Message("[INFO] $SuccessMsg") -Green
-            Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg")
+            $SuccessMessage = "Encrypted Disk Detector completed successfully on computer: $ComputerName"
+            Show-Message -Message "[INFO] $SuccessMessage" -Green
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMessage"
 
             # Read the contents of the EDD text file and show the results on the screen
             $Data = Get-Content -Path $EddTxtFile -Force -Raw | Out-String
-            Save-OutputToSingleHtmlFile -FromString $Name $(Get-Content -Path $EddTxtFile -Force -Raw) $OutputHtmlFilePath $Title
+            Save-OutputToSingleHtmlFile -Name $Name -Data $(Get-Content -Path $EddTxtFile -Force -Raw) -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
             Write-Host $Data
 
-            # Show-Message("`nEncrypted Disk Detector has finished - Review the results before proceeding") -NoTime -Yellow
-            # Write-Host ""
-            # Read-Host -Prompt "Press [ENTER] to continue data collection -> "
-
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
         finally {
             # Delete the Edd text file

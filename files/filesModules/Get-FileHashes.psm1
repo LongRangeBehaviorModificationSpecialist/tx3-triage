@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-FileHashes {
@@ -20,8 +20,8 @@ function Get-FileHashes {
         $ExecutionTime = Measure-Command {
             # Show & log $beginMessage message
             $BeginMessage = "Hashing files for computer: $ComputerName"
-            Show-Message("[INFO] $BeginMessage")
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
+            Show-Message -Message "[INFO] $BeginMessage"
+            Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $OutputFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
@@ -56,29 +56,29 @@ function Get-FileHashes {
 
                 # Show & log $ProgressMsg message
                 $ProgressMsg = "Hashing file: $($_.Name)"
-                Show-Message("[INFO] $ProgressMsg")
+                Show-Message -Message "[INFO] $ProgressMsg"
 
                 # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
                 $HashMsgFileName = "Completed hashing file: '$($_.Name)'"
                 $HashValueMsg = "[SHA256]: $($FileHash)`n"
-                Show-Message("[INFO] $HashMsgFileName") -Blue
-                Show-Message("[INFO] $HashValueMsg") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashMsgFileName")
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg`n")
+                Show-Message -Message "[INFO] $HashMsgFileName" -Blue
+                Show-Message -Message "[INFO] $HashValueMsg" -Blue
+                Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashMsgFileName"
+                Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg`n"
             }
 
             # Export the results to the CSV file
             $Results | Export-Csv -Path $HashOutputFilePath -NoTypeInformation -Encoding UTF8
 
             $FileMsg = "Hash values saved to -> '$HashOutputFileName'`n"
-            Show-Message("[INFO] $FileMsg") -Blue
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $FileMsg")
+            Show-Message -Message "[INFO] $FileMsg" -Blue
+            Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $FileMsg"
         }
-        Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-        Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+        Show-FinishMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+        Invoke-ShowErrorMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 

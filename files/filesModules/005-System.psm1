@@ -31,19 +31,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ADSData
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -69,19 +69,19 @@ function Export-SystemFilesPage {
                 $Data = openfiles.exe /query /FO CSV /V
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -106,19 +106,19 @@ function Export-SystemFilesPage {
                 $Data = Get-CimInstance -ClassName Win32_Share | Select-Object -Property *
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -143,19 +143,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU' | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -180,19 +180,19 @@ function Export-SystemFilesPage {
                 $Data = Get-CimInstance -ClassName Win32_ScheduledJob
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -217,19 +217,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ScheduledTask | Select-Object -Property * | Where-Object { ($_.State -ne 'Disabled') }
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -254,19 +254,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" } | Get-ScheduledTaskInfo | Select-Object -Property *
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -291,19 +291,19 @@ function Export-SystemFilesPage {
                 $Data = Get-HotFix | Select-Object HotfixID, Description, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -334,19 +334,19 @@ function Export-SystemFilesPage {
                 }
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -371,19 +371,19 @@ function Export-SystemFilesPage {
                 $Data = Get-AppxPackage | Format-List
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -408,19 +408,19 @@ function Export-SystemFilesPage {
                 $Data = Get-CimInstance -ClassName Win32_ShadowCopy | Select-Object -Property *
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -446,19 +446,19 @@ function Export-SystemFilesPage {
                 $Data = ipconfig /displaydns
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -484,19 +484,19 @@ function Export-SystemFilesPage {
                 $Data = Get-DnsClientCache | ConvertTo-Csv -NoTypeInformation
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -521,19 +521,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ChildItem -Recurse -Force "$Env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files" | Select-Object Name, LastWriteTime, CreationTime, Directory | Sort-Object CreationTime -Descending
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -559,19 +559,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ChildItem -Recurse -Force "$($Env:LOCALAPPDATA)\Microsoft\Windows\cookies" | Select-Object Name |ForEach-Object { $N = $_.Name; Get-Content "$($AppData)\Microsoft\Windows\cookies\$N" | Select-String "/" }
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -596,19 +596,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Internet Explorer\TypedURLs" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -633,19 +633,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -670,19 +670,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains" | Select-Object PSChildName
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -707,19 +707,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" | Select-Object -Property *
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -744,19 +744,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -781,19 +781,19 @@ function Export-SystemFilesPage {
                 $Data = gpresult.exe /z
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -818,19 +818,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\*" | Select-Object -Property *
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -855,19 +855,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\*" | Select-Object -Property * | Sort-Object '(default)'
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -892,19 +892,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\*\*" | Select-Object -Property *
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -929,19 +929,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -966,19 +966,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Security Center\Svc" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1003,19 +1003,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1039,19 +1039,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1076,19 +1076,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartMenu" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1113,19 +1113,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1150,19 +1150,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1187,19 +1187,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" | Select-Object startup
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1224,19 +1224,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1261,19 +1261,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1298,19 +1298,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\exefile\shell\open\command" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1335,19 +1335,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Classes\http\shell\open\command" | Select-Object "(Default)"
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1372,19 +1372,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\BCD00000000\*\*\*\*" | Select-Object Element | Select-String "exe" | Select-Object Line
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1409,19 +1409,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" | Select-Object * -ExcludeProperty PS*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1446,19 +1446,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             throw $PSItem
         }
     }
@@ -1484,19 +1484,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*" | Select-Object "(Default)"
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1522,27 +1522,27 @@ function Export-SystemFilesPage {
                 $Data2 = Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Extensions\*' | Select-Object ButtonText, Icon
 
                 if (-not $Data1) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data1 $File
-                    Show-OutputSavedToFile $File
+                    Save-Output -Data $Data1 -File $File
+                    Show-OutputSavedToFile -File $File
                 }
 
                 if (-not $Data2) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-OutputAppend $Data2 $File
-                    Show-OutputSavedToFile $File
+                    Save-OutputAppend -Data $Data2 -File $File
+                    Show-OutputSavedToFile -File $File
                 }
-                Write-LogOutputSaved $File
+                Write-LogOutputSaved -File $File
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1567,19 +1567,19 @@ function Export-SystemFilesPage {
                 $Data = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*" | Select-Object FriendlyName, PSChildName, ContainerID
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1604,19 +1604,19 @@ function Export-SystemFilesPage {
                 $Data = auditpol /get /category:*
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1650,19 +1650,19 @@ function Export-SystemFilesPage {
                 }
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1697,19 +1697,19 @@ function Export-SystemFilesPage {
                 Show-Message -Message "Found $Count hidden files within $Path"
 
                 if (-not $Data) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -1744,19 +1744,19 @@ function Export-SystemFilesPage {
                 Show-Message -Message "Found $Count executable files within $Path"
 
                 if ($Count -eq 0) {
-                    Write-NoDataFound -FunctionName $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 

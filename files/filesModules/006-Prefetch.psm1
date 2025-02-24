@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Export-PrefetchFilesPage {
@@ -34,19 +34,19 @@ function Export-PrefetchFilesPage {
                 $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object -Property * | Sort-Object LastAccessTime
 
                 if ($Data.Count -eq 0) {
-                    Write-NoDataFound $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 
@@ -71,19 +71,19 @@ function Export-PrefetchFilesPage {
                 $Data = Get-ChildItem -Path "C:\Windows\Prefetch\*.pf" | Select-Object Name, LastAccessTime, CreationTime | Sort-Object LastAccessTime | Format-List
 
                 if ($Data.Count -eq 0) {
-                    Write-NoDataFound $($MyInvocation.MyCommand.Name)
+                    Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
                 }
                 else {
-                    Save-Output $Data $File
-                    Show-OutputSavedToFile $File
-                    Write-LogOutputSaved $File
+                    Save-Output -Data $Data -File $File
+                    Show-OutputSavedToFile -File $File
+                    Write-LogOutputSaved -File $File
                 }
             }
-            Show-FinishMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
-            Write-LogFinishedMessage $($MyInvocation.MyCommand.Name) $ExecutionTime
+            Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 

@@ -1,32 +1,21 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-CaseArchive {
 
-    [CmdletBinding()]
-
-    $CaseArchiveFuncName = $MyInvocation.MyCommand.Name
-
     try {
         $ExecutionTime = Measure-Command {
-            # Show beginning message
-            Show-Message("Creating Case Archive file -> '$($CaseFolderName.Name).zip'") -Header -Green
+            Show-Message -Message "Creating Case Archive file -> '$($CaseFolderName.Name).zip'" -Header -Green
             $CaseFolderParent = Split-Path -Path $CaseFolderName -Parent
             $CaseFolderTitle = (Get-Item -Path $CaseFolderName).Name
             Compress-Archive -Path $CaseFolderName -DestinationPath "$CaseFolderParent\$CaseFolderTitle.zip" -Force
-            Show-Message("Case archive file created successfully") -Header -Green
+            Show-Message -Message "Case archive file created successfully" -Header -Green
         }
-
-        # Finish logging
-        Show-FinishMessage $CaseArchiveFuncName $ExecutionTime
-        Write-LogFinishedMessage $CaseArchiveFuncName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
-
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($CaseArchiveFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 

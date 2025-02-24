@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Invoke-HtmlListAllFiles {
@@ -10,8 +10,6 @@ function Invoke-HtmlListAllFiles {
         $OutputFolder,
         [string]
         $HtmlReportFile,
-        # [string]
-        # $ComputerName,
         # List of drives to be included or excluded depending on the switch value that is entered
         [string[]]
         $DriveList
@@ -23,7 +21,7 @@ function Invoke-HtmlListAllFiles {
 
         $Name = "List_Attached_Files"
         $DriveArray = ($DriveList -split "\s*,\s*")  # Split on commas with optional surrounding spaces
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
             if (-not (Test-Path $OutputFolder)) {
@@ -35,8 +33,8 @@ function Invoke-HtmlListAllFiles {
                 $FileListingSaveFile = "$OutputFolder\$($RunDate)_$($ComputerName)_Files_$($DriveName).csv"
 
                 $ScanMessage = "Scanning files on the $($DriveName):\ drive"
-                Show-Message("[INFO] $ScanMessage") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $ScanMessage")
+                Show-Message -Message "[INFO] $ScanMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $ScanMessage"
 
                 # Scan and save file details
                 Get-ChildItem -Path "$($DriveName):\" -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | ForEach-Object {
@@ -55,17 +53,17 @@ function Invoke-HtmlListAllFiles {
 
                 # Show & log $DoneMessage message
                 $DoneMessage = "Completed scanning of $($DriveName):\ drive"
-                Show-Message("[INFO] $DoneMessage") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $DoneMessage")
+                Show-Message -Message "[INFO] $DoneMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $DoneMessage"
 
                 # Show & log $FileTitle message
                 $FileTitle = "Output saved to -> '$([System.IO.Path]::GetFileName($FileListingSaveFile))'`n"
-                Show-Message("[INFO] $FileTitle") -Green
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $FileTitle")
+                Show-Message -Message "[INFO] $FileTitle" -Green
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $FileTitle"
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 

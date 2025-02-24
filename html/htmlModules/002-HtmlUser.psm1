@@ -23,7 +23,7 @@ function Export-UserHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+            Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
@@ -33,20 +33,20 @@ function Export-UserHtmlPage {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
                     if ($Type -eq "Pipe") {
-                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromPipe
                     }
                     if ($Type -eq "String") {
-                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 

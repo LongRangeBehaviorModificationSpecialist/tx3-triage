@@ -23,7 +23,7 @@ function Export-HtmlKeywordSearchPage {
         $FileName = "$Name.html"
         $KeywordDriveArray = ($KeyWordsDriveList -split "\s*,\s*")  # Split on commas with optional surrounding spaces
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
             # Ensure the keyword file exists
@@ -31,7 +31,7 @@ function Export-HtmlKeywordSearchPage {
                 Write-Error "Keyword file not found: $KeywordListFile"
             }
 
-            Show-Message("Keyword file identified as '$KeywordListFile'") -Green
+            Show-Message -Message "Keyword file identified as '$KeywordListFile'" -Green
             # Read keywords from the file, removing empty lines and trimming whitespace
             $Keywords = Get-Content -Path $KeywordListFile
 
@@ -39,7 +39,7 @@ function Export-HtmlKeywordSearchPage {
                 Write-Error "No valid keywords found in file: $KeywordListFile"
             }
 
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Add-Content -Path $OutputHtmlFilePath -Value "$HtmlHeader`n`n<table>" -Encoding UTF8
 
@@ -60,16 +60,15 @@ function Export-HtmlKeywordSearchPage {
                     Add-Content -Path $OutputHtmlFilePath -Value "<tr><td>$($File)</td></tr>" -Encoding UTF8
                 }
             }
-
             Add-Content -Path $OutputHtmlFilePath -Value "</table>`n`n`t</body>`n</html>" -Encoding UTF8
-
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
+
 
     function Write-KeywordsSectionToMain {
 
@@ -94,7 +93,6 @@ function Export-HtmlKeywordSearchPage {
                 Add-Content -Path $KeyWordsHtmlMainFile -Value $FileNameEntry -Encoding UTF8
             }
         }
-
         Add-Content -Path $KeyWordsHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
 

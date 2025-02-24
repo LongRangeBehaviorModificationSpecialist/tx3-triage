@@ -9,70 +9,69 @@
 $ModuleName = Split-Path $($MyInvocation.MyCommand.Path) -Leaf
 
 
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 # 5-047
 function Get-RecentDllFiles {
 
-    [CmdletBinding()]
-
     param (
-        [string]$Num = "5-047",
-        [string]$FileName = "RecentDllFiles.csv",
-        [string]$Path = "C:\"
+        [string]
+        $Num = "5-047",
+        [string]
+        $FileName = "RecentDllFiles.csv",
+        [string]
+        $Path = "C:\"
     )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+
     try {
-        # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
+
             $Data = Get-ChildItem -Path $Path -File -Recurse -Force | Where-Object { $_.Extension -eq ".dll" } | Select-Object Name, Directory, FullName, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
+
+            if (-not $Data) {
+                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
             }
             else {
                 # Save the data to CSV
-                Save-OutputAsCsv $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Save-OutputAsCsv -Data $Data -File $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 
 # 5-048
 function Get-RecentLinkFiles {
 
-    [CmdletBinding()]
-
     param (
-        [string]$Num = "5-048",
-        [string]$FileName = "RecentLinkFiles.csv",
-        [int]$DaysBack = 90
+        [string]
+        $Num = "5-048",
+        [string]
+        $FileName = "RecentLinkFiles.csv",
+        [int]
+        $DaysBack = 90
     )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+
     try {
-        # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
+
             # Get Recent .lnk files
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-CimInstance -ClassName Win32_ShortcutFile | Where-Object {
@@ -82,119 +81,109 @@ function Get-RecentLinkFiles {
                 @{ N = "LastAccessed"; E = { $_.LastAccessed } },
                 @{ N = "LastModified"; E = { $_.LastModified } },
                 Target | Sort-Object LastModified -Descending
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
+
+            if (-not $Data) {
+                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
             }
             else {
-                # Save output to CSV file
-                Save-OutputAsCsv $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Save-OutputAsCsv -Data $Data -File $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 
 # 5-049
 function Get-CompressedFiles {
 
-    [CmdletBinding()]
-
     param (
-        [string]$Num = "5-049",
-        [string]$FileName = "CompressedFiles.csv",
-        [string]$Path = "C:\",
+        [string]
+        $Num = "5-049",
+        [string]
+        $FileName = "CompressedFiles.csv",
+        [string]
+        $Path = "C:\",
         # Default file types to search
-        [string[]]$FileTypes = @("*.exe", "*.dll", "*.zip")
+        [string[]]
+        $FileTypes = @("*.exe", "*.dll", "*.zip")
     )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+
     try {
         # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
+
             # Get compressed files
             $Data = Get-ChildItem -Path $Path -Include $FileTypes -Recurse -Force | Where-Object { $_.Attributes -band [IO.FileAttributes]::Compressed }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
+
+            if (-not $Data) {
+                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
             }
             else {
-                # Save data to a CSV file
                 $Data | Select-Object FullName, Name, Attributes, Length, @{ N = "LastModified"; E = { $_.LastWriteTimeUtc } } | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 
 # 5-050
 function Get-EncryptedFiles {
 
-    [CmdletBinding()]
-
     param (
-        [string]$Num = "5-050",
-        [string]$FileName = "EncryptedFiles.csv",
-        [string]$Path = "C:\"
+        [string]
+        $Num = "5-050",
+        [string]
+        $FileName = "EncryptedFiles.csv",
+        [string]
+        $Path = "C:\"
     )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+
     try {
-        # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
+
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | Where-Object { $_.Attributes -band [IO.FileAttributes]::Encrypted }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
+
+            if (-not $Data) {
+                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
             }
             else {
-                # Save data to a CSV file
                 $Data | Select-Object FullName, Name, Attributes, Length, @{ N = "LastModified"; E = { $_.LastWriteTimeUtc } } | Export-Csv -Path $File -NoTypeInformation -Encoding UTF8
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 
 # 5-051
 function Get-ExeTimeline {
-
-    [CmdletBinding()]
 
     param (
         [string]$Num = "5-051",
@@ -204,42 +193,35 @@ function Get-ExeTimeline {
     )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+
     try {
-        # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
 
             $CutoffDate = (Get-Date).AddDays(-$DaysBack)
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | Where-Object { -Not $_.PSIsContainer -and $_.LastWriteTime -gt $CutoffDate } | Select-Object FullName, LastWriteTime, @{ N = "Owner"; E = { ($_ | Get-ACL).Owner } }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
+
+            if (-not $Data) {
+                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
             }
             else {
-                # Save output to CSV file
-                Save-OutputAsCsv $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Save-OutputAsCsv -Data $Data -File $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 
 # 5-052
 function Get-DownloadedExecutables {
-
-    [CmdletBinding()]
 
     param (
         [string]$Num = "5-052",
@@ -248,33 +230,30 @@ function Get-DownloadedExecutables {
     )
 
     $File = Join-Path -Path $SystemFolder -ChildPath "$($Num)_$FileName"
-    $FunctionName = $MyInvocation.MyCommand.Name
-    $Header = "$Num Running ``$FunctionName`` function"
+    $Header = "$Num Running '$($MyInvocation.MyCommand.Name)' function"
+
     try {
-        # Run the command
         $ExecutionTime = Measure-Command {
-            Show-Message("[INFO] $Header") -Header -DarkGray
-            Write-LogEntry("[$($ModuleName), Ln: $(Get-LineNum)] $Header")
+            Show-Message -Message "[INFO] $Header" -Header -DarkGray
+            Write-LogEntry -Message "[$($ModuleName), Ln: $(Get-LineNum)] $Header"
+
             $Data = Get-ChildItem -Path $Path -Recurse -Force -Include $ExecutableFileTypes | ForEach-Object { Get-Item $_.FullName -Stream * } | Where-Object { $_.Stream -Match "Zone.Identifier" } | Select-Object Filename, Stream, @{ N = "LastWriteTime"; E = { (Get-Item $_.FileName).LastWriteTime } }
-            if ($Data.Count -eq 0) {
-                Write-NoDataFound $FunctionName
+
+            if (-not $Data) {
+                Write-NoDataFound -Function $($MyInvocation.MyCommand.Name)
             }
             else {
                 # Save output to CSV file
-                Save-OutputAsCsv $Data $File
-                Show-OutputSavedToFile $File
-                Write-LogOutputSaved $File
+                Save-OutputAsCsv -Data $Data -File $File
+                Show-OutputSavedToFile -File $File
+                Write-LogOutputSaved -File $File
             }
         }
-        # Finish logging
-        Show-FinishMessage $FunctionName $ExecutionTime
-        Write-LogFinishedMessage $FunctionName $ExecutionTime
+        Show-FinishMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 

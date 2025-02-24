@@ -363,7 +363,7 @@ function Get-Gui {
         $DriveList = $tbDrivesList.Text
         $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport -CaseFolderName $CaseFolderName -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
         $Form.Close()
         return
@@ -407,26 +407,26 @@ function Get-Gui {
 
 
     # Define a button for initiating the files report
-    $btnCloseForm = New-Object Windows.Forms.Button
-    $btnCloseForm.Text = "Close Form"
-    $btnCloseForm.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-    $btnCloseForm.Width = 124
-    $btnCloseForm.Height = 40
-    $btnCloseForm.Padding = New-Object System.Windows.Forms.Padding(5)
-    $btnCloseForm.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-    $btnCloseForm.Location = New-Object Drawing.Point(296, 640)  # (x, y) position
-    $btnCloseForm.FlatAppearance.BorderSize = 1
-    $btnCloseForm.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-    $btnCloseForm.BackColor = "#c0392b"
-    $btnCloseForm.Forecolor = "#dddddd"
-    $btnCloseForm.Add_Click({
+    $btnQuit = New-Object Windows.Forms.Button
+    $btnQuit.Text = "Quit"
+    $btnQuit.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
+    $btnQuit.Width = 124
+    $btnQuit.Height = 40
+    $btnQuit.Padding = New-Object System.Windows.Forms.Padding(5)
+    $btnQuit.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btnQuit.Location = New-Object Drawing.Point(296, 640)  # (x, y) position
+    $btnQuit.FlatAppearance.BorderSize = 1
+    $btnQuit.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
+    $btnQuit.BackColor = "#c0392b"
+    $btnQuit.Forecolor = "#dddddd"
+    $btnQuit.Add_Click({
 
         $Form.Close()
         return
 
     })
     # Add the button
-    $Form.Controls.Add($btnCloseForm)
+    $Form.Controls.Add($btnQuit)
 
     $Form.Add_Shown({$Form.Activate()})
 

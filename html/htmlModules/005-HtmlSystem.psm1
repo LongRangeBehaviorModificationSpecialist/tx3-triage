@@ -25,35 +25,36 @@ function Export-SystemHtmlPage {
             $Command = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+            Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
             try {
-                Show-Message("[INFO] Searching for key [$RegKey]") -DarkGray
+                Show-Message -Message "[INFO] Searching for registry key '$RegKey'" -DarkGray
 
                 if (-not (Test-Path -Path $RegKey)) {
-                    Show-Message("[INFO] Registry Key [$RegKey] does not exist") -Yellow
-                    Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Registry Key [$RegKey] does not exist")
+                    $dneMessage = "Registry Key '$RegKey' does not exist on the examined machine"
+                    Show-Message -Message "[INFO] $dneMessage" -Yellow
+                    Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $dneMessage"
                 }
                 else {
                     $Data = Invoke-Expression -Command $Command | Out-String
 
                     if (-not $Data) {
-                        $msg = "The registry key [$RegKey] exists, but contains no data"
-                        Show-Message("[INFO] $msg") -Yellow
-                        Write-HtmlLogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg")
+                        $msg = "The registry key '$RegKey' exists, but contains no data"
+                        Show-Message -Message "[INFO] $msg" -Yellow
+                        Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $msg"
                     }
                     else {
                         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
-                        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                        Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                        Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+                        Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                     }
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 
@@ -67,7 +68,7 @@ function Export-SystemHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+            Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
@@ -76,22 +77,22 @@ function Export-SystemHtmlPage {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
 
                     if ($Type -eq "Pipe") {
-                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromPipe
                     }
 
                     if ($Type -eq "String") {
-                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
                     }
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 

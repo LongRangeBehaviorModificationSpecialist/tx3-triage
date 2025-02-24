@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Invoke-HtmlCopyRegistryHives {
@@ -19,85 +19,82 @@ function Invoke-HtmlCopyRegistryHives {
     function Get-RegistryHives {
 
         $Name = "Copy_Registry_Hives"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
             # Show & log $BeginMessage message
-            $BeginMessage = "Beginning collection of Windows Registry Hives from computer: $ComputerName"
-            Show-Message("[INFO] $BeginMessage") -Blue
-            Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
+            $BeginMessage = "Beginning collection of Windows Registry Hives from computer: '$ComputerName'"
+            Show-Message -Message "[INFO] $BeginMessage" -Blue
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $OutputFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
             }
 
-            # Show & log $SoftwareMsg message
             try {
-                $SoftwareMsg = "Copying the SOFTWARE Registry Hive"
-                Show-Message("[INFO] $SoftwareMsg") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SoftwareMsg")
+                $SoftwareMessage = "Copying the SOFTWARE Registry Hive"
+                Show-Message -Message "[INFO] $SoftwareMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SoftwareMessage"
                 cmd /r reg export HKLM\Software $OutputFolder\software.reg
             }
             catch {
-                $SoftwareWarnMsg = "An error occurred while copying SOFTWARE Hive: $($PSItem.Exception.Message)"
-                Show-Message("ERROR] $SoftwareWarnMsg") -Red
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SoftwareWarnMsg") -WarningMessage
+                $SoftwareErrorMessage = "An error occurred while copying SOFTWARE Hive: $($PSItem.Exception.Message)"
+                Show-Message -Message "ERROR] $SoftwareErrorMessage" -Red
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SoftwareErrorMessage" -ErrorMessage
             }
 
-            # Show & log $SamMsg message
             try {
-                $SamMsg = "Copying the SAM Registry Hive"
-                Show-Message("[INFO] $SamMsg") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SamMsg")
+                $SamMessage = "Copying the SAM Registry Hive"
+                Show-Message -Message "[INFO] $SamMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SamMessage"
                 cmd /r reg export HKLM\Sam $OutputFolder\sam.reg
             }
             catch {
-                $SamWarnMsg = "An error occurred while copying SAM Hive: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $SamWarnMsg") -Red
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SamWarnMsg") -WarningMessage
+                $SamErrorMessage = "An error occurred while copying SAM Hive: $($PSItem.Exception.Message)"
+                Show-Message -Message "[ERROR] $SamErrorMessage" -Red
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SamErrorMessage" -ErrorMessage
             }
 
-            # Show & log $SysMsg message
             try {
-                $SysMsg = "Copying the SYSTEM Registry Hive"
-                Show-Message("[INFO] $SysMsg") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SysMsg")
+                $SystemMessage = "Copying the SYSTEM Registry Hive"
+                Show-Message -Message "[INFO] $SystemMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SystemMessage"
                 cmd /r reg export HKLM\System $OutputFolder\system.reg
             }
             catch {
-                $SystemWarnMsg = "An error occurred while copying SYSTEM Hive: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $SystemWarnMsg") -Red
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SystemWarnMsg") -WarningMessage
+                $SystemErrorMessage = "An error occurred while copying SYSTEM Hive: $($PSItem.Exception.Message)"
+                Show-Message -Message "[ERROR] $SystemErrorMessage" -Red
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SystemErrorMessage" -ErrorMessage
             }
 
             # Show & log $SecMsg message
             try {
-                $SecMsg = "Copying the SECURITY Registry Hive"
-                Show-Message("[INFO] $SecMsg") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SecMsg")
+                $SecurityMessage = "Copying the SECURITY Registry Hive"
+                Show-Message -Message "[INFO] $SecurityMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SecurityMessage"
                 cmd /r reg export HKLM\Security $OutputFolder\security.reg
             }
             catch {
-                $SecurityWarnMsg = "An error occurred while copying SECURITY Hive: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $SecurityWarnMsg") -Red
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SecurityWarnMsg") -WarningMessage
+                $SecurityErrorMessage = "An error occurred while copying SECURITY Hive: $($PSItem.Exception.Message)"
+                Show-Message -Message "[ERROR] $SecurityErrorMessage" -Red
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SecurityErrorMessage" -ErrorMessage
             }
 
             # Show & log $NtMsg message
             try {
-                $NtMsg = "Copying the current user's NTUSER.DAT file"
-                Show-Message("[INFO] $NtMsg") -Blue
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NtMsg")
+                $NtUserMessage = "Copying the current user's NTUSER.DAT file"
+                Show-Message -Message "[INFO] $NtUserMessage" -Blue
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NtUserMessage"
                 cmd /r reg export HKCU $OutputFolder\current-ntuser.reg
             }
             catch {
-                $NTUserWarnMsg = "An error occurred while copying the current user's NTUSER.DAT file: $($PSItem.Exception.Message)"
-                Show-Message("[ERROR] $NTUserWarnMsg") -Red
-                Write-LogEntry("[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NTUserWarnMsg") -WarningMessage
+                $NTUserErrorMessage = "An error occurred while copying the current user's NTUSER.DAT file: $($PSItem.Exception.Message)"
+                Show-Message -Message "[ERROR] $NTUserErrorMessage" -Red
+                Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NTUserErrorMessage" -ErrorMessage
             }
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
     }
 

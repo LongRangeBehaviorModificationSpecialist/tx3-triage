@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-PrefetchFiles {
@@ -6,45 +6,39 @@ function Get-PrefetchFiles {
     [CmdletBinding()]
 
     param (
-        [Parameter(Position = 0)]
-        [ValidateScript({ Test-Path $_ })]
-        [string]$CaseFolderName,
-        [Parameter(Position = 1)]
-
-        [string]$ComputerName,
-        # Name of the directory to store the copied prefetch files
-        [string]$PFFolderName = "00G_PrefetchFiles",
+        [Parameter(Mandatory)]
+        [string]
+        $CaseFolderName,
+        [Parameter(Mandatory)]
+        [string]
+        $ComputerName,
+        [Parameter(Mandatory)]
+        [string]
+        $PFFolder,
         # Variable for Windows Prefetch folder location
-        [string]$WinPrefetchDir = "$Env:HOMEDRIVE\Windows\Prefetch",
-        [int]$NumOfPFRecords,
+        [string]
+        $WinPrefetchDir = "$Env:HOMEDRIVE\Windows\Prefetch",
+        [int]
+        $NumOfPFRecords = 5,
         # Path to the RawCopy executable
-        [string]$RawCopyPath = ".\bin\RawCopy.exe"
+        [string]
+        $RawCopyPath = ".\bin\RawCopy.exe"
     )
-
-    $PFCopyFuncName = $PSCmdlet.MyInvocation.MyCommand.Name
 
     try {
         $ExecutionTime = Measure-Command {
             # Show & log $BeginMessage message
-            $BeginMessage = "Beginning collection of Prefetch files from computer: $ComputerName"
-            Show-Message("$BeginMessage")
-            Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $BeginMessage")
-
-            # Make new directory to store the prefetch files
-            $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name $PFFolderName
+            $BeginMessage = "Beginning collection of Prefetch files from computer: '$ComputerName'"
+            Show-Message -Message $BeginMessage
+            Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $PFFolder)) {
                 throw "[ERROR] The necessary folder does not exist -> '$PFFolder'"
             }
 
-            # Show & log $CreateDirMsg message
-            $CreateDirMsg = "Created '$($PFFolder.Name)' folder in the case directory"
-            Show-Message("$CreateDirMsg") -Green
-            Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CreateDirMsg")
-
             # If no number is passed for the number of prefetch records to copy then copy all of the files
             if (-not $NumOfPFRecords) {
-                Write-Information "No value passed for the `$NumOFPFRecords value."
+                Write-Information "No value passed for the ``NumOfPFRecords`` value."
                 $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File
             }
             else {
@@ -70,29 +64,19 @@ function Get-PrefetchFiles {
                     Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
                     return
                 }
-
-                # Show & log $CopyMsg messages of each file copied
                 $CopyMsg = "Copied file -> '$($File.Name)'"
-                Show-Message($CopyMsg) -Magenta
-                Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $CopyMsg")
+                Show-Message -Message $CopyMsg -Magenta
+                Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $CopyMsg"
             }
-
-            # Show & log $SuccessMsg message
-            $SuccessMsg = "Prefetch files copied successfully from computer: $ComputerName"
-            Show-Message("$SuccessMsg") -Green
-            Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $SuccessMsg")
+            $SuccessMsg = "Prefetch files copied successfully from computer: '$ComputerName'"
+            Show-Message -Message $SuccessMsg -Green
+            Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $SuccessMsg"
         }
-
-        # Show & log finish messages
-        Show-FinishMessage $PFCopyFuncName $ExecutionTime
-        Write-LogFinishedMessage $PFCopyFuncName $ExecutionTime
+        Show-FinishMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        Write-LogFinishedMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
     }
-
     catch {
-        # Error handling
-        $ErrorMessage = "Error in line $($PSItem.InvocationInfo.ScriptLineNumber): $($PSItem.Exception.Message)"
-        Show-Message("$ErrorMessage") -Red
-        Write-LogEntry("[$($PFCopyFuncName), Ln: $(Get-LineNum)] $ErrorMessage") -ErrorMessage
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 

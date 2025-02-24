@@ -1,4 +1,4 @@
-$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+$ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
 function Get-HtmlFileHashes {
@@ -19,8 +19,8 @@ function Get-HtmlFileHashes {
     try {
         # Show & log $beginMessage message
         $BeginMessage = "Hashing report files for computer: $ComputerName"
-        Show-Message("[INFO] $BeginMessage") -Header -DarkGray
-        Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage")
+        Show-Message -Message "[INFO] $BeginMessage" -Header -DarkGray
+        Write-HtmlLogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
         if (-not (Test-Path $OutputFolder)) {
             throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
@@ -55,15 +55,15 @@ function Get-HtmlFileHashes {
 
             # Show & log $ProgressMsg message
             $ProgressMsg = "Hashing file: $($_.Name)"
-            Show-Message("$ProgressMsg")
+            Show-Message -Message "$ProgressMsg"
 
             # Show & log $HashMsgFileName and hashMsgHashValue messages for each file
             $HashMsgFileName = "Completed hashing file: '$($_.Name)'"
             $HashValueMsg = "[SHA256] -> $($FileHash)`n"
-            Show-Message("$HashMsgFileName") -Blue
-            Show-Message("$HashValueMsg") -Blue
-            Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashMsgFileName")
-            Write-HtmlLogEntry("[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg")
+            Show-Message -Message "$HashMsgFileName" -Blue
+            Show-Message -Message "$HashValueMsg" -Blue
+            Write-HtmlLogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashMsgFileName"
+            Write-HtmlLogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashValueMsg"
         }
 
         # Export the results to the CSV file
@@ -71,11 +71,11 @@ function Get-HtmlFileHashes {
 
         # Show & log $FileMsg message
         $FileMsg = "Hash values saved to -> '$HashOutputFileName'`n"
-        Show-Message("$FileMsg") -Blue
-        Write-HtmlLogEntry("[$($FunctionName), Ln: $(Get-LineNum)] $FileMsg")
+        Show-Message -Message "$FileMsg" -Blue
+        Write-HtmlLogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] $FileMsg"
     }
     catch {
-        Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
     }
 }
 

@@ -31,11 +31,11 @@ function Export-EventLogHtmlPage {
             $Properties = $item.value[3]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+            Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
-                Show-Message("[INFO] Searching for $LogName Log (Event ID: $EventID)") -DarkGray
+                Show-Message -Message "[INFO] Searching for $LogName Log (Event ID: $EventID)" -DarkGray
 
                 $Command = "Get-WinEvent -Max $MaxRecords -FilterHashtable @{ Logname = '$($LogName)'; ID = $($EventID) } | Select-Object -Property $($Properties) | Format-List | Out-String"
 
@@ -43,23 +43,23 @@ function Export-EventLogHtmlPage {
 
                 if ($Data.Count -eq 0) {
                     $msg = "The LogFile $LogName exists, but contains no Events that match the EventID of $EventID"
-                    Show-Message("[INFO] $msg") -Yellow
-                    Write-HtmlLogEntry("$msg")
+                    Show-Message -Message "[INFO] $msg" -Yellow
+                    Write-HtmlLogEntry -Message "$msg"
                 }
                 else {
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
-                    Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
+                    Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch [System.Exception] {
-                Show-Message("$NoMatchingEventsMsg") -Yellow
-                Write-HtmlLogEntry("$NoMatchingEventsMsg") -WarningMessage
+                Show-Message -Message "$NoMatchingEventsMsg" -Yellow
+                Write-HtmlLogEntry -Message "$NoMatchingEventsMsg" -WarningMessage
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 
@@ -74,7 +74,7 @@ function Export-EventLogHtmlPage {
             $Type = $item.value[2]
 
             $FileName = "$Name.html"
-            Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+            Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
             $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
             try {
@@ -84,23 +84,23 @@ function Export-EventLogHtmlPage {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
                 else {
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
 
                     if ($Type -eq "Pipe") {
-                        Save-OutputToSingleHtmlFile  $Name $Data $OutputHtmlFilePath $Title -FromPipe
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromPipe
                     }
 
                     if ($Type -eq "String") {
-                        Save-OutputToSingleHtmlFile $Name $Data $OutputHtmlFilePath $Title -FromString
+                        Save-OutputToSingleHtmlFile -Name $Name -Data $Data -OutputHtmlFilePath $OutputHtmlFilePath -Title $Title -FromString
                     }
 
-                    Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+                    Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
                 }
             }
             catch {
-                Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
-            Show-FinishedHtmlMessage $Name
+            Show-FinishedHtmlMessage -Name $Name
         }
     }
 
@@ -114,19 +114,19 @@ function Export-EventLogHtmlPage {
 
         $Name = "7-025_SecurityEventsLast30DaysAsCsv"
         $FileName = "$Name.csv"
-        Show-Message("[INFO] Running '$Name' command") -Header -DarkGray
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -Start
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -Start
 
             Get-EventLog -LogName Security -After $((Get-Date).AddDays(-$DaysBack)) | ConvertTo-Csv -NoTypeInformation | Out-File -FilePath "$OutputFolder\$FileName" -Encoding UTF8
 
-            Invoke-SaveOutputMessage $($MyInvocation.MyCommand.Name) $(Get-LineNum) $Name -FileName $FileName -Finish
+            Invoke-SaveOutputMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $(Get-LineNum) -Name $Name -FileName $FileName -Finish
         }
         catch {
-            Invoke-ShowErrorMessage $($MyInvocation.MyCommand.Name) $($PSItem.InvocationInfo.ScriptLineNumber) $($PSItem.Exception.Message)
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
         }
-        Show-FinishedHtmlMessage $Name
+        Show-FinishedHtmlMessage -Name $Name
     }
 
 
