@@ -12,7 +12,7 @@ function Export-FirewallHtmlPage {
     # Import the hashtables from the data files
     $FirewallPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\008A-FirewallDataArray.psd1"
 
-    $FirewallHtmlMainFile = New-Item -Path "$OutputFolder\008_main.html" -ItemType File -Force
+    $FirewallHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     # 8-000
     function Get-FirewallData {
@@ -56,7 +56,7 @@ function Export-FirewallHtmlPage {
 
     function Write-FirewallSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\008\008_main.html' target='_blank'>Firewall Data</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\008\main.html' target='_blank'>Firewall Data</a></h3>" -Encoding UTF8
 
         $SectionName = "Firewall Information Section"
 
@@ -69,7 +69,7 @@ function Export-FirewallHtmlPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "008") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

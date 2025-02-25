@@ -14,7 +14,7 @@ function Invoke-HtmlCopyRegistryHives {
         $ComputerName
     )
 
-    $RegHivesHtmlMainFile = New-Item -Path "$OutputFolder\RegHives_main.html" -ItemType File -Force
+    $RegHivesHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Get-RegistryHives {
 
@@ -24,7 +24,7 @@ function Invoke-HtmlCopyRegistryHives {
         try {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning collection of Windows Registry Hives from computer: '$ComputerName'"
-            Show-Message -Message "[INFO] $BeginMessage" -Blue
+            Show-Message -Message "[INFO] $BeginMessage" -DarkGray
             Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $OutputFolder)) {
@@ -101,7 +101,7 @@ function Invoke-HtmlCopyRegistryHives {
 
     function Write-RegistrySectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\RegHives\RegHives_main.html' target='_blank'>Exported Registry Hives</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\RegHives\main.html' target='_blank'>Exported Registry Hives</a></h3>" -Encoding UTF8
 
         $SectionName = "Exported Registry Hives"
 
@@ -114,7 +114,7 @@ function Invoke-HtmlCopyRegistryHives {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "Reg") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

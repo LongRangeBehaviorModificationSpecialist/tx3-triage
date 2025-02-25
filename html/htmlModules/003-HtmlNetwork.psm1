@@ -11,7 +11,7 @@ function Export-NetworkHtmlPage {
 
     $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003A-NetworkDataArray.psd1"
 
-    $NetworkHtmlMainFile = New-Item -Path "$OutputFolder\003_main.html" -ItemType File -Force
+    $NetworkHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     # 3-000
     function Get-NetworkData {
@@ -251,7 +251,7 @@ Active Connections, Associated Processes and DLLs
 
     function Write-NetworkSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\003\003_main.html' target='_blank'>Network Info</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\003\main.html' target='_blank'>Network Info</a></h3>" -Encoding UTF8
 
         $SectionName = "Network Information Section"
 
@@ -264,7 +264,7 @@ Active Connections, Associated Processes and DLLs
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "003") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {

@@ -14,7 +14,7 @@ function Export-HtmlKeywordSearchPage {
         $KeyWordsDriveList
     )
 
-    $KeyWordsHtmlMainFile = New-Item -Path "$OutputFolder\010_main.html" -ItemType File -Force
+    $KeyWordsHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     # 10-001
     function Search-FilesByKeywords {
@@ -72,7 +72,7 @@ function Export-HtmlKeywordSearchPage {
 
     function Write-KeywordsSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\010\010_main.html' target='_blank'>BitLocker Data</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\010\main.html' target='_blank'>BitLocker Data</a></h3>" -Encoding UTF8
 
         $SectionName = "Keywords Search Results"
 
@@ -85,7 +85,7 @@ function Export-HtmlKeywordSearchPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "010") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

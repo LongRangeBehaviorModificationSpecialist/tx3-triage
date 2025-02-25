@@ -16,7 +16,7 @@ function Get-HtmlComputerRam {
         $RamCaptureExeFilePath = ".\bin\MRCv120.exe"
     )
 
-    $RamHtmlMainFile = New-Item -Path "$OutputFolder\RAM_main.html" -ItemType File -Force
+    $RamHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Get-ComputerRam {
 
@@ -27,7 +27,7 @@ function Get-HtmlComputerRam {
 
             # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
-            Show-Message -Message "[INFO] $BeginMessage"
+            Show-Message -Message "[INFO] $BeginMessage" -DarkGray
             Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             $RamOutputFileName = "$($RunDate)_$($ComputerName)_RAM_Capture.raw"
@@ -51,7 +51,7 @@ function Get-HtmlComputerRam {
 
     function Write-RamSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\RAM\RAM_main.html' target='_blank'>Computer RAM</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\RAM\main.html' target='_blank'>Computer RAM</a></h3>" -Encoding UTF8
 
         $SectionName = "Computer Ram Capture"
 
@@ -64,7 +64,7 @@ function Get-HtmlComputerRam {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "RAM") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

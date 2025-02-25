@@ -17,7 +17,7 @@ function Get-HtmlRunningProcesses {
         $ProcessCaptureExeFilePath = ".\bin\MagnetProcessCapture.exe"
     )
 
-    $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\Processes_main.html" -ItemType File -Force
+    $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Get-RunningProcesses {
 
@@ -27,7 +27,7 @@ function Get-HtmlRunningProcesses {
         try {
             # Show & log $BeginMessage message
             $BeginMessage = "Starting Process Capture from: '$ComputerName'.  Please wait..."
-            Show-Message -Message "[INFO] $BeginMessage"
+            Show-Message -Message "[INFO] $BeginMessage" -DarkGray
             Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $OutputFolder)) {
@@ -53,7 +53,7 @@ function Get-HtmlRunningProcesses {
 
     function Write-ProcessSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\Processes\Processes_main.html' target='_blank'>Captured Processes</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\Processes\main.html' target='_blank'>Captured Processes</a></h3>" -Encoding UTF8
 
         $SectionName = "Captured Processes"
 
@@ -66,7 +66,7 @@ function Get-HtmlRunningProcesses {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 9)) -eq "Processes") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

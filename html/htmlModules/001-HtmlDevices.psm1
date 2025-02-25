@@ -12,7 +12,7 @@ function Export-DeviceHtmlPage {
     # Import the hashtables from the data files
     $DevicePropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\001A-DeviceDataArray.psd1"
 
-    $DeviceHtmlMainFile = New-Item -Path "$OutputFolder\001_main.html" -ItemType File -Force
+    $DeviceHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     # 1-000
     function Get-DeviceData {
@@ -29,6 +29,7 @@ function Export-DeviceHtmlPage {
 
             try {
                 $Data = Invoke-Expression -Command $Command
+
                 if ($Data.Count -eq 0) {
                     Invoke-NoDataFoundMessage -Name $Name
                 }
@@ -55,7 +56,7 @@ function Export-DeviceHtmlPage {
     function Get-PnpDevicesAsCsv {
 
         $Name = "1-021_PnpDevicesAsCsv"
-        $FileName = "$Name.html"
+        $FileName = "$Name.csv"
         Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
@@ -81,6 +82,7 @@ function Export-DeviceHtmlPage {
 
         try {
             $Data = pnputil /enum-devices | Out-String
+
             if (-not $Data) {
                 Invoke-NoDataFoundMessage -Name $Name
             }
@@ -109,6 +111,7 @@ function Export-DeviceHtmlPage {
 
         try {
             Show-Message -Message "[INFO] Searching for key [$RegKey]" -Blue
+
             if (-not (Test-Path -Path $RegKey)) {
                 $dneMessage = "Registry Key '$RegKey' does not exist on the examined machine"
                 Show-Message -Message "[WARNING] $dneMessage" -Yellow
@@ -149,6 +152,7 @@ function Export-DeviceHtmlPage {
             $TempCsvFile = "$OutputFolder\1-024_AutoRuns-TEMP.csv"
             Invoke-Expression ".\bin\autorunsc64.exe -a * -c -o $TempCsvFile -nobanner"
             $Data = Import-Csv -Path $TempCsvFile
+
             if (-not $Data) {
                 Invoke-NoDataFoundMessage -Name $Name
             }
@@ -180,6 +184,7 @@ function Export-DeviceHtmlPage {
 
         try {
             $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle | Out-String
+
             if ($Data.Count -eq 0) {
                 Invoke-NoDataFoundMessage -Name $Name
             }
@@ -226,7 +231,7 @@ function Export-DeviceHtmlPage {
 
     function Write-DeviceSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\001\001_main.html' target='_blank'>Device Info</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\001\main.html' target='_blank'>Device Info</a></h3>" -Encoding UTF8
 
         $SectionName = "Device Information Section"
 
@@ -239,7 +244,7 @@ function Export-DeviceHtmlPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "001") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {
@@ -259,12 +264,12 @@ function Export-DeviceHtmlPage {
     # ----------------------------------
     # Run the functions from the module
     # ----------------------------------
-    # Get-DeviceData
-    # Get-PnpDevicesAsCsv
-    # Get-PnpEnumDevices
-    # Get-TimeZoneInfo
-    # Get-AutoRunsData
-    # Get-OpenWindowTitles
+    Get-DeviceData
+    Get-PnpDevicesAsCsv
+    Get-PnpEnumDevices
+    Get-TimeZoneInfo
+    Get-AutoRunsData
+    Get-OpenWindowTitles
     Get-FullSystemInfo
 
 

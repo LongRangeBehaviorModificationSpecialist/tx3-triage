@@ -21,7 +21,7 @@ function Get-HtmlSruDb {
         $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
-    $SruDbHtmlMainFile = New-Item -Path "$OutputFolder\SruDb_main.html" -ItemType File -Force
+    $SruDbHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Copy-SruDBFile {
 
@@ -31,7 +31,7 @@ function Get-HtmlSruDb {
         try {
             # Show & log $BeginMessage message
             $BeginMessage = "Beginning capture of SRUDB.dat file from computer: '$ComputerName'"
-            Show-Message -Message $BeginMessage
+            Show-Message -Message $BeginMessage -DarkGray
             Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
             if (-not (Test-Path $OutputFolder)) {
@@ -96,8 +96,6 @@ function Get-HtmlSruDb {
                 Show-Message -Message $HashNotMatchMsg -Red
                 Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashNotMatchMsg" -ErrorMessage
             }
-            Show-FinishMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
-            Write-LogFinishedMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
         catch {
             Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
@@ -107,7 +105,7 @@ function Get-HtmlSruDb {
 
     function Write-SruDbSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\SruDb\SruDb_main.html' target='_blank'>SRUDB.dat File</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\SruDb\main.html' target='_blank'>SRUDB.dat File</a></h3>" -Encoding UTF8
 
         $SectionName = "SRUDB.dat File"
 
@@ -120,8 +118,13 @@ function Get-HtmlSruDb {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
-            Add-Content -Path $SruDbHtmlMainFile -Value $FileNameEntry -Encoding UTF8
+            if ($($File.SubString(0, 4)) -eq "main") {
+                continue
+            }
+            else {
+                $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
+                Add-Content -Path $SruDbHtmlMainFile -Value $FileNameEntry -Encoding UTF8
+            }
         }
 
         Add-Content -Path $SruDbHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8

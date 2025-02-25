@@ -13,7 +13,7 @@ function Export-SystemHtmlPage {
     $RegistryDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005A-RegistryDataArray.psd1"
     $SystemDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005B-SystemDataArray.psd1"
 
-    $SystemHtmlMainFile = New-Item -Path "$OutputFolder\005_main.html" -ItemType File -Force
+    $SystemHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     # 5-000A
     function Get-SelectRegistryValues {
@@ -98,7 +98,7 @@ function Export-SystemHtmlPage {
 
     function Write-SystemSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\005\005_main.html' target='_blank'>System Info</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\005\main.html' target='_blank'>System Info</a></h3>" -Encoding UTF8
 
         $SectionName = "System Information Section"
 
@@ -111,7 +111,7 @@ function Export-SystemHtmlPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "005") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

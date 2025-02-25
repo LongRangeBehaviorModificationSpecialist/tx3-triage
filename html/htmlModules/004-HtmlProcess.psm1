@@ -11,7 +11,7 @@ function Export-ProcessHtmlPage {
 
     $ProcessesPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\004A-ProcessDataArray.psd1"
 
-    $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\004_main.html" -ItemType File -Force
+    $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     # 4-000
     function Get-ProcessesData {
@@ -120,7 +120,7 @@ function Export-ProcessHtmlPage {
 
     function Write-ProcessSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\004\004_main.html' target='_blank'>Processes Info</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\004\main.html' target='_blank'>Processes Info</a></h3>" -Encoding UTF8
 
         $SectionName = "Process Information Section"
 
@@ -133,7 +133,7 @@ function Export-ProcessHtmlPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "004") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {

@@ -13,7 +13,7 @@ function Export-EventLogHtmlPage {
     $EventLogArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007A-EventLogArray.psd1"
     $OtherEventLogPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007B-EventLogOtherArray.psd1"
 
-    $EventLogHtmlMainFile = New-Item -Path "$OutputFolder\007_main.html" -ItemType File -Force
+    $EventLogHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     #7-000A
     function Get-EventLogData {
@@ -132,7 +132,7 @@ function Export-EventLogHtmlPage {
 
     function Write-EventLogSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\007\007_main.html' target='_blank'>Event Log Info</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\007\main.html' target='_blank'>Event Log Info</a></h3>" -Encoding UTF8
 
         $SectionName = "Event Log Information Section"
 
@@ -145,7 +145,7 @@ function Export-EventLogHtmlPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "007") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             if ([System.IO.Path]::GetExtension($File) -eq ".csv") {

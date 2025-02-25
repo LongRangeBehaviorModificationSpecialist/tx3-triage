@@ -15,7 +15,7 @@ function Invoke-HtmlNTUserDatFiles {
         $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
-    $NTUserHtmlMainFile = New-Item -Path "$OutputFolder\NTUser_main.html" -ItemType File -Force
+    $NTUserHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Get-HtmlNTUserDatFiles {
 
@@ -71,7 +71,7 @@ function Invoke-HtmlNTUserDatFiles {
 
     function Write-NTUserSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\NTUser\NTUser_main.html' target='_blank'>NTUSER.DAT Files</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\NTUser\main.html' target='_blank'>NTUSER.DAT Files</a></h3>" -Encoding UTF8
 
         $SectionName = "NTUSER.DAT Files"
 
@@ -84,7 +84,7 @@ function Invoke-HtmlNTUserDatFiles {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 6)) -eq "NTUser") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

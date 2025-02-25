@@ -15,7 +15,7 @@ function Invoke-HtmlListAllFiles {
         $DriveList
     )
 
-    $ListFilesHtmlMainFile = New-Item -Path "$OutputFolder\FilesList_main.html" -ItemType File -Force
+    $ListFilesHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Get-HtmlListAllFiles {
 
@@ -69,7 +69,7 @@ function Invoke-HtmlListAllFiles {
 
     function Write-FilesListSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\FilesList\FilesList_main.html' target='_blank'>File List Results</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\FilesList\main.html' target='_blank'>File List Results</a></h3>" -Encoding UTF8
 
         $SectionName = "Files List Results"
 
@@ -82,7 +82,7 @@ function Invoke-HtmlListAllFiles {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 9)) -eq "FilesList") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

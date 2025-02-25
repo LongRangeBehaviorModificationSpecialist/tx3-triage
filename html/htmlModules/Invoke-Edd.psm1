@@ -15,7 +15,7 @@ function Invoke-HtmlEncryptedDiskDetector {
         $EddExeFilePath = ".\bin\EDDv310.exe"
     )
 
-    $EddHtmlMainFile = New-Item -Path "$OutputFolder\Edd_main.html" -ItemType File -Force
+    $EddHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     function Get-HtmlEncryptedDiskDetector {
 
@@ -57,7 +57,7 @@ function Invoke-HtmlEncryptedDiskDetector {
 
     function Write-EddSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\Edd\Edd_main.html' target='_blank'>Encrypted Disk Detector Results</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\Edd\main.html' target='_blank'>Encrypted Disk Detector Results</a></h3>" -Encoding UTF8
 
         $SectionName = "Encrypted Device Detector Results"
 
@@ -70,7 +70,7 @@ function Invoke-HtmlEncryptedDiskDetector {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "Edd") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {

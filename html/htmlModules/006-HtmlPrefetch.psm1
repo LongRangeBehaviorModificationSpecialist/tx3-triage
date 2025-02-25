@@ -9,7 +9,7 @@ function Export-PrefetchHtmlPage {
         $HtmlReportFile
     )
 
-    $PrefetchHtmlMainFile = New-Item -Path "$OutputFolder\006_main.html" -ItemType File -Force
+    $PrefetchHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
 
     #6-001
     function Get-DetailedPrefetchData {
@@ -40,7 +40,7 @@ function Export-PrefetchHtmlPage {
 
     function Write-PrefetchSectionToMain {
 
-        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\006\006_main.html' target='_blank'>Prefetch Data</a></h3>" -Encoding UTF8
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\006\main.html' target='_blank'>Prefetch Data</a></h3>" -Encoding UTF8
 
         $SectionName = "Prefetch Information Section"
 
@@ -53,7 +53,7 @@ function Export-PrefetchHtmlPage {
         $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
 
         foreach ($File in $FileList) {
-            if ($($File.SubString(0, 3)) -eq "006") {
+            if ($($File.SubString(0, 4)) -eq "main") {
                 continue
             }
             else {
