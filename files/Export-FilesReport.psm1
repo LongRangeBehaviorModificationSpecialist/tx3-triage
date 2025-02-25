@@ -57,20 +57,20 @@ function Export-FilesReport {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory, Position = 0)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-        [Parameter(Mandatory = $true, Position = 1)]
+        [Parameter(Mandatory, Position = 1)]
         [string]$User,
-        [Parameter(Mandatory = $true, Position = 2)]
+        [Parameter(Mandatory, Position = 2)]
         [string]$Agency,
-        [Parameter(Mandatory = $true, Position = 3)]
+        [Parameter(Mandatory, Position = 3)]
         [string]$CaseNumber,
-        [Parameter(Mandatory = $true, Position = 4)]
+        [Parameter(Mandatory, Position = 4)]
         [string]$ComputerName,
-        [Parameter(Mandatory = $true, Position = 5)]
+        [Parameter(Mandatory, Position = 5)]
         [string]$Ipv4,
-        [Parameter(Mandatory = $true, Position = 6)]
+        [Parameter(Mandatory, Position = 6)]
         [string]$Ipv6,
         [bool]$Device,
         [bool]$UserData,
@@ -90,7 +90,7 @@ function Export-FilesReport {
         [string]$DriveList,
         [bool]$KeyWordSearch,
         [string]$KeyWordsDriveList,
-        # [bool]$Srum,
+        [bool]$CopySruDB,
         # [bool]$CopyPrefetch,
         # [bool]$GetEventLogs,
         [bool]$GetFileHashes,
@@ -494,22 +494,21 @@ INSTRUCTIONS
     Invoke-Prefetch
 
 
-    #! NEED TO ADD OPTION TO GUI
-    function Invoke-SrumDB {
-        if ($Srum) {
+    function Invoke-SruDb {
+        if ($CopySruDb) {
             try {
-                $SrumFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "SRUM_DB" -Force
-                Get-SrumDB -CaseFolderName $CaseFolderName -ComputerName $ComputerName -SrumFolder $SrumFolder
+                $SruDbFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "SRUDB" -Force
+                Get-SruDb -CaseFolderName $CaseFolderName -ComputerName $ComputerName -SruDbFolder $SruDbFolder
             }
             catch {
                 Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
             }
         }
         else {
-            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy SRUM Database File' option was not selected by the user" -WarningMessage
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy SRUDB.dat File' option was not selected by the user" -WarningMessage
         }
     }
-    Invoke-SrumDB
+    Invoke-SruDb
 
 
     function Invoke-ListAllFiles {

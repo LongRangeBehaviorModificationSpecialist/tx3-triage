@@ -80,7 +80,7 @@ function Write-HtmlLogEntry {
 
     $MsgLevel = if (-not $NoLevel) { $MsgLevel } else { "" }
 
-    # Generate timestamp if -NoTime is not provided
+    # Generate timestamp if the `-NoTime` switch is not provided
     $DisplayTimeStamp = if (-not $NoTime) { $(Get-TimeStamp) } else { "" }
 
     # Format the full message
@@ -209,6 +209,7 @@ function Export-HtmlReport {
         [string]$DriveList,
         [bool]$KeyWordSearch,
         [string]$KeyWordsDriveList,
+        [bool]$CopySruDB,
         [bool]$GetFileHashes,
         [bool]$MakeArchive
     )
@@ -588,6 +589,24 @@ function Export-HtmlReport {
         }
     }
     Invoke-KeywordSearch
+
+
+    function Invoke-CopySruDB {
+        if ($CopySruDB) {
+            try {
+                $SruDbHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "SruDb" -Force
+                Write-HtmlLogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
+                Get-HtmlSruDB -OutputFolder $SruDbHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy SRUDB.dat' option was not selected by the user"
+        }
+    }
+    Invoke-CopySruDB
 
 
     #! Write the closing html text to the main file

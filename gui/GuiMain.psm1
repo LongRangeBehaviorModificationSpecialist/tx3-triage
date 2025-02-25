@@ -193,7 +193,7 @@ function Get-Gui {
     $gbOptionBox = New-Object System.Windows.Forms.GroupBox
     $gbOptionBox.Text = "Select Options"
     $gbOptionBox.Location = New-Object System.Drawing.Point(10, 330)  # (x, y) position
-    $gbOptionBox.Size = New-Object System.Drawing.Size(410, 300)  # width x height
+    $gbOptionBox.Size = New-Object System.Drawing.Size(410, 325)  # width x height
     $Form.Controls.Add($gbOptionBox)
 
 
@@ -307,11 +307,19 @@ function Get-Gui {
     $gbOptionBox.Controls.Add($lblKeyWords)
 
 
+    $cbSruDb = New-Object System.Windows.Forms.CheckBox
+    $cbSruDb.Text = "Copy SRUDB.dat File"
+    $cbSruDb.Font = New-Object System.Drawing.Font("Arial", 10)
+    $cbSruDb.Width = 250
+    $cbSruDb.Location = New-Object System.Drawing.Point(10, 235)  # (x, y) position
+    $gbOptionBox.Controls.Add($cbSruDb)
+
+
     $cbHashFiles = New-Object System.Windows.Forms.CheckBox
     $cbHashFiles.Text = "Hash Results Files"
     $cbHashFiles.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbHashFiles.Width = 250
-    $cbHashFiles.Location = New-Object System.Drawing.Point(10, 235)  # (x, y) position
+    $cbHashFiles.Location = New-Object System.Drawing.Point(10, 260)  # (x, y) position
     $gbOptionBox.Controls.Add($cbHashFiles)
 
 
@@ -319,7 +327,7 @@ function Get-Gui {
     $cbArchive.Text = "Create Case Archive"
     $cbArchive.Font = New-Object System.Drawing.Font("Arial", 10)
     $cbArchive.Width = 250
-    $cbArchive.Location = New-Object System.Drawing.Point(10, 260)  # (x, y) position
+    $cbArchive.Location = New-Object System.Drawing.Point(10, 285)  # (x, y) position
     $gbOptionBox.Controls.Add($cbArchive)
 
 
@@ -332,7 +340,7 @@ function Get-Gui {
     $btnHtmlReport.Height    = 40
     $btnHtmlReport.Padding   = New-Object System.Windows.Forms.Padding(5)
     $btnHtmlReport.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-    $btnHtmlReport.Location  = New-Object System.Drawing.Point(10, 640)  # (x, y) position -> Down 50 from last checkbox
+    $btnHtmlReport.Location  = New-Object System.Drawing.Point(10, 665)  # (x, y) position -> Down 50 from last checkbox
     $btnHtmlReport.FlatAppearance.BorderSize = 1
     $btnHtmlReport.FlatAppearance.BorderColor = [System.Drawing.Color]::black
     $btnHtmlReport.BackColor = "#1f618d"
@@ -363,7 +371,7 @@ function Get-Gui {
         $DriveList = $tbDrivesList.Text
         $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport -CaseFolderName $CaseFolderName -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport -CaseFolderName $CaseFolderName -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -CopySrum $cbSruDb.Checked -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
         $Form.Close()
         return
@@ -383,7 +391,7 @@ function Get-Gui {
     $btnFilesReport.Height = 40
     $btnFilesReport.Padding = New-Object System.Windows.Forms.Padding(5)
     $btnFilesReport.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-    $btnFilesReport.Location = New-Object System.Drawing.Point(153, 640)  # (x, y) position -> Down 50 from last checkbox
+    $btnFilesReport.Location = New-Object System.Drawing.Point(153, 665)  # (x, y) position -> Down 50 from last checkbox
     $btnFilesReport.FlatAppearance.BorderSize = 1
     $btnFilesReport.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
     $btnFilesReport.BackColor = "#17a589"
@@ -414,7 +422,7 @@ function Get-Gui {
     $btnQuit.Height = 40
     $btnQuit.Padding = New-Object System.Windows.Forms.Padding(5)
     $btnQuit.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-    $btnQuit.Location = New-Object Drawing.Point(296, 640)  # (x, y) position
+    $btnQuit.Location = New-Object Drawing.Point(296, 665)  # (x, y) position
     $btnQuit.FlatAppearance.BorderSize = 1
     $btnQuit.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
     $btnQuit.BackColor = "#c0392b"

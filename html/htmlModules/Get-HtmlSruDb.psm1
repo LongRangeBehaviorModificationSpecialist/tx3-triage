@@ -1,21 +1,17 @@
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 
-function Get-SruDb {
+function Get-HtmlSruDb {
 
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory)]
         [string]
-        $CaseFolderName,
-        [Parameter(Mandatory)]
+        $OutputFolder,
+        [string]
+        $HtmlReportFile,
         [string]
         $ComputerName,
-        # Name of the directory to store the copied SRUM file
-        [Parameter(Mandatory)]
-        [string]
-        $SruDbFolder,
         [string]
         $FileNamePath = "$Env:windir\System32\sru\SRUDB.dat",
         [string]
@@ -25,15 +21,21 @@ function Get-SruDb {
         $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
-    try {
-        $ExecutionTime = Measure-Command {
+    $SruDbHtmlMainFile = New-Item -Path "$OutputFolder\SruDb_main.html" -ItemType File -Force
+
+    function Copy-SruDBFile {
+
+        $Name = "Copy_SRUDB.dat_File"
+        Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
+
+        try {
             # Show & log $BeginMessage message
-            $BeginMessage = "Beginning capture of SRUDB.dat files from computer: '$ComputerName'"
+            $BeginMessage = "Beginning capture of SRUDB.dat file from computer: '$ComputerName'"
             Show-Message -Message $BeginMessage
             Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
 
-            if (-not (Test-Path $SruDbFolder)) {
-                throw "[ERROR] The necessary folder does not exist -> '$SruDbFolder'"
+            if (-not (Test-Path $OutputFolder)) {
+                throw "[ERROR] The necessary folder does not exist -> '$OutputFolder'"
             }
 
             if (-not (Test-Path $RawCopyPath)) {
@@ -42,15 +44,17 @@ function Get-SruDb {
             }
 
             try {
-                $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$FileNamePath /OutputPath:"$SruDbFolder" /OutputName:$OutputFileName }
+                $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$FileNamePath /OutputPath:"$OutputFolder" /OutputName:$OutputFileName }
                 if ($LASTEXITCODE -ne 0) {
-                    Write-Error "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
-                    return
+                    $NoProperExitMessage = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
+                    Show-Message -Message "[ERROR] $NoProperExitMessage" -Red
+                    Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $NoProperExitMessage" -ErrorMessage
                 }
             }
             catch {
-                Write-Error "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
-                return
+                $RawCopyOtherMessage = "An error occurred while executing RawCopy.exe: $($PSItem.Exception.Message)"
+                Show-Message -Message "[ERROR] $RawCopyOtherMessage" -Red
+                Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $RawCopyOtherMessage" -ErrorMessage
             }
 
             $FileHashingMsg = "Calculating the original hash value of $FileNamePath"
@@ -63,7 +67,7 @@ function Get-SruDb {
             Show-Message -Message $OrigFileHashMsg -Green
             Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $OrigFileHashMsg"
 
-            $CopiedFile = Join-Path -Path $SruDbFolder -ChildPath $OutputFileName
+            $CopiedFile = Join-Path -Path $SrumFolder -ChildPath $OutputFileName
 
             # Get hash value of copied file
             $CopiedFileHash = (Get-FileHash -Path $CopiedFile -Algorithm SHA256).Hash
@@ -92,14 +96,46 @@ function Get-SruDb {
                 Show-Message -Message $HashNotMatchMsg -Red
                 Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $HashNotMatchMsg" -ErrorMessage
             }
+            Show-FinishMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+            Write-LogFinishedMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
         }
-        Show-FinishMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
-        Write-LogFinishedMessage -Function $($PSCmdlet.MyInvocation.MyCommand.Name) -ExecutionTime $ExecutionTime
+        catch {
+            Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
+        }
     }
-    catch {
-        Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
+
+
+    function Write-SruDbSectionToMain {
+
+        Add-Content -Path $HtmlReportFile -Value "`t`t`t`t<h3><a href='results\SruDb\SruDb_main.html' target='_blank'>SRUDB.dat File</a></h3>" -Encoding UTF8
+
+        $SectionName = "SRUDB.dat File"
+
+        $SectionHeader = "`t`t`t<h3 class='section_header'>$($SectionName)</h3>
+            <div class='number_list'>"
+
+        Add-Content -Path $SruDbHtmlMainFile -Value $HtmlHeader -Encoding UTF8
+        Add-Content -Path $SruDbHtmlMainFile -Value $SectionHeader -Encoding UTF8
+
+        $FileList = Get-ChildItem -Path $OutputFolder | Sort-Object Name | Select-Object -ExpandProperty Name
+
+        foreach ($File in $FileList) {
+            $FileNameEntry = "`t`t`t`t<a class='file_link' href='$File' target='_blank'>$File</a>"
+            Add-Content -Path $SruDbHtmlMainFile -Value $FileNameEntry -Encoding UTF8
+        }
+
+        Add-Content -Path $SruDbHtmlMainFile -Value "`t`t`t</div>`n`t`t</div>`n`t</body>`n</html>" -Encoding UTF8
     }
+
+
+    # ----------------------------------
+    # Run the functions from the module
+    # ----------------------------------
+    Copy-SruDBFile
+
+
+    Write-SruDbSectionToMain
 }
 
 
-Export-ModuleMember -Function Get-SruDB
+Export-ModuleMember -Function Get-HtmlSruDb
