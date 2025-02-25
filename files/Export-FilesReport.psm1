@@ -57,20 +57,20 @@ function Export-FilesReport {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(Mandatory)]
         [string]$User,
-        [Parameter(Mandatory, Position = 2)]
+        [Parameter(Mandatory)]
         [string]$Agency,
-        [Parameter(Mandatory, Position = 3)]
+        [Parameter(Mandatory)]
         [string]$CaseNumber,
-        [Parameter(Mandatory, Position = 4)]
+        [Parameter(Mandatory)]
         [string]$ComputerName,
-        [Parameter(Mandatory, Position = 5)]
+        [Parameter(Mandatory)]
         [string]$Ipv4,
-        [Parameter(Mandatory, Position = 6)]
+        [Parameter(Mandatory)]
         [string]$Ipv6,
         [bool]$Device,
         [bool]$UserData,

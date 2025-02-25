@@ -67,7 +67,7 @@ function Get-HtmlSruDb {
             Show-Message -Message $OrigFileHashMsg -Green
             Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $OrigFileHashMsg"
 
-            $CopiedFile = Join-Path -Path $SrumFolder -ChildPath $OutputFileName
+            $CopiedFile = Join-Path -Path $OutputFolder -ChildPath $OutputFileName
 
             # Get hash value of copied file
             $CopiedFileHash = (Get-FileHash -Path $CopiedFile -Algorithm SHA256).Hash

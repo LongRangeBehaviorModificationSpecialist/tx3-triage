@@ -332,37 +332,19 @@ function Get-Gui {
 
 
     # Define a button for initiating the html report
-    $btnHtmlReport           = [System.Windows.Forms.Button]::new()
-    $btnHtmlReport.Name      = "btnHtmlReport"
-    $btnHtmlReport.Text      = "Html Output"
-    $btnHtmlReport.Font      = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-    $btnHtmlReport.Width     = 124
-    $btnHtmlReport.Height    = 40
-    $btnHtmlReport.Padding   = New-Object System.Windows.Forms.Padding(5)
+    $btnHtmlReport = [System.Windows.Forms.Button]::new()
+    $btnHtmlReport.Name = "btnHtmlReport"
+    $btnHtmlReport.Text = "Html Output"
+    $btnHtmlReport.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
+    $btnHtmlReport.Width = 124
+    $btnHtmlReport.Height = 40
+    $btnHtmlReport.Padding = New-Object System.Windows.Forms.Padding(5)
     $btnHtmlReport.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
     $btnHtmlReport.Location  = New-Object System.Drawing.Point(10, 665)  # (x, y) position -> Down 50 from last checkbox
     $btnHtmlReport.FlatAppearance.BorderSize = 1
     $btnHtmlReport.FlatAppearance.BorderColor = [System.Drawing.Color]::black
     $btnHtmlReport.BackColor = "#1f618d"
     $btnHtmlReport.Forecolor = "#dddddd"
-    # $btnHtmlReport.Add_MouseEnter({
-
-    #         $this.BackColor = [System.Drawing.Color]::CadetBlue
-    #         $this.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Underline)
-    #         $this.FlatAppearance.BorderSize = 1
-    #         $this.FlatAppearance.BorderColor = [System.Drawing.Color]::black
-
-    # })
-
-    # $btnHtmlReport.Add_MouseLeave({
-
-    #         $this.ForeColor = "#dddddd"
-    #         $this.BackColor = "#1f618d"
-    #         $this.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-    #         $this.FlatAppearance.BorderSize = 1
-    #         $this.FlatAppearance.BorderColor = [System.Drawing.Color]::black
-
-    #     })
     $btnHtmlReport.Add_Click({
 
         $User = $tbUserName.Text
@@ -371,7 +353,7 @@ function Get-Gui {
         $DriveList = $tbDrivesList.Text
         $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-HtmlReport -CaseFolderName $CaseFolderName -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -CopySrum $cbSruDb.Checked -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-HtmlReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -CopySruDb $cbSruDb.Checked -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
         $Form.Close()
         return
@@ -404,7 +386,7 @@ function Get-Gui {
             $DriveList = $tbDrivesList.Text
             $KeyWordsDrivesList = $tbKeyWordsDrivesList.Text
 
-            Export-FilesReport $CaseFolderName $User $Agency $CaseNumber $ComputerName $Ipv4 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
+            Export-FilesReport -CaseFolderName $CaseFolderName -User $User -Agency $Agency -CaseNumber $CaseNumber -ComputerName $ComputerName -Ipv4 $Ipv4 -Ipv6 $Ipv6 -Device $cbOne.Checked -UserData $cbTwo.Checked -Network $cbThree.Checked -Process $cbFour.Checked -System $cbFive.Checked -Prefetch $cbSix.Checked -EventLogs $cbSeven.Checked -Firewall $cbEight.Checked -BitLocker $cbNine.Checked -CaptureProcesses $cbGetProcesses.Checked -GetRam $cbGetRam.Checked -Edd $cbEdd.Checked -Hives $cbRegHives.Checked -GetNTUserDat $cbNTUserDat.Checked -ListFiles $cbListFiles.Checked -DriveList $DriveList -KeyWordSearch $cbKeyWordSearch.Checked -KeyWordsDriveList $KeyWordsDrivesList -CopySrum $cbSruDb.Checked -GetFileHashes $cbHashFiles.Checked -MakeArchive $cbArchive.Checked
 
             $Form.Close()
             return

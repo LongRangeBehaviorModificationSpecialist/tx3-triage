@@ -49,7 +49,7 @@ function Write-HtmlLogEntry {
         [string]
         $Message,
         [string]
-        $LogFile = $LogFile,
+        $LogFile = "$LogFolderPath\$LogFileName",
         [switch]
         $NoLevel,
         [switch]
@@ -62,10 +62,9 @@ function Write-HtmlLogEntry {
         $NoTime
     )
 
-    $LogFolderPath = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
-    $LogFileName = "$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
+    # $LogFileName = "$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
-    $LogFile = "$LogFolderPath\$LogFileName"
+    # $LogFile = "$LogFolderPath\$LogFileName"
 
     if (-not $Message) {
         throw "The message parameter cannot be empty."
@@ -176,20 +175,19 @@ function Export-HtmlReport {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory)]
-        [ValidateScript({ Test-Path $_ })]
+        [Parameter(Mandatory, Position = 0)]
         [string]$CaseFolderName,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 1)]
         [string]$User,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 2)]
         [string]$Agency,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 3)]
         [string]$CaseNumber,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 4)]
         [string]$ComputerName,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 5)]
         [string]$Ipv4,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 6)]
         [string]$Ipv6,
         [bool]$Device,
         [bool]$UserData,
@@ -209,11 +207,14 @@ function Export-HtmlReport {
         [string]$DriveList,
         [bool]$KeyWordSearch,
         [string]$KeyWordsDriveList,
-        [bool]$CopySruDB,
+        [bool]$CopySruDb,
         [bool]$GetFileHashes,
         [bool]$MakeArchive
     )
 
+
+    $LogFolderPath = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
+    $LogFileName = "$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
 
     $FunctionName = $MyInvocation.MyCommand.Name
 
@@ -591,8 +592,8 @@ function Export-HtmlReport {
     Invoke-KeywordSearch
 
 
-    function Invoke-CopySruDB {
-        if ($CopySruDB) {
+    function Invoke-CopySruDb {
+        if ($CopySruDb) {
             try {
                 $SruDbHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "SruDb" -Force
                 Write-HtmlLogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
@@ -606,7 +607,7 @@ function Export-HtmlReport {
             Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy SRUDB.dat' option was not selected by the user"
         }
     }
-    Invoke-CopySruDB
+    Invoke-CopySruDb
 
 
     #! Write the closing html text to the main file
