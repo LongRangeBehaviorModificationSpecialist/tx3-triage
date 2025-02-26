@@ -9,9 +9,11 @@ function Export-NetworkHtmlPage {
         $HtmlReportFile
     )
 
+    # Import the hashtables from the data files
     $NetworkPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\003A-NetworkDataArray.psd1"
 
     $NetworkHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 3-000
     function Get-NetworkData {

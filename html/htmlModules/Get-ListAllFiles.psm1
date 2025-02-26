@@ -15,7 +15,9 @@ function Invoke-HtmlListAllFiles {
         $DriveList
     )
 
+
     $ListFilesHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Get-HtmlListAllFiles {
 

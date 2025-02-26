@@ -9,7 +9,9 @@ function Export-PrefetchHtmlPage {
         $HtmlReportFile
     )
 
+
     $PrefetchHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     #6-001
     function Get-DetailedPrefetchData {

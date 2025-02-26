@@ -15,7 +15,9 @@ function Invoke-HtmlNTUserDatFiles {
         $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
+
     $NTUserHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Get-HtmlNTUserDatFiles {
 

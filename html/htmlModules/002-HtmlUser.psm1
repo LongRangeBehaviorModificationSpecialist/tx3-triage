@@ -9,9 +9,12 @@ function Export-UserHtmlPage {
         $HtmlReportFile
     )
 
+
+    # Import the hashtables from the data files
     $UserPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\002A-UserDataArray.psd1"
 
     $UserHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 2-000
     function Get-UserData {

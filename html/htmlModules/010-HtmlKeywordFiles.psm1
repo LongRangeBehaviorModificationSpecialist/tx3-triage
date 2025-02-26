@@ -14,7 +14,9 @@ function Export-HtmlKeywordSearchPage {
         $KeyWordsDriveList
     )
 
+
     $KeyWordsHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 10-001
     function Search-FilesByKeywords {

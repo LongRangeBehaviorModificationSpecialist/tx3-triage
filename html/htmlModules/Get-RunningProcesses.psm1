@@ -17,7 +17,9 @@ function Get-HtmlRunningProcesses {
         $ProcessCaptureExeFilePath = ".\bin\MagnetProcessCapture.exe"
     )
 
+
     $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Get-RunningProcesses {
 

@@ -16,7 +16,9 @@ function Get-HtmlComputerRam {
         $RamCaptureExeFilePath = ".\bin\MRCv120.exe"
     )
 
+
     $RamHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Get-ComputerRam {
 
@@ -24,8 +26,6 @@ function Get-HtmlComputerRam {
         Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
-
-            # Show & log $BeginMessage message
             $BeginMessage = "Starting RAM capture from computer: $ComputerName. Please wait..."
             Show-Message -Message "[INFO] $BeginMessage" -DarkGray
             Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"

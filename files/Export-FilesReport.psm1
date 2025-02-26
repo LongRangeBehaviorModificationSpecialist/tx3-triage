@@ -85,13 +85,13 @@ function Export-FilesReport {
         [bool]$GetRam,
         [bool]$Edd,
         [bool]$Hives,
+        [bool]$CopyPrefetch,
         [bool]$GetNTUserDat,
         [bool]$ListFiles,
         [string]$DriveList,
         [bool]$KeyWordSearch,
         [string]$KeyWordsDriveList,
         [bool]$CopySruDB,
-        # [bool]$CopyPrefetch,
         # [bool]$GetEventLogs,
         [bool]$GetFileHashes,
         [bool]$MakeArchive
@@ -459,6 +459,23 @@ INSTRUCTIONS
     Invoke-EventLogs
 
 
+    function Invoke-Prefetch {
+        if ($CopyPrefetch) {
+            try {
+                $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Prefetch_Files" -Force
+                Get-PrefetchFiles -CaseFolderName $CaseFolderName -ComputerName $ComputerName -PFFolder $PFFolder
+            }
+            catch {
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Copy Prefetch Files' option was not enabled by the user" -WarningMessage
+        }
+    }
+    Invoke-Prefetch
+
+
     function Invoke-NTUser {
         if ($GetNTUserDat) {
             try {
@@ -474,24 +491,6 @@ INSTRUCTIONS
         }
     }
     Invoke-NTUser
-
-
-    #! NEED TO ADD OPTION TO GUI
-    function Invoke-Prefetch {
-        if ($CopyPrefetch) {
-            try {
-                $PFFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Prefetch_Files" -Force
-                Get-PrefetchFiles -CaseFolderName $CaseFolderName -ComputerName $ComputerName -PFFolder $PFFolder
-            }
-            catch {
-                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
-            }
-        }
-        else {
-            Write-LogEntry -Message "[$($MyInvocation.MyCommand.ModuleName), Ln: $(Get-LineNum)] The 'Collect Windows Prefetch Files' option was not enabled by the user" -WarningMessage
-        }
-    }
-    Invoke-Prefetch
 
 
     function Invoke-SruDb {

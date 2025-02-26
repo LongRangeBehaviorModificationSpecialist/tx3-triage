@@ -206,7 +206,7 @@ function Write-MainHtmlPage {
 
                     <tr>
                         <td class='case_info_details'>Report Generated <strong>:</strong></td>
-                        <td class='case_info_text'>$($ReportGenTime)</td>
+                        <td class='case_info_text'>$($ReportGenTime) ET</td>
 
                         <td class='case_info_details'>IPv6 Address <strong>:</strong></td>
                         <td class='case_info_text'>$($Ipv6)</td>

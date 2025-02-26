@@ -9,11 +9,13 @@ function Export-SystemHtmlPage {
         $HtmlReportFile
     )
 
+
     # Import the hashtables from the data files
     $RegistryDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005A-RegistryDataArray.psd1"
     $SystemDataArray = Import-PowerShellDataFile -Path "$PSScriptRoot\005B-SystemDataArray.psd1"
 
     $SystemHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 5-000A
     function Get-SelectRegistryValues {

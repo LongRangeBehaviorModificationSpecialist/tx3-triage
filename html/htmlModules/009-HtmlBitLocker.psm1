@@ -9,7 +9,9 @@ function Export-BitLockerHtmlPage {
         $HtmlReportFile
     )
 
+
     $BitLockerHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 9-001
     function Search-BitlockerVolumes {

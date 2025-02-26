@@ -21,7 +21,9 @@ function Get-HtmlSruDb {
         $RawCopyPath = ".\bin\RawCopy.exe"
     )
 
+
     $SruDbHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Copy-SruDBFile {
 
@@ -29,7 +31,6 @@ function Get-HtmlSruDb {
         Show-Message -Message "[INFO] Running '$Name' command" -Header -DarkGray
 
         try {
-            # Show & log $BeginMessage message
             $BeginMessage = "Beginning capture of SRUDB.dat file from computer: '$ComputerName'"
             Show-Message -Message $BeginMessage -DarkGray
             Write-LogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"
@@ -45,6 +46,7 @@ function Get-HtmlSruDb {
 
             try {
                 $RawCopyResult = Invoke-Command -ScriptBlock { .\bin\RawCopy.exe /FileNamePath:$FileNamePath /OutputPath:"$OutputFolder" /OutputName:$OutputFileName }
+
                 if ($LASTEXITCODE -ne 0) {
                     $NoProperExitMessage = "RawCopy.exe failed with exit code $($LASTEXITCODE). Output: $RawCopyResult"
                     Show-Message -Message "[ERROR] $NoProperExitMessage" -Red

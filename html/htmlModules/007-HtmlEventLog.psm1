@@ -9,11 +9,13 @@ function Export-EventLogHtmlPage {
         $HtmlReportFile
     )
 
+
     # Import the hashtables from the data files
     $EventLogArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007A-EventLogArray.psd1"
     $OtherEventLogPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\007B-EventLogOtherArray.psd1"
 
     $EventLogHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     #7-000A
     function Get-EventLogData {

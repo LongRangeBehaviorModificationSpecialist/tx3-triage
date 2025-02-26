@@ -9,9 +9,12 @@ function Export-ProcessHtmlPage {
         $HtmlReportFile
     )
 
+
+    # Import the hashtables from the data files
     $ProcessesPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\004A-ProcessDataArray.psd1"
 
     $ProcessHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 4-000
     function Get-ProcessesData {

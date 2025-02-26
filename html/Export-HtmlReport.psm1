@@ -202,6 +202,7 @@ function Export-HtmlReport {
         [bool]$GetRam,
         [bool]$Edd,
         [bool]$Hives,
+        [bool]$CopyPrefetch,
         [bool]$GetNTUserDat,
         [bool]$ListFiles,
         [string]$DriveList,
@@ -236,10 +237,10 @@ function Export-HtmlReport {
     $HtmlModulesDirectory = "html\htmlModules"
 
 
-    foreach ($file in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force)) {
-        Import-Module -Name $file.FullName -Force -Global
-        Show-Message -Message "Module file: '.\$($file.Name)' was imported successfully" -NoTime -Blue
-        Write-HtmlLogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully"
+    foreach ($File in (Get-ChildItem -Path $HtmlModulesDirectory -Filter *.psm1 -Force)) {
+        Import-Module -Name $File.FullName -Force -Global
+        Show-Message -Message "Module file: '.\$($File.Name)' was imported successfully" -NoTime -Blue
+        Write-HtmlLogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] Module file '.\$($File.Name)' was imported successfully"
     }
 
     Show-Message -Message "[INFO] tx3-triage script execution began" -Header -Yellow
@@ -315,7 +316,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect Running Processes' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect Running Processes' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-GetHtmlProcesses
@@ -333,7 +334,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect RAM' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Collect RAM' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-GetHtmlMachineRam
@@ -351,13 +352,13 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Run Encrypted Disk Detector' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Run Encrypted Disk Detector' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-Edd
 
 
-    function Invoke-CopyRegistryHives  {
+    function Invoke-CopyRegistryHives {
         if ($Hives) {
             try {
                 $RegistryHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "RegHives" -Force
@@ -369,10 +370,28 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy Registry Hives' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy Registry Hives' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-CopyRegistryHives
+
+
+    function Invoke-CopyPrefetchFiles {
+        if ($CopyPrefetch) {
+            try {
+            $PrefetchHtmlOutputFolder = New-Item -ItemType Directory -Path $ResultsFolder -Name "Prefetch" -Force
+            Write-HtmlLogEntry -Message "[$($FunctionName), Ln: $(Get-LineNum)] '$($MyInvocation.MyCommand.Name)' function was run"
+            Get-HtmlCopyPrefetchFiles -OutputFolder $PrefetchHtmlOutputFolder -HtmlReportFile $HtmlReportFile -ComputerName $ComputerName
+            }
+            catch {
+                Invoke-ShowErrorMessage -Function $($MyInvocation.MyCommand.Name) -LineNumber $($PSItem.InvocationInfo.ScriptLineNumber) -Message $($PSItem.Exception.Message)
+            }
+        }
+        else {
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy Prefetch Files' option was not selected by the user" -WarningMessage
+        }
+    }
+    Invoke-CopyPrefetchFiles
 
 
     function Invoke-DeviceHtmlOutput {
@@ -387,7 +406,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Device Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Device Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-DeviceHtmlOutput
@@ -405,7 +424,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get User Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get User Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-UserHtmlOutput
@@ -423,7 +442,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Network Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Network Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-NetworkHtmlOutput
@@ -441,7 +460,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Process Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Process Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-ProcessHtmlOutput
@@ -459,7 +478,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get System Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get System Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-SystemHtmlOutput
@@ -477,7 +496,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Prefetch Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-PrefetchHtmlOutput
@@ -495,7 +514,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Event Log Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Event Log Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-EventLogHtmlOutput
@@ -513,7 +532,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Firewall Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get Firewall Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-FirewallHtmlOutput
@@ -531,7 +550,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get BitLocker Data' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Get BitLocker Data' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-BitLockerHtmlOutput
@@ -549,7 +568,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy NTUSER.DAT Files' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy NTUSER.DAT Files' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-NTUser
@@ -568,7 +587,7 @@ function Export-HtmlReport {
             }
         }
         else {
-                Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user"
+                Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'List All Files' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-ListFiles
@@ -586,7 +605,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Search for Keywords' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Search for Keywords' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-KeywordSearch
@@ -604,7 +623,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy SRUDB.dat' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Copy SRUDB.dat' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-CopySruDb
@@ -626,7 +645,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Hash Output Files' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-GetFileHashes
@@ -642,7 +661,7 @@ function Export-HtmlReport {
             }
         }
         else {
-            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user"
+            Write-HtmlLogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] The 'Make Case Archive' option was not selected by the user" -WarningMessage
         }
     }
     Invoke-GetHtmlCaseArchive

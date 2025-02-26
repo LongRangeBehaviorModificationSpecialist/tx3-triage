@@ -17,7 +17,6 @@ function Get-HtmlFileHashes {
     )
 
     try {
-        # Show & log $beginMessage message
         $BeginMessage = "Hashing report files for computer: $ComputerName"
         Show-Message -Message "[INFO] $BeginMessage" -Header -DarkGray
         Write-HtmlLogEntry -Message "[$($PSCmdlet.MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $BeginMessage"

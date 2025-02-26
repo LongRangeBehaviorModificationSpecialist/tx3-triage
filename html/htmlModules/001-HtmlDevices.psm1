@@ -9,10 +9,12 @@ function Export-DeviceHtmlPage {
         $HtmlReportFile
     )
 
+
     # Import the hashtables from the data files
     $DevicePropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\001A-DeviceDataArray.psd1"
 
     $DeviceHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 1-000
     function Get-DeviceData {
@@ -183,7 +185,7 @@ function Export-DeviceHtmlPage {
         $OutputHtmlFilePath = New-Item -Path "$OutputFolder\$FileName" -ItemType File -Force
 
         try {
-            $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property ProcessName, MainWindowTitle | Out-String
+            $Data = Get-Process | Where-Object { $_.mainWindowTitle } | Select-Object -Property * | Format-List | Out-String
 
             if ($Data.Count -eq 0) {
                 Invoke-NoDataFoundMessage -Name $Name

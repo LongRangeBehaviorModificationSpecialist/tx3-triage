@@ -9,10 +9,12 @@ function Export-FirewallHtmlPage {
         $HtmlReportFile
     )
 
+
     # Import the hashtables from the data files
     $FirewallPropertyArray = Import-PowerShellDataFile -Path "$PSScriptRoot\008A-FirewallDataArray.psd1"
 
     $FirewallHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     # 8-000
     function Get-FirewallData {

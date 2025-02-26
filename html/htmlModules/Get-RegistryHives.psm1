@@ -14,7 +14,9 @@ function Invoke-HtmlCopyRegistryHives {
         $ComputerName
     )
 
+
     $RegHivesHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Get-RegistryHives {
 

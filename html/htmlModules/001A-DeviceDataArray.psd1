@@ -31,7 +31,7 @@
                                        "Get-CimInstance -ClassName Win32_PhysicalMemory | Select-Object -Property * | Out-String",
                                        "String")
     "1-011_EnvVars"                  = ("EnvVars",
-                                       "Get-ChildItem -Path env: | Out-String",
+                                       "Get-ChildItem -Path env: | Format-List | Out-String",
                                        "String")
     "1-012_DiskInfo"                 = ("Disk Info",
                                        "Get-Disk | Select-Object -Property * | Sort-Object -Property DiskNumber | Out-String",
@@ -40,13 +40,13 @@
                                        "Get-Partition | Select-Object -Property * | Sort-Object -Property DiskNumber, PartitionNumber | Out-String",
                                        "String")
     "1-014_Win32DiskPartitions"      = ("Win32_DiskPartitions",
-                                       "Get-CimInstance -ClassName Win32_DiskPartition | Sort-Object -Property Name | Format-List | Out-String",
+                                       "Get-CimInstance -ClassName Win32_DiskPartition | Select-Object -Property * | Sort-Object -Property Name | Format-List | Out-String",
                                        "String")
     "1-015_Win32StartupCommand"      = ("Win32_StartupCommand",
                                        "Get-CimInstance -ClassName Win32_StartupCommand | Select-Object -Property * | Out-String",
                                        "String")
     "1-016_SoftwareLicensingService" = ("Software Licensing Service",
-                                       "Get-WmiObject -ClassName SoftwareLicensingService | Out-String",
+                                       "Get-WmiObject -ClassName SoftwareLicensingService | Select-Object -Property * | Out-String",
                                        "String")
     "1-017_Win32Bios"                = ("Win32_Bios",
                                        "Get-WmiObject -ClassName Win32_Bios | Select-Object -Property * | Out-String",
@@ -55,7 +55,7 @@
                                        "Get-CimInstance Win32_PnPEntity | Select-Object -Property * | Out-String",
                                        "String")
     "1-019_Win32Product"             = ("Win32_Product",
-                                       "Get-WmiObject Win32_Product | Out-String",
+                                       "Get-WmiObject Win32_Product | Select-Object -Property * | Out-String",
                                        "String")
     "1-020_DiskAllocation"           = ("FSUtil Volume",
                                        "fsutil volume allocationReport C: | Out-String",

@@ -15,7 +15,9 @@ function Invoke-HtmlEncryptedDiskDetector {
         $EddExeFilePath = ".\bin\EDDv310.exe"
     )
 
+
     $EddHtmlMainFile = New-Item -Path "$OutputFolder\main.html" -ItemType File -Force
+
 
     function Get-HtmlEncryptedDiskDetector {
 

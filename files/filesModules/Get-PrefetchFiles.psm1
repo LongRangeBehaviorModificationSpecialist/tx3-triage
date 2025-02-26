@@ -38,7 +38,7 @@ function Get-PrefetchFiles {
 
             # If no number is passed for the number of prefetch records to copy then copy all of the files
             if (-not $NumOfPFRecords) {
-                Write-Information "No value passed for the ``NumOfPFRecords`` value."
+                Write-Information "No value passed for the 'NumOfPFRecords' value."
                 $Files = Get-ChildItem -Path $WinPrefetchDir -Recurse -Force -File
             }
             else {
