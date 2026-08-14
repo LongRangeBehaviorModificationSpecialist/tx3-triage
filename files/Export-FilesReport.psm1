@@ -7,20 +7,19 @@ function Write-LogEntry {
 
     param (
         [Parameter(Mandatory)]
-        [string]
-        $Message,
-        [string]
-        $LogFile = $LogFile,
-        [switch]
-        $NoLevel,
-        [switch]
-        $DebugMessage,
-        [switch]
-        $WarningMessage,
-        [switch]
-        $ErrorMessage,
-        [switch]
-        $NoTime
+        [string]$Message,
+
+        [string]$LogFile = $LogFile,
+
+        [switch]$NoLevel,
+
+        [switch]$DebugMessage,
+
+        [switch]$WarningMessage,
+
+        [switch]$ErrorMessage,
+
+        [switch]$NoTime
     )
 
     $LogFileName = "$($RunDate)_$($Ipv4)_$($ComputerName)_Log.log"
@@ -60,18 +59,25 @@ function Export-FilesReport {
         [Parameter(Mandatory)]
         [ValidateScript({ Test-Path $_ })]
         [string]$CaseFolderName,
+
         [Parameter(Mandatory)]
         [string]$User,
+
         [Parameter(Mandatory)]
         [string]$Agency,
+
         [Parameter(Mandatory)]
         [string]$CaseNumber,
+
         [Parameter(Mandatory)]
         [string]$ComputerName,
+
         [Parameter(Mandatory)]
         [string]$Ipv4,
+
         [Parameter(Mandatory)]
         [string]$Ipv6,
+
         [bool]$Device,
         [bool]$UserData,
         [bool]$Network,
