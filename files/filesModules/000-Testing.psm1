@@ -181,7 +181,7 @@ function Get-BrowserHistory {
 
     param (
         [string]$Num = "0-003",
-        [string]$FileName = "SuspiciousFiles.txt",
+        [string]$FileName = "BrowsingHistory.txt",
         [string[]]$Keywords = @("child", "porn", "csam", "abuse")
     )
 
@@ -439,7 +439,7 @@ function Get-ThumbnailCache {
 
     param (
         [string]$Num = "0-009",
-        [string]$FileName = "RecentlyAccessedFiles.txt",
+        [string]$FileName = "ThumbCache.txt",
         [string]$CachePath = "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"
     )
 
