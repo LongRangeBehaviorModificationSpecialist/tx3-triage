@@ -1,6 +1,5 @@
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
-
 function Write-LogEntry {
 
     [CmdletBinding()]
@@ -49,7 +48,6 @@ function Write-LogEntry {
 
     Add-Content -Path $LogFile -Value $FormattedMessage -Encoding UTF8
 }
-
 
 function Export-FilesReport {
 
@@ -103,13 +101,10 @@ function Export-FilesReport {
         [bool]$MakeArchive
     )
 
-
     $LogFolder = New-Item -ItemType Directory -Path $CaseFolderName -Name "Logs" -Force
-
 
     # Name of the folder containing the .psm1 files that are to be imported
     $FilesModulesDirectory = "files\filesModules"
-
 
     foreach ($file in (Get-ChildItem -Path $FilesModulesDirectory -Filter *.psm1 -Force)) {
         Import-Module -Name $file.FullName -Force -Global
@@ -117,19 +112,16 @@ function Export-FilesReport {
         Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Module file '.\$($file.Name)' was imported successfully"
     }
 
-
     # Start transcript to record all of the screen output
     $TranscriptBeginMessage = "Powershell Transcript started"
     Start-Transcript -OutputDirectory $LogFolder -IncludeInvocationHeader -NoClobber
     Show-Message -Message $TranscriptBeginMessage -Blue
     Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $TranscriptBeginMessage" -DebugMessage
 
-
     # Write the data to the log file and display start time message on the screen
     Write-LogEntry -Message "`n-----------------------------------------------" -NoTime  -NoLevel
     Write-LogEntry -Message "    Script Log for tX3 DFIR Script Usage" -NoTime -NoLevel
     Write-LogEntry -Message "-----------------------------------------------" -NoTime -NoLevel
-
 
     [string]$Banner = "
 +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
@@ -141,16 +133,13 @@ function Export-FilesReport {
 +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
     "
 
-
     # Display the DFIR banner and instructions to the user
     Show-Message -Message $Banner -NoTime -Red
     Write-LogEntry -Message $Banner -NoTime -NoLevel
 
-
-    $StartMessage = "$($MyInvocation.MyCommand.ModuleName) execution started"
+    $StartMessage = "$( $MyInvocation.MyCommand.ModuleName ) execution started"
     Show-Message -Message "[INFO] $StartMessage" -Blue
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] $StartMessage"
-
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] $StartMessage"
 
     Show-Message -Message "
 
@@ -169,47 +158,39 @@ INSTRUCTIONS
      MACHINE. MOVE THE COLLECTION DEVICE TO A FORENSIC MACHINE BEFORE
      OPENING ANY FILES!
 [E]  DO NOT close any pop-up windows that may appear.
-[F]  To get help for this script, run ``Get-Help .\tx3-triage.ps1``
+[F]  To get help for this script, run 'Get-Help .\tx3-triage.ps1'
      command from a PowerShell CLI prompt.
-[G]  To exit this script at anytime, press ``Ctrl + C``.`n" -NoTime -Yellow
-
+[G]  To exit this script at anytime, press 'Ctrl + C'.`n" -NoTime -Yellow
 
     Write-Host ""
     Show-Message -Message "--> Please read the instructions before executing the script! <--" -NoTime -BlueOnGray
 
-
     # Stops the script until the user presses the ENTER key so the script does not begin before the user is ready
     Read-Host -Prompt "`nPress [ENTER] to begin data collection -> "
-
 
     if (-not $User) {
         [string]$User = Read-Host -Prompt "[*] Enter user's name -> "
     }
 
-
     if (-not $Agency) {
         [string]$Agency = Read-Host -Prompt "`n[*] Enter agency name -> "
     }
-
 
     if (-not $CaseNumber) {
         [string]$CaseNumber = Read-Host -Prompt "`n[*] Enter case number -> "
     }
 
-
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Operator Name Entered: '$User'"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Agency Name Entered: '$Agency'"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Case Number Entered: '$CaseNumber'"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Computer Name: '$ComputerName'"
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Operator Name Entered: '$User'"
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Agency Name Entered: '$Agency'"
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Case Number Entered: '$CaseNumber'"
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Computer Name: '$ComputerName'"
 
     # Write device IP information to the log file
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv4 address: '$Ipv4'"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Device IPv6 address: '$Ipv6'"
-
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Device IPv4 address: '$Ipv4'"
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Device IPv6 address: '$Ipv6'"
 
     Show-Message -Message "Data acquisition started. This may take a hot minute...`n"
-    Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Data acquisition started`n"
-
+    Write-LogEntry -Message "[$( $MyInvocation.MyCommand.Name ), Ln: $(Get-LineNum)] Data acquisition started`n"
 
     # Running Encrypted Disk Detector
     function Invoke-Edd {
@@ -231,7 +212,6 @@ INSTRUCTIONS
     }
     Invoke-Edd
 
-
     function Invoke-Processes {
         if ($CaptureProcesses) {
             try {
@@ -248,7 +228,6 @@ INSTRUCTIONS
         }
     }
     Invoke-Processes
-
 
     function Invoke-Ram {
         if ($GetRam) {
@@ -267,7 +246,6 @@ INSTRUCTIONS
     }
     Invoke-Ram
 
-
     function Invoke-DeviceFilesOutput {
         if ($Device) {
             try {
@@ -284,7 +262,6 @@ INSTRUCTIONS
         }
     }
     Invoke-DeviceFilesOutput
-
 
     function Invoke-UserFilesOutput {
         if ($UserData) {
@@ -303,7 +280,6 @@ INSTRUCTIONS
     }
     Invoke-UserFilesOutput
 
-
     function Invoke-NetworkFilesOutput {
         if ($Network) {
             try {
@@ -320,7 +296,6 @@ INSTRUCTIONS
         }
     }
     Invoke-NetworkFilesOutput
-
 
     function Invoke-ProcessFilesOutput {
         if ($Process) {
@@ -339,7 +314,6 @@ INSTRUCTIONS
     }
     Invoke-ProcessFilesOutput
 
-
     function Invoke-SystemFilesOutput {
         if ($System) {
             try {
@@ -356,7 +330,6 @@ INSTRUCTIONS
         }
     }
     Invoke-SystemFilesOutput
-
 
     function Invoke-PrefetchFilesOutput {
         if ($Prefetch) {
@@ -375,7 +348,6 @@ INSTRUCTIONS
     }
     Invoke-PrefetchFilesOutput
 
-
     function Invoke-EventLogFilesOutput {
         if ($EventLogs) {
             try {
@@ -392,7 +364,6 @@ INSTRUCTIONS
         }
     }
     Invoke-EventLogFilesOutput
-
 
     function Invoke-FirewallFilesOutput {
         if ($Firewall) {
@@ -411,7 +382,6 @@ INSTRUCTIONS
     }
     Invoke-FirewallFilesOutput
 
-
     function Invoke-BitLockerFilesOutput {
         if ($BitLocker) {
             try {
@@ -429,7 +399,6 @@ INSTRUCTIONS
     }
     Invoke-BitLockerFilesOutput
 
-
     function Invoke-Registry {
         if ($Hives) {
             try {
@@ -445,7 +414,6 @@ INSTRUCTIONS
         }
     }
     Invoke-Registry
-
 
     #! NEED TO ADD OPTION TO GUI
     function Invoke-EventLogs {
@@ -464,7 +432,6 @@ INSTRUCTIONS
     }
     Invoke-EventLogs
 
-
     function Invoke-Prefetch {
         if ($CopyPrefetch) {
             try {
@@ -480,7 +447,6 @@ INSTRUCTIONS
         }
     }
     Invoke-Prefetch
-
 
     function Invoke-NTUser {
         if ($GetNTUserDat) {
@@ -498,7 +464,6 @@ INSTRUCTIONS
     }
     Invoke-NTUser
 
-
     function Invoke-SruDb {
         if ($CopySruDb) {
             try {
@@ -514,7 +479,6 @@ INSTRUCTIONS
         }
     }
     Invoke-SruDb
-
 
     function Invoke-ListAllFiles {
         if ($ListFiles) {
@@ -533,7 +497,6 @@ INSTRUCTIONS
     }
     Invoke-ListAllFiles
 
-
     function Invoke-GetFileHashes {
         if ($GetFileHashes) {
             try {
@@ -550,7 +513,6 @@ INSTRUCTIONS
         }
     }
     Invoke-GetFileHashes
-
 
     function Invoke-CaseArchive {
         if ($MakeArchive) {
@@ -573,38 +535,30 @@ INSTRUCTIONS
     }
     Invoke-CaseArchive
 
-
     # Get the time the script was completed
     $EndTimeForLog = Get-Date
     $DurationForLog = New-TimeSpan -Start $StartTime -End $EndTimeForLog
 
-
     # Calculate the total run time of the script and formats the results
     $DiffForLog = "$($DurationForLog.Days) days $($DurationForLog.Hours) hours $($DurationForLog.Minutes) minutes $($DurationForLog.Seconds) seconds"
 
-
     # Display a message that the script has completed and list the total time run time on the screen
     Write-LogEntry -Message "[$($MyInvocation.MyCommand.Name), Ln: $(Get-LineNum)] Script execution completed in: $DiffForLog"
-
 
     $EndTimeForShow = Get-Date
     $DurationForShow = New-TimeSpan -Start $StartTime -End $EndTimeForShow
     $DiffForShow = "$($DurationForShow.Days) days $($DurationForShow.Hours) hours $($DurationForShow.Minutes) minutes $($DurationForShow.Seconds) seconds"
 
-
     Show-Message -Message "[INFO] Script execution completed in: $DiffForShow`n" -Header -Green
     Show-Message -Message "[INFO] The results are available in the '$CaseFolderName' directory" -Header -Green
-
 
     # Stop the transcript
     Stop-Transcript
     Show-Message -Message "Transcript ended" -Header
 
-
     # Show a popup message when script is complete
     (New-Object -ComObject Wscript.Shell).popup("The Script has finished running", 0, "Done", 0x1) | Out-Null
 
 }
-
 
 Export-ModuleMember -Function Export-FilesReport, Write-LogEntry -Variable *
