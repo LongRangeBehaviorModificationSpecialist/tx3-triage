@@ -26,10 +26,8 @@ function Get-ForensicData {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-001",
-        [string]
-        $FileName = "SystemInfo.txt"
+        [string]$Num = "0-001",
+        [string]$FileName = "SystemInfo.txt"
     )
 
     $File = Join-Path -Path $TestingFolder -ChildPath "$($Num)_$FileName"
@@ -136,16 +134,11 @@ function Get-SuspiciousFiles {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-002",
-        [string]
-        $FileName = "SuspiciousFiles.txt",
-        [string]
-        $Path = "C:\",
-        [string[]]
-        $Keywords = @("child", "porn", "csam", "abuse"),
-        [string[]]
-        $Extensions = @("jpg", "png", "mp4", "mov")
+        [string]$Num = "0-002",
+        [string]$FileName = "SuspiciousFiles.txt",
+        [string]$Path = "C:\",
+        [string[]]$Keywords = @("child", "porn", "csam", "abuse"),
+        [string[]]$Extensions = @("jpg", "png", "mp4", "mov")
     )
 
     begin {
@@ -187,12 +180,9 @@ function Get-BrowserHistory {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-003",
-        [string]
-        $FileName = "SuspiciousFiles.txt",
-        [string[]]
-        $Keywords = @("child", "porn", "csam", "abuse")
+        [string]$Num = "0-003",
+        [string]$FileName = "SuspiciousFiles.txt",
+        [string[]]$Keywords = @("child", "porn", "csam", "abuse")
     )
 
     begin {
@@ -231,7 +221,7 @@ function Get-BrowserHistory {
                             }
                         }
                         catch {
-                            Write-Warning "Failed to parse browser history at $Path -> $($_)"
+                            Write-Warning "Failed to parse browser history at $Path -> $( $_ )"
                         }
                     }
                     else {
@@ -258,14 +248,10 @@ function Compare-FileHashes {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-004",
-        [string]
-        $FileName = "CompareHashes.txt",
-        [string]
-        $Path = "C:\",
-        [string]
-        $HashDatabase = "C:\hashes.txt"
+        [string]$Num = "0-004",
+        [string]$FileName = "CompareHashes.txt",
+        [string]$Path = "C:\",
+        [string]$HashDatabase = "C:\hashes.txt"
     )
 
     begin {
@@ -308,10 +294,8 @@ function Get-USBSTOR {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-005",
-        [string]
-        $FileName = "USBSTOR.txt"
+        [string]$Num = "0-005",
+        [string]$FileName = "USBSTOR.txt"
     )
 
     begin {
@@ -374,16 +358,11 @@ function Get-RecentlyAccessedFiles {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-006",
-        [string]
-        $FileName = "RecentlyAccessedFiles.txt",
-        [string]
-        $Path = "C:\",
-        [string[]]
-        $Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg"),
-        [int]
-        $Days = 7
+        [string]$Num = "0-006",
+        [string]$FileName = "RecentlyAccessedFiles.txt",
+        [string]$Path = "C:\",
+        [string[]]$Extensions = @("jpg", "jpeg", "png", "mp4", "mov", "avi", "mpeg"),
+        [int]$Days = 7
     )
 
     process {
@@ -401,14 +380,10 @@ function Get-SuspiciousFilePermissions {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-007",
-        [string]
-        $FileName = "SuspiciousFilePermissions.txt",
-        [string]
-        $Path = "C:\",
-        [string[]]
-        $Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg")
+        [string]$Num = "0-007",
+        [string]$FileName = "SuspiciousFilePermissions.txt",
+        [string]$Path = "C:\",
+        [string[]]$Extensions = @("jpg", "png", "mp4", "mov", "avi", "mpeg")
     )
 
     process {
@@ -437,12 +412,9 @@ function Get-PrefetchAnalysis {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-008",
-        [string]
-        $FileName = "PrefetchAnalysis.txt",
-        [string]
-        $Path = "C:\Windows\Prefetch"
+        [string]$Num = "0-008",
+        [string]$FileName = "PrefetchAnalysis.txt",
+        [string]$Path = "C:\Windows\Prefetch"
     )
 
     process {
@@ -466,12 +438,9 @@ function Get-ThumbnailCache {
     [CmdletBinding()]
 
     param (
-        [string]
-        $Num = "0-009",
-        [string]
-        $FileName = "RecentlyAccessedFiles.txt",
-        [string]
-        $CachePath = "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"
+        [string]$Num = "0-009",
+        [string]$FileName = "RecentlyAccessedFiles.txt",
+        [string]$CachePath = "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"
     )
 
     process {
